@@ -13,13 +13,24 @@
   </template>
   
   <script>
+
+  import { useRouter } from 'vue-router';
+
   export default {
     name: "Dashboard",
-    methods: {
-      handleLogout() {
-        this.$router.push("/"); // 返回登录页
-      },
+    setup (){
+
+      const router = useRouter();  
+
+      const handleLogout = () => {
+        router.push("/"); // 返回登录页
+      };
+
+      return{
+        handleLogout,
+      };
     },
+
   };
   </script>
   

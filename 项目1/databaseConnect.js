@@ -17,6 +17,11 @@ app.use(bodyParser.json());
 
 //数据库连接
 const db = mysql.createConnection({
+    // host: "8.138.88.141",
+    // user: "xzj",
+    // password: "12345",
+    // database: "user_auth",
+
     host: "localhost",
     user: "root",
     password: "root",
@@ -50,8 +55,6 @@ app.post ("/api/login",(req,res) => {
         //const isPasswordValid = await compare(password,user.password);
 
         if(password != user.password){
-            console.log('数据库中的密码: ${user.password}','上传的密码:,${password}');
-           // console.log('上传的密码:', password);
             return res.status(401).json({message:"密码错误"});
         }
 

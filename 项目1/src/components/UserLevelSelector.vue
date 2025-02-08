@@ -7,10 +7,10 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'UserLevelSelector',
-    props: {
+  <script setup>
+  import { ref } from 'vue';
+
+     const props = defineProps ({
       levels: {
         type: Array,
         default: () => [
@@ -18,18 +18,16 @@
           { label: '普通用户', value: 'user' },
         ],
       },
-    },
-    data() {
-      return {
-        selectedLevel: null,
-      };
-    },
-    methods: {
-      handleChange(value) {
-        this.$emit('level-selected', value);
-      },
-    },
-  };
+    });
+
+    const emit = defineEmits(['levle-select']);
+
+    const selectedLevel = ref(null);
+   
+    const handleChange = (value) => {
+      emit(selectedLevel,value);
+    };
+   
   </script>
   
   <style scoped>
