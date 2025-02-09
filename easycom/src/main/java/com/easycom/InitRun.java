@@ -2,9 +2,9 @@ package com.easycom;
 
 import com.easycom.redis.RedisUtils;
 import io.lettuce.core.RedisConnectionException;
-import io.lettuce.core.RedisException;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class InitRun implements ApplicationRunner {
 
     @Resource
     private DataSource dataSource;
-    @Resource
+    @Value("${server.port:}")
     private Integer serverPort;
 
     @Override

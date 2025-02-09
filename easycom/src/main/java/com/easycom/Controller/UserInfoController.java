@@ -23,6 +23,10 @@ public class UserInfoController {
     @Resource
     private IUserInfoService userInfoService;
 
+    /**
+     * 获取验证码
+     * @return
+     */
     @RequestMapping("/getCheckCode")
     public Result getCheckCode(){
         return userInfoService.getCheckCode();
