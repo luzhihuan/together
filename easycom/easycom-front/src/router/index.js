@@ -7,13 +7,13 @@ const router =createRouter({
     routes:[
         {
             path:'/login',
-            name:'/login',
+            name:'login',
             component:()=>import("@/views/Login.vue")
         },
         {
             path:'/',
             name:'Framework',
-            component:()=>import("@/views/Framwork.vue")
+            component:()=>import("@/views/Framework.vue")
         },
     ]
 })
