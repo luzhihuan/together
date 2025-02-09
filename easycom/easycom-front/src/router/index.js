@@ -22,7 +22,7 @@ router.beforeEach((to,from,next,)=>{
     if(to.meta.needLogin!=null&&to.meta.needLogin&&userInfo==null){
         router.push("/login")
     }
-    next()
+    next();
 })
 
 export default router
