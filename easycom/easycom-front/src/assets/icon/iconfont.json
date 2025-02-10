@@ -1,10 +1,24 @@
 {
-  "id": "",
-  "name": "",
+  "id": "4824077",
+  "name": "easycom",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
   "glyphs": [
+    {
+      "icon_id": "1207882",
+      "name": "up",
+      "font_class": "up",
+      "unicode": "e673",
+      "unicode_decimal": 58995
+    },
+    {
+      "icon_id": "1555751",
+      "name": "down",
+      "font_class": "down",
+      "unicode": "e688",
+      "unicode_decimal": 59016
+    },
     {
       "icon_id": "1043766",
       "name": "password",

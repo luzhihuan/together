@@ -1,11 +1,16 @@
+<template>
+  <div>
+    首页
+
+
+  </div>
+</template>
+
 <script setup>
 
 </script>
 
-<template>
+<style lang="scss" scoped>
 
-</template>
-
-<style scoped>
 
 </style>
