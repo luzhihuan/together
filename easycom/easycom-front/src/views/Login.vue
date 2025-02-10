@@ -10,15 +10,27 @@
                 
                 <el-form :model="form" :rules="rules" ref="login" >
                     <el-form-item prop = "user_id">
-                        <el-input v-model="form.user_id" placeholder="请输入账号"/>
+                        <el-input v-model="form.user_id" placeholder="请输入账号" @focus="clearValidation('user_id')">
+                            <template #prefix>
+                                <span class="iconfont icon-user"></span>
+                            </template>
+                        </el-input>
                     </el-form-item>
 
                     <el-form-item prop="password">
-                        <el-input v-mode="form.password" placeholder="请输入密码" show-password/>
+                        <el-input v-mode="form.password" placeholder="请输入密码" @focus="clearValidation('password')">
+                            <template #prefix>
+                                <span class="iconfont icon-password"></span>
+                            </template>
+                        </el-input>
                     </el-form-item>
                     
                     <el-form-item prop="checkcode">
-                        <el-input v-model="form.checkcode" placholder="请输入验证码"/>
+                        <el-input v-model="form.checkcode" placeholder="输入验证码" @focus="clearValidation('checkcode')">
+                            <template #prefix>
+                              <span class="iconfont icon-checkCode"></span>
+                            </template>
+                        </el-input>
                     </el-form-item>
 
                     <el-form-item>
@@ -38,6 +50,7 @@
 
 
 <script setup>
+import message from '../utils/Message';
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
 
@@ -54,6 +67,10 @@ import { ElMessage } from 'element-plus';
         password:[{required: true, message:'请输入密码', trigger:'blur'}],
         checkcode:[{required: true, message:'请输入验证码', trigger:'blur'}],
     };
+
+    const clearValidation = (field) =>{  //重新聚焦输入框就清除提示信息
+      login.value.clearValidate(field);
+    }
 
 </script>
 
