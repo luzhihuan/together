@@ -13,7 +13,34 @@ const router =createRouter({
         {
             path:'/',
             name:'Framework',
-            component:()=>import("@/views/Framework.vue")
+            component:()=>import("@/views/Framework.vue"),
+            children:[
+                {
+                    path:"/main",
+                    name:"首页",
+                    meta:{
+                        needLogin:true,
+                    },
+                    component:()=>import("@/views/main/main.vue"),
+                },
+                {
+                    path:"/message",
+                    name:"收件箱",
+                    meta:{
+                        needLogin:true,
+                    },
+                    component:()=>import("@/views/message/message.vue"),
+
+                },
+                {
+                    path:"/setting",
+                    name:"设置",
+                    meta:{
+                        needLogin:true,
+                    },
+                    component:()=>import("@/views/setting/setting.vue"),
+                },
+            ]
         },
     ]
 })

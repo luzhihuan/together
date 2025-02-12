@@ -5,6 +5,8 @@ import com.easycom.Service.IUserInfoService;
 import com.easycom.entity.PO.UserInfo;
 import com.easycom.entity.VO.Result;
 import jakarta.annotation.Resource;
+import jakarta.validation.constraints.Max;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RequestParam;

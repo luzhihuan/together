@@ -35,7 +35,20 @@
 
 <!--    主体部分-->
     <div class="body">
-      <div class="left-menu">选项</div>
+<!--      左边菜单栏-->
+      <div class="left-menu">
+        <div
+          @click="jump(item)"
+          :class="['menu-item','active']"
+          v-for="item in menus"
+        >
+          <div :class="['iconfont','icon'+item.icon]"></div>
+          <div class="text">{{item.name}}</div>
+        </div>
+
+      </div>
+
+
       <div class="right-main">main</div>
     </div>
 
@@ -44,7 +57,29 @@
 
 <script setup>
 
+const menus = [
+  {
+    path:"/main",
+    icon:"main",
+    name:"首页",
+  },
+  {
+    path:"/message",
+    icon:"messages",
+    name:"收件箱",
+  },
+  {
+    path:"/setting",
+    icon:"setting",
+    name:"设置",
+  },
+]
+
+
+
 </script>
+
+
 
 <style lang="scss" scoped>
 .header {
@@ -132,6 +167,13 @@
     display: flex;
     height: calc(100vh - 70px);
     width: 400px;
+    .menu-item{
+      text-align: center;
+      font-size: 14px;
+      padding: 20px 0;
+      cursor: pointer;
+      font-weight: bold;
+    }
   }
 
 
@@ -139,6 +181,11 @@
     background-color: #ffe490;
     width: 100%;
   }
+
+
+
+
+
 }
 
 
