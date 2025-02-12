@@ -1,14 +1,30 @@
 <template>
+  <div class="login-body">
     <div class="bg">
         <el-card class="login-card">
-            <el-form>
-                <el-form-item>
+            <div class="login-title">密码重置</div>
+            <el-form :model="resetForm" ref="resetFormRef" :rules="rules">
+                <el-form-item prop="password" class="form_base">
                     <el-input 
-                        v-mode="formData.password" 
-                        placeholder="请输入密码" 
-                        v-model.trim="formData.password"
+                        v-mode="resetForm.password" 
+                        placeholder="请输入新密码" 
+                        v-model.trim="resetForm.password"
                         show-password
                         @focus="clearValidation('password')"
+                        >
+                            <template #prefix>
+                                <span class="iconfont icon-password"></span>
+                            </template>
+                        </el-input>
+                </el-form-item>
+
+                <el-form-item prop="rePassword" class="form_base">
+                    <el-input 
+                        v-mode="resetForm.rePassword" 
+                        placeholder="请确认新密码" 
+                        v-model.trim="resetForm.rePassword"
+                        show-password
+                        @focus="clearValidation('rePassword')"
                         >
                             <template #prefix>
                                 <span class="iconfont icon-password"></span>
@@ -18,21 +34,36 @@
             </el-form>
         </el-card>
     </div>
+  </div>
 </template>
 
+<script setup>
+  import { ref } from 'vue';
+import message from '../utils/Message';
+
+  const resetForm = ref({});
+  const resetFormRef = ref();
+
+  const rules = {
+    passowrd:[{required: true, message:'请输入要修改的密码', tigger:'blur'}],
+    rePassword:[{required: true, message: '请再次输入密码', tigger:'blur'}],
+  }
+</script>
 
 <style lang="scss" scoped>
 .login-body {
   height: calc(100vh);
   background-size: cover;
+  background:linear-gradient(to right, #cef5c3, #7dfa88);
 
   display: flex;
   .bg{
-    background:linear-gradient(to right, #4ad124, #036920);
     flex: 1;
     display: flex;
     background-size: cover;
     opacity: 0.8;
+    align-items: center;
+    justify-content: center;
   }
 
 
