@@ -210,6 +210,7 @@ const login = async () =>{
         return;
       }
       });
+      await router.push({name:'passwordReset'})
     };
 
     //重置表单  后续需要修改为只重置验证码保留用户输入的内容

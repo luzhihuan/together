@@ -45,6 +45,11 @@ const router =createRouter({
                 },
             ]
         },
+        {
+            path:'/passwordReset',
+            name:'passwordReset',
+            component:()=>import("@/views/passwordReset.vue")
+        }
     ]
 })
 router.beforeEach((to,from,next,)=>{
