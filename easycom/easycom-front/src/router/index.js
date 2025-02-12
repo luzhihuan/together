@@ -20,6 +20,7 @@ const router =createRouter({
                     name:"首页",
                     meta:{
                         needLogin:true,
+                        code:'main'
                     },
                     component:()=>import("@/views/main/main.vue"),
                 },
@@ -28,6 +29,7 @@ const router =createRouter({
                     name:"收件箱",
                     meta:{
                         needLogin:true,
+                        code:'messages'
                     },
                     component:()=>import("@/views/message/message.vue"),
 
@@ -37,6 +39,7 @@ const router =createRouter({
                     name:"设置",
                     meta:{
                         needLogin:true,
+                        code:'setting'
                     },
                     component:()=>import("@/views/setting/setting.vue"),
                 },
@@ -46,9 +49,9 @@ const router =createRouter({
 })
 router.beforeEach((to,from,next,)=>{
     const userInfo = VueCookies.get("userInfo")
-    if(to.meta.needLogin!=null&&to.meta.needLogin&&userInfo==null){
-        router.push("/login")
-    }
+    // if(to.meta.needLogin!=null&&to.meta.needLogin&&userInfo==null){
+    //     router.push("/login")
+    // }
     next();
 })
 

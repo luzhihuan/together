@@ -3,7 +3,7 @@
 <!--    顶端-->
     <div class="header">
 <!--      左边-->
-      <div class="logo">
+      <div class="logo" @click="backToMain">
         <div class="name">
           <img src="../assets/logo.png" alt="" style="cursor: pointer;margin-right: 10px"/>
           综 测 管 理 系 统
@@ -37,44 +37,88 @@
     <div class="body">
 <!--      左边菜单栏-->
       <div class="left-menu">
-        <div
-          @click="jump(item)"
-          :class="['menu-item','active']"
-          v-for="item in menus"
-        >
-          <div :class="['iconfont','icon'+item.icon]"></div>
-          <div class="text">{{item.name}}</div>
+        <div class="">
+          <div
+              @click="jump(item)"
+              :class="['menu-item',item.code===currentMenu.code?'active':'']"
+              v-for="item in menus"
+          >
+              <div :class="['iconfont','icon-'+item.icon,'icon-font',item.code===currentMenu.code?'icon-active':'']"></div>
+              <span class="text" style="font-size: 25px;text-align: center">{{item.name}}</span>
+              <span
+                  :class="['iconfont',item.code===currentMenu.code?'icon-up':'icon-down','icon-font2']"
+                  v-if="item.children"
+              ></span>
+              <router-link :to="item.path"></router-link>
+          </div>
         </div>
 
       </div>
 
 
-      <div class="right-main">main</div>
+      <div class="right-main">
+        <router-view/>
+      </div>
     </div>
 
   </div>
 </template>
 
 <script setup>
+import {ref, reactive, getCurrentInstance, nextTick, watch} from "vue"
+const { proxy } = getCurrentInstance();
+
+import {useRouter,useRoute} from "vue-router";
+const route = useRoute()
+const router = useRouter()
 
 const menus = [
   {
     path:"/main",
     icon:"main",
     name:"首页",
+    code:'main',
   },
   {
     path:"/message",
     icon:"messages",
     name:"收件箱",
+    code:'messages',
   },
   {
     path:"/setting",
     icon:"setting",
     name:"设置",
+    code:'setting',
   },
 ]
 
+const currentMenu = ref({})
+const currentPath = ref()
+
+const jump = (item)=>{
+  if(!item.path||item.code===currentMenu.value.code){
+    return
+  }
+  router.push(item.path)
+}
+
+const setMenu = (code,path) => {
+  const menu = menus.find((item)=>{
+    return item.code === code
+  })
+  currentMenu.value = menu
+  currentPath.value = path
+}
+watch(()=>route,(newVal,oldVal)=>{
+  if(newVal.meta.code){
+    setMenu(newVal.meta.code,newVal.path)
+  }
+},{immediate:true,deep:true})
+
+const backToMain = ()=>{
+  router.push('/main')
+}
 
 
 </script>
@@ -163,16 +207,38 @@ const menus = [
   display: flex;
   overflow: hidden;
   .left-menu{
-    border-right: #7effe6 solid 1px;
+    border-right: #ffffff solid 1px;
     display: flex;
     height: calc(100vh - 70px);
-    width: 400px;
+    width: 350px;
     .menu-item{
+      margin-top: 20px;
       text-align: center;
       font-size: 14px;
       padding: 20px 0;
       cursor: pointer;
       font-weight: bold;
+      width: 300px;
+      &:hover{
+        background-color: #9bd8fa;
+      }
+    }
+    .icon-font{
+      text-align: center;
+      font-size: 40px;
+    }
+    .icon-active{
+      color: #05a1f5;
+    }
+    .icon-font2{
+      margin-left: 20px;
+    }
+    .active{
+      background-color: #eef9fe;
+      .text{
+
+        color: #05a1f5;
+      }
     }
   }
 
@@ -181,8 +247,6 @@ const menus = [
     background-color: #ffe490;
     width: 100%;
   }
-
-
 
 
 

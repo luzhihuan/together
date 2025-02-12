@@ -1,6 +1,7 @@
 package com.easycom.Service.impl;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.entity.PO.UserInfo;
 import com.easycom.Mapper.UserInfoMapper;
@@ -52,8 +53,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Override
     public Result login(UserInfo userInfo) {
+
         UserInfo check = userInfoMapper.selectById(userInfo.getUserId());
-        String s = DigestUtils.md5DigestAsHex(userInfo.getPassword().getBytes());
         //根据用户ID查验账号
         if (check == null) {
             return Result.fail("用户ID不存在");

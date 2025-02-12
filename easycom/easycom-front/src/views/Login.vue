@@ -193,6 +193,16 @@ import FrameworkVue from './Framework.vue';
   // }
   // changeCheckCode(0)
 
+const login = async () =>{
+  let result = await proxy.Request({
+    url:,
+    params:,
+  })
+
+
+
+}
+
     //验证邮箱验证码发送表单
     const sendEmailCode = async() =>{
       emailConfirmDialogRef.value.validate(async (valid) => {
