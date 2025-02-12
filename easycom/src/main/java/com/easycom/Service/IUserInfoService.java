@@ -3,6 +3,8 @@ package com.easycom.Service;
 import com.easycom.entity.PO.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.easycom.entity.VO.Result;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * <p>
@@ -15,5 +17,5 @@ import com.easycom.entity.VO.Result;
 public interface IUserInfoService extends IService<UserInfo> {
     Result getCheckCode();
 
-    Result login(String userId, String password);
+    Result login( String checkCodeKey, String username, String password, String checkCode);
 }

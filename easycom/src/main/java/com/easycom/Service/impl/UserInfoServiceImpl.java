@@ -1,21 +1,20 @@
 package com.easycom.Service.impl;
 
 import cn.hutool.core.lang.UUID;
-import cn.hutool.crypto.digest.DigestUtil;
 import com.easycom.Utils.DefaultParam;
-import com.easycom.Utils.JwtUtils;
+import com.easycom.Utils.VerifyUtil;
+import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.UserInfo;
 import com.easycom.Mapper.UserInfoMapper;
 import com.easycom.Service.IUserInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easycom.entity.VO.Result;
+import com.easycom.entity.enums.VerifyRegexEnum;
 import com.easycom.redis.RedisUtils;
 import io.springboot.captcha.SpecCaptcha;
 import io.springboot.captcha.base.Captcha;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +30,8 @@ import java.util.Map;
 @Service
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements IUserInfoService {
 
-    @Autowired
+    @Resource
     private UserInfoMapper userInfoMapper;
-    @Autowired
-    private JwtUtils jwtUtils;
 
 
     @Override
@@ -55,13 +52,24 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result login(String userId, String password) {
+    public Result login(String checkCodeKey, String username, String password, String checkCode) {
+
+        //第一步先检验验证码是否正确或者是否存在！
+        if (RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
+            return Result.fail("图片验证码已过期，请重新获取！");
+        }
+        if (!checkCode.equalsIgnoreCase(
+                RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey).toString())) {
+            return Result.fail("图片验证码不正确");
+        }
+
         UserInfo check = null;
-        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";//正则判断是否为邮箱
-        if (userId.matches(emailRegex)) {
-             check = userInfoMapper.selectByEmail(userId);
+        //使用枚举正则
+//        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";//正则判断是否为邮箱
+        if (VerifyUtil.verify(VerifyRegexEnum.EMAIL,username)) {
+             check = userInfoMapper.selectByEmail(username);
         }else {
-             check = userInfoMapper.selectById(userId);
+             check = userInfoMapper.selectById(username);
         }
         //根据用户ID查验账号
         if (check == null) {
@@ -74,8 +82,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (!check.getPassword().equals(password)) {
             return Result.fail("密码错误");
         }
-        String token = jwtUtils.generateToken(check.getUserId());
-        return Result.ok(token);//生成token
+        //生成token
+        String token = UUID.fastUUID().toString(true);
+        TokenUserInfoDTO tokenUserInfoDTO = new TokenUserInfoDTO();
+        tokenUserInfoDTO.setUserId(check.getUserId());
+        tokenUserInfoDTO.setToken(token);
+
+        //TODO 将dto保存到redis
+        //TODO 判断一下是否为管理员
+
+
+        return Result.ok(tokenUserInfoDTO);
+
     }
 
 }
