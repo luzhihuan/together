@@ -94,3 +94,21 @@ Caused by: java.lang.ClassNotFoundException: org.springframework.boot.task.TaskE
 	at org.springframework.boot.autoconfigure.condition.OnBeanCondition.getMatchOutcome(OnBeanCondition.java:156) ~[spring-boot-autoconfigure-3.3.4.jar:3.3.4]
 	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:47) ~[spring-boot-autoconfigure-3.3.4.jar:3.3.4]
 	... 17 more
+2025-02-12 22:56:36 WARN  org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: c00d2d0b-4790-480f-b81a-d88741615954
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-02-12 23:00:09 WARN  org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: da93f9e3-b2da-4513-a452-6d80a511b07c
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-02-12 23:12:44 WARN  org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: bd8adc34-1c3e-4940-83f9-a8e5f7f15971
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+

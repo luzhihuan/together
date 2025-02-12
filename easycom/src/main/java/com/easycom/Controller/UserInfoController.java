@@ -2,11 +2,8 @@ package com.easycom.Controller;
 
 
 import com.easycom.Service.IUserInfoService;
-import com.easycom.entity.PO.UserInfo;
 import com.easycom.entity.VO.Result;
 import jakarta.annotation.Resource;
-import jakarta.validation.constraints.Max;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,8 +34,9 @@ public class UserInfoController {
     }
 
     @RequestMapping("/login")
-    public Result login(@RequestParam UserInfo userInfo){
-        return userInfoService.login(userInfo);
+    public Result login(@RequestParam(name = "userId",required = true) String userId,
+                        @RequestParam(name = "password",required = true) String password){
+        return userInfoService.login(userId,password);
     }
 
 

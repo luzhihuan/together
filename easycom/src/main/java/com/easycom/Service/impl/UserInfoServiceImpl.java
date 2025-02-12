@@ -3,6 +3,7 @@ package com.easycom.Service.impl;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.easycom.Utils.DefaultParam;
+import com.easycom.Utils.JwtUtils;
 import com.easycom.entity.PO.UserInfo;
 import com.easycom.Mapper.UserInfoMapper;
 import com.easycom.Service.IUserInfoService;
@@ -32,6 +33,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Autowired
     private UserInfoMapper userInfoMapper;
+    @Autowired
+    private JwtUtils jwtUtils;
 
 
     @Override
@@ -52,23 +55,27 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result login(UserInfo userInfo) {
-
-        UserInfo check = userInfoMapper.selectById(userInfo.getUserId());
+    public Result login(String userId, String password) {
+        UserInfo check = null;
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";//正则判断是否为邮箱
+        if (userId.matches(emailRegex)) {
+             check = userInfoMapper.selectByEmail(userId);
+        }else {
+             check = userInfoMapper.selectById(userId);
+        }
         //根据用户ID查验账号
         if (check == null) {
             return Result.fail("用户ID不存在");
         }
         //检验账号是否被禁用 且 检验密码是否正确
-        if(check.getStatus() == 1){
-            if (check.getPassword().equals(userInfo.getPassword())) {
-                return Result.ok("登录成功");
-            } else {
-                return Result.fail("密码错误");
-            }
-        }else{
+        if (check.getStatus() == 0) {
             return Result.fail("账号已被禁用");
         }
+        if (!check.getPassword().equals(password)) {
+            return Result.fail("密码错误");
+        }
+        String token = jwtUtils.generateToken(check.getUserId());
+        return Result.ok(token);//生成token
     }
 
 }
