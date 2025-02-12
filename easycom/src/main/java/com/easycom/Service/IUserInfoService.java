@@ -14,4 +14,6 @@ import com.easycom.entity.VO.Result;
  */
 public interface IUserInfoService extends IService<UserInfo> {
     Result getCheckCode();
+
+    Result login(UserInfo userInfo);
 }
