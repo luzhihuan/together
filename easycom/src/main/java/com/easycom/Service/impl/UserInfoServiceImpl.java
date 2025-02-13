@@ -1,6 +1,7 @@
 package com.easycom.Service.impl;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.Utils.VerifyUtil;
@@ -19,6 +20,7 @@ import io.springboot.captcha.base.Captcha;
 import jakarta.annotation.Resource;
 import jodd.util.ArraysUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 import java.sql.Wrapper;
 import java.time.LocalDate;
@@ -119,15 +121,24 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result regist(String userId, String email, String password, String nickName) {
+    public Result regist(String checkCodeKey,String checkCode,String email, String password, String nickName) {
+        if (RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
+            return Result.fail("图片验证码已过期，请重新获取！");
+        }
+        if (!checkCode.equalsIgnoreCase(
+                RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey).toString())) {
+            return Result.fail("图片验证码不正确");
+        }
+        if (userInfoMapper.selectByEmail(email) != null) {
+            return Result.fail("邮箱已被注册");
+        }
         try {
             userInfoMapper.insert(UserInfo.builder()
-                                          .userId(userId)
-                                          .email(email)
-                                          .nickName(nickName)
-                                          .password(password)
-                                          .status(1)
-                                          .build());
+                    .email(email)
+                    .nickName(nickName)
+                    .password(DigestUtil.md5Hex(password))
+                    .status(1)
+                    .build());
             return Result.ok("注册成功");
         } catch (Exception e) {
             e.printStackTrace();

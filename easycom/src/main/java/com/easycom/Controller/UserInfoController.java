@@ -50,11 +50,12 @@ public class UserInfoController {
         return userInfoService.login(checkCodeKey, username,password,checkCode);
     }
     @RequestMapping("/regist")
-    public Result regist(@NotEmpty String userId,
-                         @NotEmpty String email,
+    public Result regist(@NotEmpty String email,
                          @NotEmpty String password,
-                         @NotEmpty String nick_name){
-        return userInfoService.regist(userId,email,password,nick_name);
+                         @NotEmpty String nick_name,
+                         @NotEmpty String checkCodeKey,
+                         @NotEmpty String codeKey){
+        return userInfoService.regist(checkCodeKey,codeKey,email,password,nick_name);
     }
 
 }
