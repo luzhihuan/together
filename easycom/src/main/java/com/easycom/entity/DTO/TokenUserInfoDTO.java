@@ -6,7 +6,7 @@ import lombok.Data;
 public class TokenUserInfoDTO {
     private String nickName;
     private String userId;
-    private Boolean isAdmin;
+    private Boolean isAdmin = false;
     private String token;
 
 }

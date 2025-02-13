@@ -47,7 +47,7 @@ public class UserInfoController {
     @RequestMapping("/login")
     public Result login(@NotEmpty String checkCodeKey,@NotEmpty @Max(12) String username,
                         @NotEmpty String password,@NotEmpty String checkCode){
-        return userInfoService.login(userId,password);
+        return userInfoService.login(checkCodeKey, username,password,checkCode);
     }
 
 

@@ -1,8 +1,10 @@
 package com.easycom.Service.impl;
 
 import cn.hutool.core.lang.UUID;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.Utils.VerifyUtil;
+import com.easycom.config.AppConfig;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.UserInfo;
 import com.easycom.Mapper.UserInfoMapper;
@@ -10,12 +12,17 @@ import com.easycom.Service.IUserInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easycom.entity.VO.Result;
 import com.easycom.entity.enums.VerifyRegexEnum;
+import com.easycom.redis.RedisComponent;
 import com.easycom.redis.RedisUtils;
 import io.springboot.captcha.SpecCaptcha;
 import io.springboot.captcha.base.Captcha;
 import jakarta.annotation.Resource;
+import jodd.util.ArraysUtil;
 import org.springframework.stereotype.Service;
 
+import java.sql.Wrapper;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +39,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Resource
     private UserInfoMapper userInfoMapper;
+    @Resource
+    private AppConfig appConfig;
+    @Resource
+    private RedisComponent redisComponent;
 
 
     @Override
@@ -64,12 +75,12 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }
 
         UserInfo check = null;
-        //使用枚举正则
-//        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";//正则判断是否为邮箱
         if (VerifyUtil.verify(VerifyRegexEnum.EMAIL,username)) {
              check = userInfoMapper.selectByEmail(username);
-        }else {
+        }else if (VerifyUtil.verify(VerifyRegexEnum.ACCOUNT,username)){
              check = userInfoMapper.selectById(username);
+        }else{
+            return Result.fail("userName格式错误");
         }
         //根据用户ID查验账号
         if (check == null) {
@@ -88,10 +99,23 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         tokenUserInfoDTO.setUserId(check.getUserId());
         tokenUserInfoDTO.setToken(token);
 
-        //TODO 将dto保存到redis
-        //TODO 判断一下是否为管理员
+
+        //判断一下是否为管理员
+        String[] split = appConfig.getAdminEmail().split(",");
+        if (ArraysUtil.contains(split,check.getEmail())) {
+            tokenUserInfoDTO.setIsAdmin(true);
+        }else {
+            tokenUserInfoDTO.setIsAdmin(false);
+        }
 
 
+        //将dto保存到redis
+        redisComponent.sendDTO(tokenUserInfoDTO);
+        
+        //修改登录时间
+        UpdateWrapper<UserInfo> wrapper = new UpdateWrapper<>();
+        wrapper.set("last_login_time",new Date()).eq("user_id",check.getUserId());
+        userInfoMapper.update(wrapper);
         return Result.ok(tokenUserInfoDTO);
 
     }
