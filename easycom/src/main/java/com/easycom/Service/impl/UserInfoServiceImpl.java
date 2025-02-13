@@ -80,7 +80,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }else if (VerifyUtil.verify(VerifyRegexEnum.ACCOUNT,username)){
              check = userInfoMapper.selectById(username);
         }else{
-            return Result.fail("userName格式错误");
+            return Result.fail("用户名或密码错误！");
         }
         //根据用户ID查验账号
         if (check == null) {
@@ -93,6 +93,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (!check.getPassword().equals(password)) {
             return Result.fail("密码错误");
         }
+
         //生成token
         String token = UUID.fastUUID().toString(true);
         TokenUserInfoDTO tokenUserInfoDTO = new TokenUserInfoDTO();
@@ -110,12 +111,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
 
         //将dto保存到redis
-        redisComponent.sendDTO(tokenUserInfoDTO);
-
-        //修改登录时间
-        UpdateWrapper<UserInfo> wrapper = new UpdateWrapper<>();
-        wrapper.set("last_login_time",new Date()).eq("user_id",check.getUserId());
-        userInfoMapper.update(wrapper);
+        redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
+        
         return Result.ok(tokenUserInfoDTO);
 
     }
