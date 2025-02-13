@@ -4,6 +4,7 @@ import cn.hutool.core.lang.UUID;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.easycom.Utils.DefaultParam;
+import com.easycom.Utils.UserHolder;
 import com.easycom.Utils.VerifyUtil;
 import com.easycom.config.AppConfig;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
@@ -12,6 +13,7 @@ import com.easycom.Mapper.UserInfoMapper;
 import com.easycom.Service.IUserInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easycom.entity.VO.Result;
+import com.easycom.entity.enums.UserStatusEnum;
 import com.easycom.entity.enums.VerifyRegexEnum;
 import com.easycom.redis.RedisComponent;
 import com.easycom.redis.RedisUtils;
@@ -129,16 +131,20 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey).toString())) {
             return Result.fail("图片验证码不正确");
         }
+        if (!VerifyUtil.verify(VerifyRegexEnum.PASSWORD,password)) {
+            return Result.fail("密码格式错误");
+        }
         if (userInfoMapper.selectByEmail(email) != null) {
             return Result.fail("邮箱已被注册");
         }
         try {
             userInfoMapper.insert(UserInfo.builder()
-                    .email(email)
-                    .nickName(nickName)
-                    .password(DigestUtil.md5Hex(password))
-                    .status(1)
-                    .build());
+                            .userId(UserHolder.getUserIdByRandom())
+                            .email(email)
+                            .nickName(nickName)
+                            .password(DigestUtil.md5Hex(password))
+                            .status(UserStatusEnum.ENABLE.getStatus())
+                            .build());
             return Result.ok("注册成功");
         } catch (Exception e) {
             e.printStackTrace();
