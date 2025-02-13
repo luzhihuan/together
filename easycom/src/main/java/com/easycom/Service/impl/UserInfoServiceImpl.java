@@ -122,7 +122,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
 
         //第一次登录
-        if(check.getStatus().equals(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())){
+        if (check.getStatus().equals(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())) {
             return Result.firstLogin(tokenUserInfoDTO);
         }
 
@@ -131,7 +131,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result regist(String checkCodeKey,String checkCode,String email, String password, String nickName) {
+    public Result regist(String checkCodeKey, String checkCode, String email, String password, String nickName) {
         if (RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
             return Result.fail("图片验证码已过期，请重新获取！");
         }
@@ -139,50 +139,51 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey).toString())) {
             return Result.fail("图片验证码不正确");
         }
-        if (!VerifyUtil.verify(VerifyRegexEnum.PASSWORD,password)) {
+        if (!VerifyUtil.verify(VerifyRegexEnum.PASSWORD, password)) {
             return Result.fail("密码格式错误");
         }
         if (userInfoMapper.selectByEmail(email) != null) {
             return Result.fail("邮箱已被注册");
         }
-        try {
-            userInfoMapper.insert(UserInfo.builder()
-                            .userId(UserHolder.getUserIdByRandom())
-                            .email(email)
-                            .nickName(nickName)
-                            .password(DigestUtil.md5Hex(password))
-                            .status(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())
-                            .build());
-            return Result.ok("注册成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Result.fail("注册失败");
-        }finally {
-            RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey);
-        }
-    }
+            int insert = userInfoMapper.insert(UserInfo.builder()
+                    .userId(UserHolder.getUserIdByRandom())
+                    .email(email)
+                    .nickName(nickName)
+                    .password(DigestUtil.md5Hex(password))
+                    .status(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())
+                    .build());
 
+            RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey);
+
+
+            if (insert > 0) {
+                return Result.ok("注册成功");
+            } else {
+                return Result.fail("注册失败");
+            }
+        }
     @Override
     public Result resetPassword(HttpServletRequest request, String password) {
         //查看密码格式是否正确
-        if (VerifyUtil.verify(VerifyRegexEnum.PASSWORD,password)) {
+        if (VerifyUtil.verify(VerifyRegexEnum.PASSWORD, password)) {
             return Result.fail("密码格式错误");
         }
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
         String check = userInfoMapper.getPasswordById(tokenUserInfoDTO.getUserId());
         //检查原密码和新密码是否一样
-        if (check.equals(password)){
+        if (check.equals(password)) {
             return Result.fail("密码未修改");
         }
-        try {
-            UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("user_id",tokenUserInfoDTO.getUserId()).set("password",password);
-            userInfoMapper.update(updateWrapper);
-            return Result.ok("修改密码成功");
-        }catch (Exception e){
-            e.printStackTrace();
-            return Result.fail( "密码修改出错");
+        //修改密码
+        UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("user_id", tokenUserInfoDTO.getUserId()).set("password", password);
+        int update = userInfoMapper.update(updateWrapper);
+        if (update > 0) {
+            return Result.ok("密码修改成功");
+        } else {
+            return Result.fail("密码未修改");
         }
+
 
     }
 
