@@ -31,6 +31,11 @@
                             </template>
                         </el-input>
                 </el-form-item>
+                <el-form-item class="form_base button">
+                  <el-button type="primary">重置</el-button>
+                  <el-button class="cancel">取消</el-button>
+                </el-form-item>
+                
             </el-form>
         </el-card>
     </div>
@@ -45,8 +50,12 @@ import message from '../utils/Message';
   const resetFormRef = ref();
 
   const rules = {
-    passowrd:[{required: true, message:'请输入要修改的密码', tigger:'blur'}],
+    password:[{required: true, message:'请输入要修改的密码', tigger:'blur'}],
     rePassword:[{required: true, message: '请再次输入密码', tigger:'blur'}],
+  }
+
+  const clearValidation = (field) =>{
+    resetFormRef.value.clearValidate(field);
   }
 </script>
 
@@ -69,11 +78,11 @@ import message from '../utils/Message';
 
   .login-card{
     width: 500px;
-    height: 700px;
+    height: 350px;
     min-width: 300px;
     max-width: 800px;
-    min-height: 400px;
-    max-height: 800px;
+    min-height: 350px;
+    max-height: 400px;
     padding :10px;
     border-radius: 7px;
     justify-content: center;
@@ -95,19 +104,15 @@ import message from '../utils/Message';
     margin-top: 30px;
   }
 
-  .form_checkcode{
-    width: 300px;
+  .button{
+    display: grid;
+    place-items: center;
   }
-
-  .rememberMe{
-    justify-content: center;
-  }
-
-  .logIn{
+  .reset{
     margin-left: 80px;
   }
 
-  .fogotPassword{
+  .cancel{
     margin-left: 20px;
   }
 
