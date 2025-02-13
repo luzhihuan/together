@@ -119,7 +119,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
 
         //第一次登录
-        if(check.getStatus()==UserStatusEnum.FIRST_TIME_LOGIN.getStatus()){
+        if(check.getStatus().equals(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())){
             return Result.firstLogin(tokenUserInfoDTO);
         }
 
@@ -148,7 +148,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                             .email(email)
                             .nickName(nickName)
                             .password(DigestUtil.md5Hex(password))
-                            .status(UserStatusEnum.ENABLE.getStatus())
+                            .status(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())
                             .build());
             return Result.ok("注册成功");
         } catch (Exception e) {
