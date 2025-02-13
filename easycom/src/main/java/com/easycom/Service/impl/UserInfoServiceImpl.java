@@ -111,7 +111,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
         //将dto保存到redis
         redisComponent.sendDTO(tokenUserInfoDTO);
-        
+
         //修改登录时间
         UpdateWrapper<UserInfo> wrapper = new UpdateWrapper<>();
         wrapper.set("last_login_time",new Date()).eq("user_id",check.getUserId());
