@@ -2,11 +2,14 @@ package com.easycom.Controller;
 
 
 import com.easycom.Service.IUserInfoService;
+import com.easycom.annotation.GlobalInterceptor;
 import com.easycom.entity.VO.Result;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,6 +59,12 @@ public class UserInfoController {
                          @NotEmpty String checkCodeKey,
                          @NotEmpty String codeKey){
         return userInfoService.regist(checkCodeKey,codeKey,email,password,nick_name);
+    }
+
+    @RequestMapping("/resetPassword")
+    @GlobalInterceptor
+    public Result resetPassword(HttpServletRequest request, @NotEmpty @Max(20)String  password){
+        return userInfoService.resetPassword(request,password);
     }
 
 }

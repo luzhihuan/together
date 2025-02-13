@@ -20,7 +20,10 @@ import com.easycom.redis.RedisUtils;
 import io.springboot.captcha.SpecCaptcha;
 import io.springboot.captcha.base.Captcha;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import jodd.util.ArraysUtil;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -157,6 +160,30 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }finally {
             RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey);
         }
+    }
+
+    @Override
+    public Result resetPassword(HttpServletRequest request, String password) {
+        //查看密码格式是否正确
+        if (VerifyUtil.verify(VerifyRegexEnum.PASSWORD,password)) {
+            return Result.fail("密码格式错误");
+        }
+        TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
+        String check = userInfoMapper.getPasswordById(tokenUserInfoDTO.getUserId());
+        //检查原密码和新密码是否一样
+        if (check.equals(password)){
+            return Result.fail("密码未修改");
+        }
+        try {
+            UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("user_id",tokenUserInfoDTO.getUserId()).set("password",password);
+            userInfoMapper.update(updateWrapper);
+            return Result.ok("修改密码成功");
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail( "密码修改出错");
+        }
+
     }
 
 }
