@@ -34,5 +34,7 @@ public class Result {
         return new Result(0,msg,null,null,null,null,msg,"失败");
     }
 
-
+    public static Result firstLogin(Object data) {
+        return new Result(2,data,null,null,null,null,"第一次登录","成功");
+    }
 }

@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum UserStatusEnum {
 
     DISABLE(0,"禁用"),
-    ENABLE(1,"启用");
+    ENABLE(1,"启用"),
+    FIRST_TIME_LOGIN(2,"第一次登录");
 
     private final Integer status;
     private final String desc;

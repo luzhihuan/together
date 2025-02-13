@@ -118,6 +118,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         //将dto保存到redis
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
 
+
+        if(check.getStatus()==UserStatusEnum.FIRST_TIME_LOGIN.getStatus()){
+            return Result.ok(tokenUserInfoDTO);
+        }
+
         return Result.ok(tokenUserInfoDTO);
 
     }
@@ -149,6 +154,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         } catch (Exception e) {
             e.printStackTrace();
             return Result.fail("注册失败");
+        }finally {
+            RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey);
         }
     }
 
