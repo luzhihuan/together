@@ -49,6 +49,12 @@ public class UserInfoController {
                         @NotEmpty String password,@NotEmpty String checkCode){
         return userInfoService.login(checkCodeKey, username,password,checkCode);
     }
-
+    @RequestMapping("/regist")
+    public Result regist(@NotEmpty String userId,
+                         @NotEmpty String email,
+                         @NotEmpty String password,
+                         @NotEmpty String nick_name){
+        return userInfoService.regist(userId,email,password,nick_name);
+    }
 
 }

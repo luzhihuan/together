@@ -21,6 +21,7 @@ import jodd.util.ArraysUtil;
 import org.springframework.stereotype.Service;
 
 import java.sql.Wrapper;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,11 +76,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }
 
         UserInfo check = null;
-        if (VerifyUtil.verify(VerifyRegexEnum.EMAIL,username)) {
-             check = userInfoMapper.selectByEmail(username);
-        }else if (VerifyUtil.verify(VerifyRegexEnum.ACCOUNT,username)){
-             check = userInfoMapper.selectById(username);
-        }else{
+        if (VerifyUtil.verify(VerifyRegexEnum.EMAIL, username)) {
+            check = userInfoMapper.selectByEmail(username);
+        } else if (VerifyUtil.verify(VerifyRegexEnum.ACCOUNT, username)) {
+            check = userInfoMapper.selectById(username);
+        } else {
             return Result.fail("用户名或密码错误！");
         }
         //根据用户ID查验账号
@@ -103,18 +104,35 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
         //判断一下是否为管理员
         String[] split = appConfig.getAdminEmail().split(",");
-        if (ArraysUtil.contains(split,check.getEmail())) {
+        if (ArraysUtil.contains(split, check.getEmail())) {
             tokenUserInfoDTO.setIsAdmin(true);
-        }else {
+        } else {
             tokenUserInfoDTO.setIsAdmin(false);
         }
 
 
         //将dto保存到redis
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
-        
+
         return Result.ok(tokenUserInfoDTO);
 
+    }
+
+    @Override
+    public Result regist(String userId, String email, String password, String nickName) {
+        try {
+            userInfoMapper.insert(UserInfo.builder()
+                                          .userId(userId)
+                                          .email(email)
+                                          .nickName(nickName)
+                                          .password(password)
+                                          .status(1)
+                                          .build());
+            return Result.ok("注册成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("注册失败");
+        }
     }
 
 }

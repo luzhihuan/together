@@ -18,4 +18,6 @@ public interface IUserInfoService extends IService<UserInfo> {
     Result getCheckCode();
 
     Result login( String checkCodeKey, String username, String password, String checkCode);
+
+    Result regist(String userId, String email, String password, String nickName);
 }
