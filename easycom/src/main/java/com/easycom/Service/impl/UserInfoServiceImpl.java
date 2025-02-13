@@ -118,9 +118,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         //将dto保存到redis
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
 
-
+        //第一次登录
         if(check.getStatus()==UserStatusEnum.FIRST_TIME_LOGIN.getStatus()){
-            return Result.ok(tokenUserInfoDTO);
+            return Result.firstLogin(tokenUserInfoDTO);
         }
 
         return Result.ok(tokenUserInfoDTO);
