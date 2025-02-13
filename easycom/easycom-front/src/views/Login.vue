@@ -1,64 +1,140 @@
 <template>
   <div class="login-body">
     <div class="bg">
-        <div class="left-part">
+        <div class="left-part">    
             <!-- 左半部分占位 -->
         </div>
         <div class="right-part">
-            <el-card class="login-card">
-                <div class="login-title">用户登录</div>
-                
-                <el-form :model="formData" :rules="rules" ref="formDataRef">
-                    <el-form-item prop = "username" class="form_base">
-                        <el-input 
-                        v-model="formData.username" 
-                        placeholder="请用学号或邮箱登录" 
-                        v-model.trim="formData.username"
-                        @focus="clearValidation('username')"
-                        
-                        >
-                            <template #prefix>
-                                <span class="iconfont icon-user"></span>
-                            </template>
-                        </el-input>
-                    </el-form-item>
+          <!-- 登录面板及动画 -->
+          <transition name="slide">
+            <div v-if="currentCard === 1">
+              <el-card class="login-card">
+                <div class="login-title">用户登录</div>                 
+                  <el-form :model="formData" :rules="rules" ref="formDataRef">
+                      <el-form-item prop = "username" class="form_base">
+                          <el-input 
+                          v-model="formData.username" 
+                          placeholder="请使用学号或邮箱登录" 
+                          v-model.trim="formData.username"
+                          @focus="clearValidation('username')"
+                          
+                          >
+                              <template #prefix>
+                                  <span class="iconfont icon-user"></span>
+                              </template>
+                          </el-input>
+                      </el-form-item>
 
-                    <el-form-item prop="password" class="form_base">
-                        <el-input 
-                        v-mode="formData.password" 
-                        placeholder="请输入密码" 
-                        v-model.trim="formData.password"
+                      <el-form-item prop="password" class="form_base">
+                          <el-input 
+                          v-mode="formData.password" 
+                          placeholder="请输入密码" 
+                          v-model.trim="formData.password"
+                          show-password
+                          @focus="clearValidation('password')"
+                          >
+                              <template #prefix>
+                                  <span class="iconfont icon-password"></span>
+                              </template>
+                          </el-input>
+                      </el-form-item>
+                      
+                      <el-form-item prop="checkcode" class="form_base form_checkcode" >
+                          <el-input 
+                          v-model="formData.checkcode" 
+                          placeholder="请输入图片验证码" 
+                          v-model.trim="formData.checkcode"
+                          @focus="clearValidation('checkcode')"
+                          >
+                              <template #prefix>
+                                <span class="iconfont icon-checkCode"></span>
+                              </template>
+                          </el-input>
+                          <img :src="checkCodeEmailUrl"  alt="" @click="changeCheckCode(1)"/>
+                      </el-form-item>
+
+                      <el-form-item class="form_base">
+                          <el-checkbox class="rememberMe" v-model="formData.rememberMe">记住我</el-checkbox>
+                          <el-button type="primary" class="logIn" @click="loginAction">登录</el-button>
+                          <el-button type="text" class="fogotPassword" @click="reSet">忘记密码?</el-button>
+                      </el-form-item>
+                  </el-form>                      
+              </el-card>
+            </div>
+          </transition>
+          <!-- 重置密码面板及动画 -->
+          <transition name="slide">
+            <div v-if="currentCard === 2">
+              <el-card class="login-card">
+                <div class="login-title">密码重置</div>
+                <el-form :model="resetForm" ref="resetFormRef" :rules="rules">
+                  <el-form-item prop="email" class="form_base">
+                    <el-input
+                      v-model="emailConfirmDialog.email"
+                      placeholder="请输入邮箱"
+                      v-model-trim = "emailConfirmDialog.email"
+                      @focus="clearValidation('email')"
+                    >
+                    <template #prefix>
+                      <span class="iconfont icon-user "></span>
+                    </template>
+                    </el-input>
+                  </el-form-item>  
+                  
+                  <el-form-item prop="emailCode" class="form_base ">
+                    <div class="input-button-group">
+                      <el-input
+                        v-model="emailConfirmDialog.emailCode"
+                        placeholder="请输入收到的验证码"
+                        v-model-trim = "emailConfirmDialog.emailCode"
+                        @focus="clearValidation('emailCode')"
+                      >
+                      <template #prefix>
+                        <span class="iconfont icon-checkCode "></span>
+                      </template>
+                      </el-input> 
+                      <el-button type="primary" class="checkcodeButton" @click="popUp">发送验证码</el-button>  
+                    </div>
+                    <el-button type="text">没收到验证码？</el-button>               
+                  </el-form-item>
+
+                  <el-form-item prop="firstPassword" class="form_base">
+                    <el-input 
+                        v-mode="resetForm.firstPassword" 
+                        placeholder="请输入新密码" 
+                        v-model.trim="resetForm.firstPassword"
                         show-password
-                        @focus="clearValidation('password')"
+                        @focus="clearValidation('firstPassword')"
                         >
                             <template #prefix>
                                 <span class="iconfont icon-password"></span>
                             </template>
                         </el-input>
-                    </el-form-item>
-                    
-                    <el-form-item prop="checkcode" class="form_base form_checkcode" >
-                        <el-input 
-                        v-model="formData.checkcode" 
-                        placeholder="请输入图片验证码" 
-                        v-model.trim="formData.checkcode"
-                        @focus="clearValidation('checkcode')"
-                        >
-                            <template #prefix>
-                              <span class="iconfont icon-checkCode"></span>
-                            </template>
-                        </el-input>
-                        <img :src="checkCodeEmailUrl"  alt="" @click="changeCheckCode(1)"/>
-                    </el-form-item>
+                  </el-form-item>
 
-                    <el-form-item class="form_base">
-                        <el-checkbox class="rememberMe" v-model="formData.rememberMe">记住我</el-checkbox>
-                        <el-button type="primary" class="logIn" @click="loginAction">登录</el-button>
-                        <el-button type="text" class="fogotPassword" @click="popUp">忘记密码?</el-button>
-                    </el-form-item>
+                  <el-form-item prop="rePassword" class="form_base">
+                      <el-input 
+                          v-mode="resetForm.rePassword" 
+                          placeholder="请确认新密码" 
+                          v-model.trim="resetForm.rePassword"
+                          show-password
+                          @focus="clearValidation('rePassword')"
+                          >
+                              <template #prefix>
+                                  <span class="iconfont icon-password"></span>
+                              </template>
+                          </el-input>
+                  </el-form-item>
+
+                  <el-form-item class="form_base button">
+                    <el-button type="primary">重置</el-button>
+                    <el-button class="cancel" @click="reSet">取消</el-button>
+                  </el-form-item> 
+                                 
                 </el-form>
-                    
-            </el-card>
+              </el-card>
+            </div>
+          </transition>
 
         </div>
         <!-- 弹窗 -->
@@ -84,7 +160,7 @@
             </el-input>
           </el-form-item>  
           
-          <el-form-item prop="emailCode">
+          <!-- <el-form-item prop="emailCode">
             <el-input
               v-model="emailConfirmDialog.emailCode"
               placeholder="请输入收到的验证码"
@@ -95,7 +171,7 @@
               <span class="iconfont icon-checkCode "></span>
             </template>
             </el-input>
-          </el-form-item>
+          </el-form-item> -->
 
 
           <el-form-item prop="checkcode">
@@ -131,10 +207,10 @@ import { ElMessage } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
 import { md5 } from "js-md5";
 import FrameworkVue from './Framework.vue';
-
+  //路由初始化
   const route = useRoute()
   const router = useRouter()
-
+  //重置变量初始化
   const emailConfirmDialog = reactive({
     show: false,
     title: "邮箱认证",
@@ -144,13 +220,30 @@ import FrameworkVue from './Framework.vue';
       click: (e) =>{
         sendEmailCode();
       },
-    }]
+    },
+    {
+      type: "primary",
+      text: "取消",
+      class: "checkcodeButton",
+      click: (e) =>{
+        emailConfirmDialog.show = false
+      },
+    }
+    ]
   })
   const emailConfirmDialogRef = ref();
-
+  const resetForm = ref({});
+  const resetFormRef = ref();
+  //弹窗
   const popUp = async =>{
     emailConfirmDialog.show = true;
   }
+  //界面切换动画初始化
+  const currentCard = ref(1)
+  const reSet  = () =>{
+    currentCard.value = currentCard.value === 1 ? 2 : 1;
+  }
+  
 
   const { proxy } = getCurrentInstance()
 
@@ -159,11 +252,13 @@ import FrameworkVue from './Framework.vue';
       password:[{required: true, message:'请输入密码', trigger:'blur'}],
       checkcode:[{required: true, message:'请输入图片验证码', trigger:'blur'}],
       email:[{required: true, message:'请输入邮箱', trigger:'blur'}],
-      emailCode:[{required: true, message:'请输入收到的邮箱验证码', trigger:'blur'}]
+      emailCode:[{required: true, message:'请输入收到的邮箱验证码', trigger:'blur'}],
+      firstPassword:[{required: true, message:'请输入新密码', trigger:'blur'}],
+      rePassword:[{required: true, message:'请确认新密码', trigger:'blur'}]
   };
 
   const formData = ref({});
-  const formDataRef = ref();
+  const formDataRef = ref(); 
 
   let url = null; //url初始化
 
@@ -200,7 +295,6 @@ import FrameworkVue from './Framework.vue';
         return;
       }
       });
-      await router.push({name:'passwordReset'})
     };
 
     //重置表单  后续需要修改为只重置验证码保留用户输入的内容
@@ -286,7 +380,7 @@ import FrameworkVue from './Framework.vue';
 
   .login-card{
     width: 500px;
-    height: 700px;
+    height: 550px;
     min-width: 300px;
     max-width: 800px;
     min-height: 400px;
@@ -314,6 +408,17 @@ import FrameworkVue from './Framework.vue';
 
   .form_checkcode{
     width: 300px;
+    
+  }
+  
+  .input-button-group{
+    display: flex;
+    align-items: center;
+  }
+
+  .checkcodeButton{
+    margin-left: 8px;
+    margin-right: 8px;
   }
 
   .rememberMe{
@@ -327,6 +432,33 @@ import FrameworkVue from './Framework.vue';
   .fogotPassword{
     margin-left: 20px;
   }
+
+  /* 进入动画：卡片从右侧滑入 */
+.slide-enter-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.slide-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.slide-enter-to {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* 离开动画：卡片向左侧滑出 */
+.slide-leave-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.slide-leave-from {
+  transform: translateX(0);
+  opacity: 1;
+}
+.slide-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
 
 }
 </style>
