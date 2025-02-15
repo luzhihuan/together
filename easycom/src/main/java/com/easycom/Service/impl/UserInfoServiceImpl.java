@@ -22,15 +22,9 @@ import io.springboot.captcha.base.Captcha;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jodd.util.ArraysUtil;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.http.HttpRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
-import java.sql.Wrapper;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Date;
+import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycom.Mapper.ScoreBreakdownMapper">
+
+    <resultMap id="BaseResultMap" type="com.easycom.entity.PO.ScoreBreakdown">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="studentId" column="student_id" jdbcType="INTEGER"/>
+            <result property="baseScore" column="base_score" jdbcType="INTEGER"/>
+            <result property="baseScoreDetails" column="base_score_details" jdbcType="VARCHAR"/>
+            <result property="evaluationScore" column="evaluation_score" jdbcType="INTEGER"/>
+            <result property="evaluationScoreDetails" column="evaluation_score_details" jdbcType="VARCHAR"/>
+            <result property="qualityScore" column="quality_score" jdbcType="INTEGER"/>
+            <result property="qualityScoreDetails" column="quality_score_details" jdbcType="VARCHAR"/>
+            <result property="deductScore" column="deduct_score" jdbcType="INTEGER"/>
+            <result property="deductScoresDetails" column="deduct_scores_details" jdbcType="VARCHAR"/>
+            <result property="totalScore" column="total_score" jdbcType="INTEGER"/>
+            <result property="totalScoreDetails" column="total_score_details" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,student_id,
+        base_score,base_score_details,evaluation_score,
+        evaluation_score_details,quality_score,quality_score_details,
+        deduct_score,deduct_scores_details,total_score,
+        total_score_details,type,status
+    </sql>
+</mapper>
