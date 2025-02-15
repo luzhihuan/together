@@ -17,4 +17,5 @@ public class DefaultParam {
     public static final String REDIS_KEY_SCORE_BREAKDOWN_USERID = "easycom:score:userId";
 
     public static final String PASSWORD_VERIFY = "^(?=.*\\d)(?=.*[a-zA-Z])[\\da-zA-Z~!@#$%^&*_]{8,18}$";
+    public static final String SCORE_LIMIT = "^([0-9]|[1-9][0-9]|100)$";
 }

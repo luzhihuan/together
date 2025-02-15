@@ -14,14 +14,17 @@ import com.easycom.entity.VO.Result;
 import com.easycom.entity.enums.ScoreBreakdownStatusEnum;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
 import com.easycom.entity.enums.VerifyRegexEnum;
+import com.easycom.exception.UserException;
 import com.easycom.redis.RedisComponent;
 import com.easycom.redis.RedisUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Wrapper;
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * @author 21597
@@ -34,22 +37,32 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
     private ScoreBreakdownMapper scoreBreakdownMapper;
     @Resource
     private RedisComponent redisComponent;
-    @Resource
-    private Double totalCode;
+
 
     @Override
-    public Result recordScore(HttpServletRequest request, String filePath,
-                              double baseScore, String baseScoreDetails,
-                              double evaluationScore, String evaluationScoreDetails,
-                              double qualityScore, String qualityScoreDetails,
-                              double deductScore, String deductScoreDetails,
-                              Integer type, String totalScoreDetails) {
+    public Result recordScore(HttpServletRequest request,
+                              String baseScore, String baseScoreDetails,
+                              String evaluationScore, String evaluationScoreDetails,
+                              String qualityScore, String qualityScoreDetails,
+                              String deductScore, String deductScoreDetails,
+                              Integer type) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
+        String totalScore = "";
+
+        //计算各个分数项
         if (type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())) {
-            totalCode = ScoreBreakUtil.getMoralityTotalCode(baseScore, evaluationScore, qualityScore, deductScore);
+            totalScore = ScoreBreakUtil.getMoralityTotalCode(baseScore, evaluationScore, qualityScore, deductScore);
         } else {
-            totalCode = ScoreBreakUtil.getOtherTotalCode(baseScore, evaluationScore, deductScore, type);
+            totalScore = ScoreBreakUtil.getOtherTotalCode(baseScore, evaluationScore, deductScore, type);
         }
+
+        //处理空的情况！
+        baseScoreDetails = Optional.ofNullable(baseScoreDetails).orElse("无");
+        evaluationScoreDetails = Optional.ofNullable(evaluationScoreDetails).orElse("无");
+        qualityScoreDetails = Optional.ofNullable(qualityScoreDetails).orElse("无");
+        deductScoreDetails  = Optional.ofNullable(deductScoreDetails).orElse("无");
+
+        //构建对象
         ScoreBreakdown scoreBreakdown = ScoreBreakdown.builder()
                 .userId(tokenUserInfoDTO.getUserId())
                 .baseScore(baseScore)
@@ -60,37 +73,31 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                 .qualityScoreDetails(qualityScoreDetails)
                 .deductScore(deductScore)
                 .deductScoresDetails(deductScoreDetails)
-                .totalScore(totalCode)
-                .totalScoreDetails(totalScoreDetails)
+                .totalScore(totalScore)
                 .type(type)
-                .status(ScoreBreakdownStatusEnum.SENDING.getStatus())
-                .filePath(filePath).build();
+                .status(ScoreBreakdownStatusEnum.SENDING.getStatus()).build();
 
-        try {
-            redisComponent.saveScore(scoreBreakdown);
-            return Result.ok("上传中");
-        } catch (Exception e) {
-            return Result.fail("上传失败");
-        }
+        //每种类型的表，先暂时存到redis中
+        redisComponent.saveScore(scoreBreakdown);
+
+        return Result.ok("上传中");
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Result saveScore(HttpServletRequest request) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
-        ScoreBreakdown scoreBreakdown = null;
-        try {
-            for (int i = 1; i <= 5; i++) {
-                scoreBreakdown = (ScoreBreakdown) RedisUtils.get(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + i);
-                scoreBreakdown.setStatus(ScoreBreakdownStatusEnum.FINISH.getStatus());
-                boolean b = scoreBreakdownMapper.insertOrUpdate(scoreBreakdown);
-                if (b) {
-                    RedisUtils.del(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + i);
-                }
+        //遍历每一种类型的表，并将其写入数据库
+        for (ScoreBreakdownTypeEnum typeEnum : ScoreBreakdownTypeEnum.values()) {
+            ScoreBreakdown scoreBreakdown = (ScoreBreakdown) RedisUtils.get(
+                    DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + typeEnum.getType());
+            scoreBreakdown.setStatus(ScoreBreakdownStatusEnum.FINISH.getStatus());
+            boolean b = scoreBreakdownMapper.insertOrUpdate(scoreBreakdown);
+            if (b) {
+                throw new UserException("上传失败，请重新检查！");
             }
-            return Result.ok("上传成功");
-        } catch (Exception e) {
-            return Result.fail("上传失败");
         }
+        return Result.ok("上传成功");
     }
 
     @Override

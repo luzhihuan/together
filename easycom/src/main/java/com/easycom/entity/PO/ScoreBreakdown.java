@@ -3,51 +3,105 @@ package com.easycom.entity.PO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
 /**
- * @TableName score_breakdown
+ * <p>
+ * 学生综测类型明细表
+ * </p>
+ *
+ * @author luzhihuan
+ * @since 2025-02-16
  */
-@TableName(value ="score_breakdown")
 @Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@TableName("score_breakdown")
 @Builder
 public class ScoreBreakdown implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 自增id每张表，都具有唯一性
+     */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    /**
+     * 用户id
+     */
     private String userId;
 
-    private Integer studentId;
+    /**
+     * 学生学号
+     */
+    private String studentId;
 
-    private double baseScore;
+    /**
+     * 基础分
+     */
+    private String baseScore;
 
+    /**
+     * 基础分事项
+     */
     private String baseScoreDetails;
 
-    private double evaluationScore;
+    /**
+     * 互评分，仅仅德育类型有
+     */
+    private String evaluationScore;
 
+    /**
+     * 互评分事项
+     */
     private String evaluationScoreDetails;
 
-    private double qualityScore;
+    /**
+     * 加分项
+     */
+    private String qualityScore;
 
+    /**
+     * 加分事项
+     */
     private String qualityScoreDetails;
 
-    private double deductScore;
+    /**
+     * 扣分项
+     */
+    private String deductScore;
 
+    /**
+     * 扣分事项
+     */
     private String deductScoresDetails;
 
-    private double totalScore;
+    /**
+     * 总分
+     */
+    private String totalScore;
 
-    private String totalScoreDetails;
-
+    /**
+     * 表的类型：1德  2智  3体  4美  5劳
+     */
     private Integer type;
 
+    /**
+     * 状态： 0提交中 1提交完毕
+     */
     private Integer status;
 
+    /**
+     * 文件路径
+     */
     private String filePath;
 
-    private static final long serialVersionUID = 1L;
+
 }

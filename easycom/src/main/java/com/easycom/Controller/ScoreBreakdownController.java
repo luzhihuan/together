@@ -2,11 +2,16 @@ package com.easycom.Controller;
 
 
 import com.easycom.Service.IScoreBreakdownService;
+import com.easycom.Utils.DefaultParam;
+import com.easycom.annotation.GlobalInterceptor;
 import com.easycom.entity.VO.Result;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,37 +25,56 @@ public class ScoreBreakdownController {
     private IScoreBreakdownService scoreBreakdownService;
 
 
-    
+    /**
+     * 填写每一种类型的表，并保存
+     *
+     * @param request                前端请求信息
+     * @param baseScore              基础分
+     * @param baseScoreDetails       基础分事项
+     * @param evaluationScore        互评分
+     * @param evaluationScoreDetails 互评分事项
+     * @param qualityScore           加分
+     * @param qualityScoreDetails    加分事项
+     * @param deductScore            扣分
+     * @param deductScoreDetails     扣分事项
+     * @param type                   表的类型：1德  2智  3体  4美  5劳
+     * @return
+     */
     @RequestMapping("/sendScore")
-    public Result recordScore(HttpServletRequest request,
-                              @NotEmpty String filePath, @NotEmpty double baseScore,
-                              @NotEmpty @Max(200) String baseScoreDetails, @NotEmpty double evaluationScore,
-                              @NotEmpty @Max(200) String evaluationScoreDetails, @NotEmpty double qualityScore,
-                              @NotEmpty @Max(200) String qualityScoreDetails, @NotEmpty double deductScore,
-                              @NotEmpty @Max(200) String deductScoreDetails, @NotEmpty Integer type, @NotEmpty String totalScoreDetails) {
+    @GlobalInterceptor
+    public Result recordScore(HttpServletRequest request, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String baseScore,
+                              @Max(200) String baseScoreDetails, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String evaluationScore,
+                              @Max(200) String evaluationScoreDetails, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String qualityScore,
+                              @Max(200) String qualityScoreDetails, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String deductScore,
+                              @Max(200) String deductScoreDetails, @NotEmpty Integer type) {
 
-        return scoreBreakdownService.recordScore(request,filePath, baseScore, baseScoreDetails,
-                                                 evaluationScore, evaluationScoreDetails, qualityScore,
-                                                 qualityScoreDetails, deductScore, deductScoreDetails, type,totalScoreDetails);
+        return scoreBreakdownService.recordScore(request, baseScore, baseScoreDetails,
+                evaluationScore, evaluationScoreDetails, qualityScore,
+                qualityScoreDetails, deductScore, deductScoreDetails, type);
 
     }
 
     @RequestMapping("/saveScore")
-    public Result saveScore(HttpServletRequest request){
+    @GlobalInterceptor
+    public Result saveScore(HttpServletRequest request) {
         return scoreBreakdownService.saveScore(request);
     }
 
     @RequestMapping("/deleteScore")
-    public Result deleteScore(HttpServletRequest request,Integer type){
-        return scoreBreakdownService.deleteScore(request,type);
+    @GlobalInterceptor
+    public Result deleteScore(HttpServletRequest request, Integer type) {
+        return scoreBreakdownService.deleteScore(request, type);
     }
 
     @RequestMapping("/beforeShowInfo")
-    public Result beforeShowInfo(HttpServletRequest request,Integer type){
-        return scoreBreakdownService.beforeShowInfo(request,type);
+    @GlobalInterceptor
+    public Result beforeShowInfo(HttpServletRequest request, Integer type) {
+        return scoreBreakdownService.beforeShowInfo(request, type);
     }
+
     @RequestMapping("/afterShowInfo")
-    public Result afterShowInfo(HttpServletRequest request,Integer type){
-        return scoreBreakdownService.afterShowInfo(request,type);
+    @GlobalInterceptor
+    public Result afterShowInfo(HttpServletRequest request, Integer type) {
+        return scoreBreakdownService.afterShowInfo(request, type);
     }
 }
