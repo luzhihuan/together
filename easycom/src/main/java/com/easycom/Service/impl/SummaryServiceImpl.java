@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 * @createDate 2025-02-14 13:48:12
 */
 @Service
-public class SummaryServiceImpl extends ServiceImpl<SummaryMapper, Summary>
-    implements ISummaryService {
+public class SummaryServiceImpl extends ServiceImpl<SummaryMapper, Summary> implements ISummaryService {
 
 }
 

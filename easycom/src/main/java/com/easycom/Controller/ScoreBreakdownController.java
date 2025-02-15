@@ -14,40 +14,42 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("score")
+@RequestMapping("/score")
 public class ScoreBreakdownController {
     @Resource
     private IScoreBreakdownService scoreBreakdownService;
 
 
-    @RequestMapping("sendScore")
-    public Result recordScore(HttpServletRequest request,@NotEmpty String filePath, @NotEmpty double baseScore,
+    
+    @RequestMapping("/sendScore")
+    public Result recordScore(HttpServletRequest request,
+                              @NotEmpty String filePath, @NotEmpty double baseScore,
                               @NotEmpty @Max(200) String baseScoreDetails, @NotEmpty double evaluationScore,
                               @NotEmpty @Max(200) String evaluationScoreDetails, @NotEmpty double qualityScore,
                               @NotEmpty @Max(200) String qualityScoreDetails, @NotEmpty double deductScore,
-                              @NotEmpty @Max(200) String deductScorDetails, @NotEmpty Integer type, @NotEmpty String totalScoreDetails) {
+                              @NotEmpty @Max(200) String deductScoreDetails, @NotEmpty Integer type, @NotEmpty String totalScoreDetails) {
 
         return scoreBreakdownService.recordScore(request,filePath, baseScore, baseScoreDetails,
                                                  evaluationScore, evaluationScoreDetails, qualityScore,
-                                                 qualityScoreDetails, deductScore, deductScorDetails, type,totalScoreDetails);
+                                                 qualityScoreDetails, deductScore, deductScoreDetails, type,totalScoreDetails);
 
     }
 
-    @RequestMapping("saveScore")
+    @RequestMapping("/saveScore")
     public Result saveScore(HttpServletRequest request){
         return scoreBreakdownService.saveScore(request);
     }
 
-    @RequestMapping("deleteScore")
+    @RequestMapping("/deleteScore")
     public Result deleteScore(HttpServletRequest request,Integer type){
         return scoreBreakdownService.deleteScore(request,type);
     }
 
-    @RequestMapping("beforeShowInfo")
+    @RequestMapping("/beforeShowInfo")
     public Result beforeShowInfo(HttpServletRequest request,Integer type){
         return scoreBreakdownService.beforeShowInfo(request,type);
     }
-    @RequestMapping("afterShowInfo")
+    @RequestMapping("/afterShowInfo")
     public Result afterShowInfo(HttpServletRequest request,Integer type){
         return scoreBreakdownService.afterShowInfo(request,type);
     }

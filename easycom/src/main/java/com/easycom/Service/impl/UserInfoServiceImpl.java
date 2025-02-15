@@ -155,7 +155,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             } else {
                 return Result.fail("注册失败");
             }
-        }
+    }
+
+
     @Override
     public Result resetPassword(HttpServletRequest request, String password) {
         //查看密码格式是否正确
@@ -178,7 +180,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             return Result.fail("密码未修改");
         }
 
+    }
 
+    @Override
+    public Result findPassword(String password, String checkCodeKey, String checkCode, String emailCode, String username) {
+        //TODO 找回密码功能
+
+        return null;
     }
 
 }

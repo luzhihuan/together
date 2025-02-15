@@ -91,7 +91,7 @@ const menus = [
   },
 ]
 
-const currentMenu = ref({})
+const currentMenu = ref(menus[0])
 const currentPath = ref()
 
 const jump = (item)=>{
@@ -117,7 +117,6 @@ watch(()=>route,(newVal,oldVal)=>{
 const backToMain = ()=>{
   router.push('/main')
 }
-
 
 </script>
 
@@ -208,7 +207,7 @@ const backToMain = ()=>{
     box-shadow: 0 5px 5px rgba(0,0,0, 0.3);
     border-right: #ffffff solid 1px;
     display: flex;
-    height: calc(100vh - 70px);
+    height: calc(100vh - 80px);
     width: 350px;
     .menu-item{
       margin-top: 20px;

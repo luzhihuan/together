@@ -2,13 +2,16 @@ package com.easycom.Controller;
 
 
 import com.easycom.Service.IUserInfoService;
+import com.easycom.Utils.DefaultParam;
 import com.easycom.annotation.GlobalInterceptor;
 import com.easycom.entity.VO.Result;
+import com.easycom.entity.enums.VerifyRegexEnum;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -52,6 +55,16 @@ public class UserInfoController {
                         @NotEmpty String password,@NotEmpty String checkCode){
         return userInfoService.login(checkCodeKey, username,password,checkCode);
     }
+
+    /**
+     * 用户注册逻辑
+     * @param email 邮箱
+     * @param password  密码
+     * @param nick_name 昵称
+     * @param checkCodeKey  验证码唯一标识
+     * @param codeKey   用户输入的验证码
+     * @return
+     */
     @RequestMapping("/regist")
     public Result regist(@NotEmpty String email,
                          @NotEmpty String password,
@@ -61,10 +74,37 @@ public class UserInfoController {
         return userInfoService.regist(checkCodeKey,codeKey,email,password,nick_name);
     }
 
+    /**
+     * 登陆后的重置密码
+     * @param request   前端请求信息
+     * @param password  修改的密码
+     * @return
+     */
     @RequestMapping("/resetPassword")
     @GlobalInterceptor
-    public Result resetPassword(HttpServletRequest request, @NotEmpty @Max(20)String  password){
+    public Result resetPassword(HttpServletRequest request,  @Pattern(regexp = DefaultParam.PASSWORD_VERIFY) String  password){
         return userInfoService.resetPassword(request,password);
     }
+
+    /**
+     * 找回密码
+     * @param password 修改的密码
+     * @param checkCodeKey  验证码唯一标识
+     * @param checkCode 验证码的值
+     * @param emailCode 邮箱发送的验证码
+     * @param username  用户名
+     * @return
+     */
+    @RequestMapping("/findPassword")
+    @GlobalInterceptor
+    public Result findPassword(@Pattern(regexp = DefaultParam.PASSWORD_VERIFY) String password,
+                               @NotEmpty String checkCodeKey,
+                               @NotEmpty String checkCode,
+                               @NotEmpty String emailCode,
+                               @NotEmpty String username){
+        return userInfoService.findPassword(password, checkCodeKey, checkCode, emailCode, username);
+    }
+
+
 
 }

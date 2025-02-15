@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ScoreBreakdownTypeEnum {
-    Morality(1,"德育"),
+    MORALITY(1,"德育"),
     INTELLECT(2,"智育"),
     PHYSICAL_EDUCATION(3,"体育"),
     AESTHETICS(4,"美育"),

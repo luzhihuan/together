@@ -13,6 +13,7 @@ import com.easycom.entity.PO.ScoreBreakdown;
 import com.easycom.entity.VO.Result;
 import com.easycom.entity.enums.ScoreBreakdownStatusEnum;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
+import com.easycom.entity.enums.VerifyRegexEnum;
 import com.easycom.redis.RedisComponent;
 import com.easycom.redis.RedisUtils;
 import jakarta.annotation.Resource;
@@ -37,23 +38,36 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
     private Double totalCode;
 
     @Override
-    public Result recordScore(HttpServletRequest request, String filePath, double baseScore, String baseScoreDetails, double evaluationScore, String evaluationScoreDetails, double qualityScore, String qualityScoreDetails, double deductScore, String deductScorDetails, Integer type, String totalScoreDetails) {
+    public Result recordScore(HttpServletRequest request, String filePath,
+                              double baseScore, String baseScoreDetails,
+                              double evaluationScore, String evaluationScoreDetails,
+                              double qualityScore, String qualityScoreDetails,
+                              double deductScore, String deductScoreDetails,
+                              Integer type, String totalScoreDetails) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
-        if (type.equals(ScoreBreakdownTypeEnum.Morality.getType())) {
+        if (type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())) {
             totalCode = ScoreBreakUtil.getMoralityTotalCode(baseScore, evaluationScore, qualityScore, deductScore);
         } else {
             totalCode = ScoreBreakUtil.getOtherTotalCode(baseScore, evaluationScore, deductScore, type);
         }
-        ScoreBreakdown build = ScoreBreakdown.builder().userId(tokenUserInfoDTO.getUserId()).
-                baseScore(baseScore).baseScoreDetails(baseScoreDetails).
-                evaluationScore(evaluationScore).evaluationScoreDetails(evaluationScoreDetails).
-                qualityScore(qualityScore).qualityScoreDetails(qualityScoreDetails).
-                deductScore(deductScore).deductScoresDetails(deductScorDetails).
-                totalScore(totalCode).totalScoreDetails(totalScoreDetails).type(type).
-                status(ScoreBreakdownStatusEnum.SENDING.getStatus()).filePath(filePath).build();
+        ScoreBreakdown scoreBreakdown = ScoreBreakdown.builder()
+                .userId(tokenUserInfoDTO.getUserId())
+                .baseScore(baseScore)
+                .baseScoreDetails(baseScoreDetails)
+                .evaluationScore(evaluationScore)
+                .evaluationScoreDetails(evaluationScoreDetails)
+                .qualityScore(qualityScore)
+                .qualityScoreDetails(qualityScoreDetails)
+                .deductScore(deductScore)
+                .deductScoresDetails(deductScoreDetails)
+                .totalScore(totalCode)
+                .totalScoreDetails(totalScoreDetails)
+                .type(type)
+                .status(ScoreBreakdownStatusEnum.SENDING.getStatus())
+                .filePath(filePath).build();
 
         try {
-            redisComponent.saveSocre(build);
+            redisComponent.saveScore(scoreBreakdown);
             return Result.ok("上传中");
         } catch (Exception e) {
             return Result.fail("上传失败");

@@ -26,7 +26,7 @@ public class RedisComponent {
         );
     }
 
-    public void saveSocre(ScoreBreakdown scoreBreakdown) {
+    public void saveScore(ScoreBreakdown scoreBreakdown) {
 
         RedisUtils.set(
                 DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + scoreBreakdown.getUserId()+":"+scoreBreakdown.getType(),
