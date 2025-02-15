@@ -53,11 +53,16 @@
                           <img :src="checkCodeUrl"  alt="" @click="changeCheckCode(0)"/>
                       </el-form-item>
 
-                      <el-form-item class="form_base">
+                      <div class="form_base">
                           <el-checkbox class="rememberMe" v-model="formData.rememberMe">记住我</el-checkbox>
-                          <el-button type="primary" class="logIn" @click="loginAction">登录</el-button>
+                      </div>
+                      <div class="form_base">
                           <el-button type="text" class="fogotPassword" @click="reSetCancel">忘记密码?</el-button>
-                      </el-form-item>
+                          <el-button type="text" class="fogotPassword" @click="reSetCancel">没有账号?</el-button>
+                      </div>
+                      <div class="form_base">
+                        <el-button type="primary" class="logIn" @click="loginAction">登录</el-button>
+                      </div>
                   </el-form>                      
               </el-card>
             </div>
@@ -435,11 +440,12 @@ import FrameworkVue from './Framework.vue';
   }
 
   .logIn{
-    margin-left: 80px;
+    
+    width: 100%;
   }
 
   .fogotPassword{
-    margin-left: 20px;
+    //margin-left: 20px;
   }
 
   /* 进入动画：卡片从右侧滑入 */
