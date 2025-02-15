@@ -1,5 +1,6 @@
 package com.easycom.Service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.easycom.Mapper.ScoreBreakdownMapper;
@@ -18,6 +19,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
+import java.sql.Wrapper;
 import java.util.HashMap;
 
 /**
@@ -37,7 +39,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
     @Override
     public Result recordScore(HttpServletRequest request, String filePath, double baseScore, String baseScoreDetails, double evaluationScore, String evaluationScoreDetails, double qualityScore, String qualityScoreDetails, double deductScore, String deductScorDetails, Integer type, String totalScoreDetails) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
-        if (type == ScoreBreakdownTypeEnum.Morality.getType()) {
+        if (type.equals(ScoreBreakdownTypeEnum.Morality.getType())) {
             totalCode = ScoreBreakUtil.getMoralityTotalCode(baseScore, evaluationScore, qualityScore, deductScore);
         } else {
             totalCode = ScoreBreakUtil.getOtherTotalCode(baseScore, evaluationScore, deductScore, type);
@@ -65,8 +67,9 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         try {
             for (int i = 1; i <= 5; i++) {
                 scoreBreakdown = (ScoreBreakdown) RedisUtils.get(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + i);
-                int insert = scoreBreakdownMapper.insert(scoreBreakdown);
-                if (insert == 1) {
+                scoreBreakdown.setStatus(ScoreBreakdownStatusEnum.FINISH.getStatus());
+                boolean b = scoreBreakdownMapper.insertOrUpdate(scoreBreakdown);
+                if (b) {
                     RedisUtils.del(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + i);
                 }
             }
@@ -77,8 +80,29 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
     }
 
     @Override
-    public Result updateScore(HttpServletRequest request, HashMap<String, Object> infos) {
+    public Result deleteScore(HttpServletRequest request,Integer type) {
+        TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
+        RedisUtils.del(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + type);
+        return Result.ok("删除成功");
+    }
 
+    @Override
+    public Result beforeShowInfo(HttpServletRequest request, Integer type) {
+        TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
+        return Result.ok((ScoreBreakdown)RedisUtils.get(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + type));
+
+    }
+
+    @Override
+    public Result afterShowInfo(HttpServletRequest request, Integer type) {
+        TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
+
+        QueryWrapper<ScoreBreakdown> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",tokenUserInfoDTO.getUserId())
+                    .eq("type",type);
+
+        ScoreBreakdown scoreBreakdown = scoreBreakdownMapper.selectOne(queryWrapper);
+        return Result.ok(scoreBreakdown);
     }
 }
 

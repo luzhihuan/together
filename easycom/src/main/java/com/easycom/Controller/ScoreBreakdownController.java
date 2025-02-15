@@ -38,9 +38,17 @@ public class ScoreBreakdownController {
         return scoreBreakdownService.saveScore(request);
     }
 
-    @RequestMapping("updateScore")
-    public Result updateScore(HttpServletRequest request, HashMap<String, Object> infos){
-        return scoreBreakdownService.updateScore(request,infos);
+    @RequestMapping("deleteScore")
+    public Result deleteScore(HttpServletRequest request,Integer type){
+        return scoreBreakdownService.deleteScore(request,type);
     }
 
+    @RequestMapping("beforeShowInfo")
+    public Result beforeShowInfo(HttpServletRequest request,Integer type){
+        return scoreBreakdownService.beforeShowInfo(request,type);
+    }
+    @RequestMapping("afterShowInfo")
+    public Result afterShowInfo(HttpServletRequest request,Integer type){
+        return scoreBreakdownService.afterShowInfo(request,type);
+    }
 }

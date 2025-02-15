@@ -19,5 +19,10 @@ public interface IScoreBreakdownService extends IService<ScoreBreakdown> {
 
     Result saveScore(HttpServletRequest request);
 
-    Result updateScore(HttpServletRequest request, HashMap<String, Object> infos);
+
+    Result deleteScore(HttpServletRequest request,Integer type);
+
+    Result beforeShowInfo(HttpServletRequest request, Integer type);
+
+    Result afterShowInfo(HttpServletRequest request, Integer type);
 }
