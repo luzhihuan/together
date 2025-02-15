@@ -38,21 +38,19 @@
 <!--      左边菜单栏-->
       <div class="left-menu">
         <div class="">
-          <div
-              @click="jump(item)"
-              :class="['menu-item',item.code===currentMenu.code?'active':'']"
-              v-for="item in menus"
+          <div @click="jump(item)" 
+          :class="['menu-item',item.code===currentMenu.code?'active':'']" 
+          v-for="item in menus"
           >
-              <div :class="['iconfont','icon-'+item.icon,'icon-font',item.code===currentMenu.code?'icon-active':'']"></div>
-              <span class="text" style="font-size: 25px;text-align: center">{{item.name}}</span>
-              <span
-                  :class="['iconfont',item.code===currentMenu.code?'icon-up':'icon-down','icon-font2']"
-                  v-if="item.children"
-              ></span>
-              <router-link :to="item.path"></router-link>
+          <div :class="['iconfont','icon-'+item.icon,'icon-font',item.code===currentMenu.code?'icon-active':'']"></div>
+            <span class="text" style="font-size: 25px;text-align: center">{{item.name}}</span>
+            <span
+                :class="['iconfont',item.code===currentMenu.code?'icon-up':'icon-down','icon-font2']"
+                v-if="item.children"
+            ></span>
+            <router-link :to="item.path"></router-link>
           </div>
         </div>
-
       </div>
 
 
@@ -82,7 +80,7 @@ const menus = [
   {
     path:"/message",
     icon:"messages",
-    name:"收件箱",
+    name:"信件",
     code:'messages',
   },
   {
@@ -128,7 +126,7 @@ const backToMain = ()=>{
 <style lang="scss" scoped>
 .header {
   /* 添加阴影效果，让头部有悬浮感，增强层次感 */
-  box-shadow: 0 3px 10px 0 rgb(0 0 0 / 6%);
+  box-shadow: 0 3px 10px 0 rgb(0 0 0 / 8%);
 
   /* 设置头部的高度为56像素，保持固定高度 */
   height: 80px;
@@ -207,6 +205,7 @@ const backToMain = ()=>{
   display: flex;
   overflow: hidden;
   .left-menu{
+    box-shadow: 0 5px 5px rgba(0,0,0, 0.3);
     border-right: #ffffff solid 1px;
     display: flex;
     height: calc(100vh - 70px);

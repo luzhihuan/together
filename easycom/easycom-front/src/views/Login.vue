@@ -50,13 +50,13 @@
                                 <span class="iconfont icon-checkCode"></span>
                               </template>
                           </el-input>
-                          <img :src="checkCodeEmailUrl"  alt="" @click="changeCheckCode(1)"/>
+                          <img :src="checkCodeUrl"  alt="" @click="changeCheckCode(0)"/>
                       </el-form-item>
 
                       <el-form-item class="form_base">
                           <el-checkbox class="rememberMe" v-model="formData.rememberMe">记住我</el-checkbox>
                           <el-button type="primary" class="logIn" @click="loginAction">登录</el-button>
-                          <el-button type="text" class="fogotPassword" @click="reSet">忘记密码?</el-button>
+                          <el-button type="text" class="fogotPassword" @click="reSetCancel">忘记密码?</el-button>
                       </el-form-item>
                   </el-form>                      
               </el-card>
@@ -127,8 +127,8 @@
                   </el-form-item>
 
                   <el-form-item class="form_base button">
-                    <el-button type="primary">重置</el-button>
-                    <el-button class="cancel" @click="reSet">取消</el-button>
+                    <el-button type="primary" @click="reSetPassword">重置</el-button>
+                    <el-button class="cancel" @click="reSetCancel">取消</el-button>
                   </el-form-item> 
                                  
                 </el-form>
@@ -158,6 +158,7 @@
               <span class="iconfont icon-user "></span>
             </template>
             </el-input>
+            <img :src="checkCodeEmailUrl"  alt="" @click="changeCheckCode(1)"/>
           </el-form-item>  
           
           <!-- <el-form-item prop="emailCode">
@@ -240,9 +241,17 @@ import FrameworkVue from './Framework.vue';
   }
   //界面切换动画初始化
   const currentCard = ref(1)
-  const reSet  = () =>{
+  const reSetCancel  = () =>{
     currentCard.value = currentCard.value === 1 ? 2 : 1;
   }
+  //重置密码表单验证
+  const reSetPassword = async () =>{
+    resetFormRef.value.validate (async (valid) =>{
+      if(!valid){
+        return;
+      }
+    })
+  };
   
 
   const { proxy } = getCurrentInstance()
