@@ -1,6 +1,6 @@
 <template>
   <div class="message-body"> 
-    <div class="oneThirdPart">
+    <!-- <div class="oneThirdPart">
        <el-container class="button-container"> 
         <el-button class="style-button" >
           <template #icon>
@@ -32,7 +32,9 @@
         <span class="style-font">草稿箱</span>
         </el-button>
       </el-container>
-    </div>
+    </div> -->
+
+    
   </div>
 </template>
 
@@ -44,7 +46,7 @@
 
 .message-body{
   display: flex;
-
+  overflow: auto;
 
   //每个小部分的样式
   .oneThirdPart{

@@ -151,51 +151,36 @@
           :showCancel = "false"
           @close = "emailConfirmDialog.show=false"
         >
-        <el-form :model="emailConfirmDialog" :rules="rules" ref="emailConfirmDialogRef">
-          <el-form-item prop="email">
-            <el-input
-              v-model="emailConfirmDialog.email"
-              placeholder="请输入邮箱"
-              v-model-trim = "emailConfirmDialog.email"
-              @focus="clearValidation('email')"
-            >
-            <template #prefix>
-              <span class="iconfont icon-user "></span>
-            </template>
-            </el-input>
-            <img :src="checkCodeEmailUrl"  alt="" @click="changeCheckCode(1)"/>
-          </el-form-item>  
+          <el-form :model="emailConfirmDialog" :rules="rules" ref="emailConfirmDialogRef">
+            <el-form-item prop="email">
+              <el-input
+                v-model="emailConfirmDialog.email"
+                placeholder="请输入邮箱"
+                v-model-trim = "emailConfirmDialog.email"
+                @focus="clearValidation('email')"
+              >
+              <template #prefix>
+                <span class="iconfont icon-user "></span>
+              </template>
+              </el-input>
+              <img :src="checkCodeEmailUrl"  alt="" @click="changeCheckCode(1)"/>
+            </el-form-item>  
           
-          <!-- <el-form-item prop="emailCode">
-            <el-input
-              v-model="emailConfirmDialog.emailCode"
-              placeholder="请输入收到的验证码"
-              v-model-trim = "emailConfirmDialog.emailCode"
-              @focus="clearValidation('emailCode')"
-            >
-            <template #prefix>
-              <span class="iconfont icon-checkCode "></span>
-            </template>
-            </el-input>
-          </el-form-item> -->
+            <el-form-item prop="checkcode">
+              <el-input
+                v-model="emailConfirmDialog.checkcode"
+                placeholder="请输入图片验证码"
+                v-model-trim = "emailConfirmDialog.checkcode"
+                @focus="clearValidation('checkcode')"
+                class="form_checkcode"
+              >
+              <template #prefix>
+                <span class="iconfont icon-checkCode "></span>
+              </template>
+              </el-input>
+            </el-form-item>
 
-
-          <el-form-item prop="checkcode">
-            <el-input
-              v-model="emailConfirmDialog.checkcode"
-              placeholder="请输入图片验证码"
-              v-model-trim = "emailConfirmDialog.checkcode"
-              @focus="clearValidation('checkcode')"
-              class="form_checkcode"
-            >
-            <template #prefix>
-              <span class="iconfont icon-checkCode "></span>
-            </template>
-            </el-input>
-          </el-form-item>
-
-          
-        </el-form>
+          </el-form>
         </Dialog>
                     
 
@@ -212,14 +197,14 @@ import { ref, reactive, getCurrentInstance, nextTick, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
 import { md5 } from "js-md5";
-import FrameworkVue from './Framework.vue';
+// import FrameworkVue from './Framework.vue';
   //路由初始化
   const route = useRoute()
   const router = useRouter()
   //重置变量初始化
   const emailConfirmDialog = reactive({
     show: false,
-    title: "邮箱认证",
+    title: "人机验证",
     buttons: [{
       type: "primary",
       text: "发送验证码",
@@ -241,7 +226,7 @@ import FrameworkVue from './Framework.vue';
   const resetForm = ref({});
   const resetFormRef = ref();
   //弹窗
-  const popUp = async =>{
+  const popUp = async() =>{
     emailConfirmDialog.show = true;
   }
   //界面切换动画初始化
@@ -445,7 +430,7 @@ import FrameworkVue from './Framework.vue';
   }
 
   .fogotPassword{
-    //margin-left: 20px;
+    margin-right: 20px;
   }
 
   /* 进入动画：卡片从右侧滑入 */

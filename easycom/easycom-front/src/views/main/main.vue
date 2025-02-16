@@ -8,13 +8,13 @@
       <el-container class="button-container">
         <el-button 
           class="style-button"
-          @click="fileUpLoad"
+          @click="yearSelection"
         >
           <el-icon >
             <Management />
           </el-icon>
         </el-button>
-        <span class="button-title">佐证资料上传</span>
+        <span class="button-title">年度综合评测</span>
       </el-container>
       
       <el-container class="button-container">
@@ -38,31 +38,97 @@
           <Checked />
         </el-icon>
         </el-button>
-        <span class="button-title">综测成绩查询</span>
+        <span class="button-title">评测结果查询</span>
       </el-container>
     </div>
     <div class="marginTop">
-    <span class="font-title">
-      敬请期待
-    </span>
-    <el-divider class="divider"></el-divider>
-    <el-container class="button-container">
-        <el-button 
-          class="style-button"
-          @click="fileUpLoad"
-        >
-        <el-icon>
-          <Cherry /> 
-        </el-icon>
-        </el-button>
-        <span class="button-title">敬请期待</span>
+      <span class="font-title">
+        敬请期待
+      </span>
+      <el-divider class="divider"></el-divider>
+      <el-container class="button-container">
+          <el-button 
+            class="style-button"
+            @click="fileUpLoad"
+          >
+          <el-icon>
+            <Cherry /> 
+          </el-icon>
+          </el-button>
+          <span class="button-title">敬请期待</span>
       </el-container>
     </div>
+
+    <Dialog
+      :show = "dialog.show"
+      :title = "dialog.title"
+      :buttons = "dialog.buttons"
+      width = "500px"
+      :showCancel = "false"
+      @close = "dialog.show=false"
+    >
+      <el-select 
+      v-model="value"
+      placeholder = "请选择当期评测时间"
+      class="style-selection"
+      >
+        <el-option
+          v-for = "item in years"
+          :key = "item.value"
+          :label = "item.label"
+          :value = "item.value"
+          :disabled = "item.disabled"       
+        />
+        
+      </el-select>
+    </Dialog>
   </div>
 </template>
 
 <script setup>
+  import { ref } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
+  import { reactive } from 'vue';
 
+  const value = ref('')
+  const dialog = reactive({
+    show: false,
+    title: '评测年度选择',
+    buttons: [
+      {
+        type:"primary",
+        text:"确认",
+      },
+      {
+        type:"primary",
+        text:"取消",
+        click: (e) =>{
+          dialog.show = false;
+        }
+      }
+    ]
+  })
+
+  const years = [
+    {
+      value : '2024-2025',
+      label : '2024-2025年度评测',
+      disabled: true,
+    },
+    {
+      value : '2023-2024',
+      label : '2023-2024年度评测',
+    },
+    {
+      value : '2022-2023',
+      label : '2022-2023年度评测',
+      disabled: true,
+    },
+  ]
+
+  const yearSelection = () => {
+    dialog.show = true;
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -119,6 +185,10 @@
 .style-row{
   display: flex;
   flex-direction: row;
+}
+
+.style-selection{
+  width: 100%;
 }
 
 </style>
