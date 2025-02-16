@@ -16,6 +16,10 @@ const router =createRouter({
             component:()=>import("@/views/Framework.vue"),
             children:[
                 {
+                    path:"/",
+                    redirect:"/main"
+                },
+                {
                     path:"/main",
                     name:"首页",
                     meta:{
