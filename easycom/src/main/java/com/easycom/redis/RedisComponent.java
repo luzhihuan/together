@@ -29,9 +29,17 @@ public class RedisComponent {
     public void saveScore(ScoreBreakdown scoreBreakdown) {
 
         RedisUtils.set(
-                DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + scoreBreakdown.getUserId()+":"+scoreBreakdown.getType(),
-                 scoreBreakdown,
+                DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + scoreBreakdown.getUserId() + ":" + scoreBreakdown.getType(),
+                scoreBreakdown,
                 DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
+        );
+    }
+
+    public void saveProveInfo(String userId, StringBuilder currentFilePath) {
+        RedisUtils.set(
+                DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId,
+                currentFilePath,
+                DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_DAY
         );
     }
 }

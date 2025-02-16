@@ -80,9 +80,11 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                 throw new UserException("文件格式不对！");
             }
             //所有上传的文件都命名为  1.图片后缀 2.图片后缀 3.图片后缀 等
-            currentFilePath = currentFilePath.append(i).append(fileSuffix);
+            currentFilePath = currentFilePath.append(i+1).append(fileSuffix);
             //TODO 将文件暂时存储到redis中
+            redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),currentFilePath);
         }
+
 
         //设置文件路径规则为，如果用户传入5个文件，则为 /file/{userid}/5
         String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+files.length;
@@ -91,7 +93,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         if (type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())) {
             totalScore = ScoreBreakUtil.getMoralityTotalCode(baseScore, evaluationScore, qualityScore, deductScore);
         } else {
-            totalScore = ScoreBreakUtil.getOtherTotalCode(baseScore, evaluationScore, deductScore, type);
+            totalScore = ScoreBreakUtil.getOtherTotalCode(baseScore, qualityScore, deductScore, type);
         }
 
         //处理空的情况！
@@ -138,6 +140,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             }
         }
         //TODO 从缓存中获取到用户所有临时文件，存储到服务器文件夹中
+
         //TODO 用户填写完毕后，需要将所有临时文件删除，包括删除存储每一种类型的表
         return Result.ok("上传成功");
     }

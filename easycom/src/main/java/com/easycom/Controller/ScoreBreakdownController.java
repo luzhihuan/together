@@ -55,25 +55,33 @@ public class ScoreBreakdownController {
                 qualityScoreDetails, deductScore, deductScoreDetails, type,files);
 
     }
-
+    /**
+     * 提取redis中的数据存储到数据库中
+     * */
     @RequestMapping("/saveScore")
     @GlobalInterceptor
     public Result saveScore(HttpServletRequest request) {
         return scoreBreakdownService.saveScore(request);
     }
-
+    /**
+     * 删除redis中的存档
+     * */
     @RequestMapping("/deleteScore")
     @GlobalInterceptor
     public Result deleteScore(HttpServletRequest request, Integer type) {
         return scoreBreakdownService.deleteScore(request, type);
     }
-
+    /**
+    * "上传送"的展示
+    * */
     @RequestMapping("/beforeShowInfo")
     @GlobalInterceptor
     public Result beforeShowInfo(HttpServletRequest request, Integer type) {
         return scoreBreakdownService.beforeShowInfo(request, type);
     }
-
+    /**
+     * "上传完成"的展示
+     * */
     @RequestMapping("/afterShowInfo")
     @GlobalInterceptor
     public Result afterShowInfo(HttpServletRequest request, Integer type) {
