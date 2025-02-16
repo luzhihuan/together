@@ -137,7 +137,8 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                 throw new UserException("上传失败，请重新检查！");
             }
         }
-        //TODO 用户填写完毕后，需要将所有临时文件删除，包括存储每一种类型的表
+        //TODO 从缓存中获取到用户所有临时文件，存储到服务器文件夹中
+        //TODO 用户填写完毕后，需要将所有临时文件删除，包括删除存储每一种类型的表
         return Result.ok("上传成功");
     }
 
