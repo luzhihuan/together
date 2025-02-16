@@ -31,3 +31,4 @@ public interface IScoreBreakdownService extends IService<ScoreBreakdown> {
 
     Result afterShowInfo(HttpServletRequest request, Integer type);
 }
+

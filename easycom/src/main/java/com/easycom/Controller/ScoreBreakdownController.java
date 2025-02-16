@@ -72,7 +72,7 @@ public class ScoreBreakdownController {
         return scoreBreakdownService.deleteScore(request, type);
     }
     /**
-    * "上传送"的展示
+    * 在上传完成前访问redis展示数据
     * */
     @RequestMapping("/beforeShowInfo")
     @GlobalInterceptor
@@ -80,7 +80,7 @@ public class ScoreBreakdownController {
         return scoreBreakdownService.beforeShowInfo(request, type);
     }
     /**
-     * "上传完成"的展示
+     * 在上传完成后访问mysql展示数据
      * */
     @RequestMapping("/afterShowInfo")
     @GlobalInterceptor
