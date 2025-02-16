@@ -2,6 +2,8 @@ package com.easycom.Service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.easycom.entity.PO.Summary;
+import com.easycom.entity.VO.Result;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 /**
@@ -10,5 +12,7 @@ import com.easycom.entity.PO.Summary;
 * @createDate 2025-02-14 13:48:12
 */
 public interface ISummaryService extends IService<Summary> {
+
+    Result showScore(HttpServletRequest request);
 
 }

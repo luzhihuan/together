@@ -55,7 +55,7 @@ public class UserInfoController {
      * @return  用户传输信息
      */
     @RequestMapping("/login")
-    public Result login(@NotEmpty String checkCodeKey,@NotEmpty @Max(12) String username,
+    public Result login(@NotEmpty String checkCodeKey,@NotEmpty String username,
                         @NotEmpty String password,@NotEmpty String checkCode){
         return userInfoService.login(checkCodeKey, username,password,checkCode);
     }

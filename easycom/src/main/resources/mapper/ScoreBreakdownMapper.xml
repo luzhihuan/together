@@ -17,7 +17,6 @@
             <result property="deductScore" column="deduct_score" jdbcType="INTEGER"/>
             <result property="deductScoresDetails" column="deduct_scores_details" jdbcType="VARCHAR"/>
             <result property="totalScore" column="total_score" jdbcType="INTEGER"/>
-            <result property="totalScoreDetails" column="total_score_details" jdbcType="VARCHAR"/>
             <result property="type" column="type" jdbcType="INTEGER"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
     </resultMap>
@@ -29,4 +28,5 @@
         deduct_score,deduct_scores_details,total_score,
         total_score_details,type,status
     </sql>
+
 </mapper>

@@ -18,19 +18,19 @@ public class Summary implements Serializable {
 
     private String userId;
 
-    private Integer studentId;
+    private double studentId;
 
-    private Integer moralityScore;
+    private double moralityScore;
 
-    private Integer intellectualScore;
+    private double intellectualScore;
 
-    private Integer sportScore;
+    private double sportScore;
 
-    private Integer aestheticScore;
+    private double aestheticScore;
 
-    private Integer laborScore;
+    private double laborScore;
 
-    private Integer totalScore;
+    private double totalScore;
 
     private Integer status;
 

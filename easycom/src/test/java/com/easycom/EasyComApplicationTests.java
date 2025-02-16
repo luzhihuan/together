@@ -11,7 +11,5 @@ class EasyComApplicationTests {
 
 	@Test
 	void contextLoads() {
-
 	}
-
 }
