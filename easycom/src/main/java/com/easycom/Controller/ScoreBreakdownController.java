@@ -14,6 +14,7 @@ import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class ScoreBreakdownController {
      * @param deductScore            扣分
      * @param deductScoreDetails     扣分事项
      * @param type                   表的类型：1德  2智  3体  4美  5劳
+     * @param files                  学生上传的证明材料
      * @return
      */
     @RequestMapping("/sendScore")
@@ -46,11 +48,11 @@ public class ScoreBreakdownController {
                               @Max(200) String baseScoreDetails, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String evaluationScore,
                               @Max(200) String evaluationScoreDetails, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String qualityScore,
                               @Max(200) String qualityScoreDetails, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String deductScore,
-                              @Max(200) String deductScoreDetails, @NotEmpty Integer type) {
+                              @Max(200) String deductScoreDetails, @NotEmpty Integer type, MultipartFile[] files) {
 
         return scoreBreakdownService.recordScore(request, baseScore, baseScoreDetails,
                 evaluationScore, evaluationScoreDetails, qualityScore,
-                qualityScoreDetails, deductScore, deductScoreDetails, type);
+                qualityScoreDetails, deductScore, deductScoreDetails, type,files);
 
     }
 

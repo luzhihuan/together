@@ -8,6 +8,7 @@ import com.easycom.Service.IScoreBreakdownService;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.Utils.ScoreBreakUtil;
 import com.easycom.Utils.UserHolder;
+import com.easycom.config.AppConfig;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.ScoreBreakdown;
 import com.easycom.entity.VO.Result;
@@ -21,6 +22,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Wrapper;
 import java.util.HashMap;
@@ -37,6 +39,8 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
     private ScoreBreakdownMapper scoreBreakdownMapper;
     @Resource
     private RedisComponent redisComponent;
+    @Resource
+    private AppConfig appconfig;
 
 
     @Override
@@ -45,9 +49,43 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                               String evaluationScore, String evaluationScoreDetails,
                               String qualityScore, String qualityScoreDetails,
                               String deductScore, String deductScoreDetails,
-                              Integer type) {
+                              Integer type, MultipartFile[] files) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
         String totalScore = "";
+
+        //设置文件存储路径
+        StringBuilder fileFolder = new StringBuilder(appconfig.getProjectFolder() + DefaultParam.FILE_FOLDER_FILE + tokenUserInfoDTO.getUserId());
+        if(type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())){
+            fileFolder.append("/m/");
+        }else if(type.equals(ScoreBreakdownTypeEnum.INTELLECT.getType())){
+            fileFolder.append("/i/");
+        }else if(type.equals(ScoreBreakdownTypeEnum.PHYSICAL_EDUCATION.getType())){
+            fileFolder.append("/p/");
+        }else if(type.equals(ScoreBreakdownTypeEnum.AESTHETICS.getType())){
+            fileFolder.append("/a/");
+        }else if(type.equals(ScoreBreakdownTypeEnum.LABOR.getType())){
+            fileFolder.append("/l/");
+        }else {
+            return Result.fail(DefaultParam.PARAM_ERROR);
+        }
+        for (int i = 0; i < files.length; i++) {
+            StringBuilder currentFilePath = fileFolder;
+            //获取文件后缀名
+            String fileSuffix = UserHolder.getFileSuffix(files[i].getName());
+            //如果文件不是图片类型
+            if(!fileSuffix.equals(".png")||!fileSuffix.equals(".PNG")||
+                    !fileSuffix.equals(".jpg")||!fileSuffix.equals(".JPG")||
+                    !fileSuffix.equals(".JPEG")||!fileSuffix.equals(".jpg")
+            ){
+                throw new UserException("文件格式不对！");
+            }
+            //所有上传的文件都命名为  1.图片后缀 2.图片后缀 3.图片后缀 等
+            currentFilePath = currentFilePath.append(i).append(fileSuffix);
+            //TODO 将文件暂时存储到redis中
+        }
+
+        //设置文件路径规则为，如果用户传入5个文件，则为 /file/{userid}/5
+        String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+files.length;
 
         //计算各个分数项
         if (type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())) {
@@ -75,10 +113,12 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                 .deductScoresDetails(deductScoreDetails)
                 .totalScore(totalScore)
                 .type(type)
-                .status(ScoreBreakdownStatusEnum.SENDING.getStatus()).build();
+                .status(ScoreBreakdownStatusEnum.SENDING.getStatus())
+                .filePath(filePath).build();
 
         //每种类型的表，先暂时存到redis中
         redisComponent.saveScore(scoreBreakdown);
+
 
         return Result.ok("上传中");
     }
@@ -97,6 +137,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                 throw new UserException("上传失败，请重新检查！");
             }
         }
+        //TODO 用户填写完毕后，需要将所有临时文件删除，包括存储每一种类型的表
         return Result.ok("上传成功");
     }
 

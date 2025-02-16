@@ -30,4 +30,12 @@ public class UserHolder {
         return 'U'+RandomUtil.randomString(11);
     }
 
+    public static String getFileSuffix(String fileName){
+        int index = fileName.lastIndexOf(".");
+        if(index == -1){
+            return "";
+        }
+        return fileName.substring(index);
+    }
+
 }

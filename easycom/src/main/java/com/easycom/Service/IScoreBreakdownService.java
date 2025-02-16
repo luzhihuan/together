@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.easycom.entity.PO.ScoreBreakdown;
 import com.easycom.entity.VO.Result;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
@@ -19,7 +20,7 @@ public interface IScoreBreakdownService extends IService<ScoreBreakdown> {
                        String baseScore, String baseScoreDetails,
                        String evaluationScore, String evaluationScoreDetails,
                        String qualityScore, String qualityScoreDetails,
-                       String deductScore, String deductScoreDetails, Integer type);
+                       String deductScore, String deductScoreDetails, Integer type, MultipartFile[] files);
 
     Result saveScore(HttpServletRequest request);
 
