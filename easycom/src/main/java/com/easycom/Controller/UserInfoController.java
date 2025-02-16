@@ -15,6 +15,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import org.aspectj.weaver.ast.Not;
 import org.springframework.http.HttpRequest;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2025-02-09
  */
 @RestController
+@Validated
 @RequestMapping("/user")
 public class UserInfoController {
 
@@ -55,7 +57,7 @@ public class UserInfoController {
      * @return  用户传输信息
      */
     @RequestMapping("/login")
-    public Result login(@NotEmpty String checkCodeKey,@NotEmpty @Max(12) String username,
+    public Result login(@NotEmpty String checkCodeKey,@NotEmpty String username,
                         @NotEmpty String password,@NotEmpty String checkCode){
         return userInfoService.login(checkCodeKey, username,password,checkCode);
     }

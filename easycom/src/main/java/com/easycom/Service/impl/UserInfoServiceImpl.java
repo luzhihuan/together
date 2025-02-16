@@ -72,7 +72,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public Result login(String checkCodeKey, String username, String password, String checkCode) {
 
         //第一步先检验验证码是否正确或者是否存在！
-        if (RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
+        if (!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
             return Result.fail("图片验证码已过期，请重新获取！");
         }
         if (!checkCode.equalsIgnoreCase(
@@ -105,7 +105,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         TokenUserInfoDTO tokenUserInfoDTO = new TokenUserInfoDTO();
         tokenUserInfoDTO.setUserId(check.getUserId());
         tokenUserInfoDTO.setToken(token);
-
+        tokenUserInfoDTO.setNickName(check.getNickName());
 
         //判断一下是否为管理员
         String[] split = appConfig.getAdminEmail().split(",");
