@@ -152,7 +152,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         //补充summary的信息，并录入到数据库当中
         summary.setUserId(tokenUserInfoDTO.getUserId());
         summary.setStatus(SummaryEnum.CLASS_AUDIT.getStatus());
-        //TODO 计算总分
+        //TODO 计算总分计算
         summaryMapper.save(summary);
 
         //TODO 从缓存中获取到用户所有临时文件，存储到服务器文件夹中
