@@ -16,9 +16,15 @@ public class DefaultParam {
     public static final Integer REDIS_KEY_EXPIRE_TIME_ONE_HOUR = REDIS_KEY_EXPIRE_TIME_ONE_MIN * 60;
     public static final String REDIS_KEY_SCORE_BREAKDOWN_USERID = "easycom:score:userId";
     public static final String REDIS_KEY_USER_TEMP_FILE = "easycom:user:temp:";
+    public static final String REDIS_KEY_SYS_SETTING = "easycom:SystemSetting:"
 
     public static final String PASSWORD_VERIFY = "^(?=.*\\d)(?=.*[a-zA-Z])[\\da-zA-Z~!@#$%^&*_]{8,18}$";
-    public static final String SCORE_LIMIT = "^([0-9]|[1-9][0-9]|100)$";
+    public static final String EMAIL_CHECK = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
+
 
     public static final String FILE_FOLDER_FILE = "/file/";
+
+
+    //十五分钟
+    public static final Long MINUTES_15 = (long) (15 * 1000 * 60);
 }

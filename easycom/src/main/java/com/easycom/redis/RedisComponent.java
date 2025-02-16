@@ -1,6 +1,7 @@
 package com.easycom.redis;
 
 import com.easycom.Utils.DefaultParam;
+import com.easycom.entity.DTO.SysSettingDTO;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.ScoreBreakdown;
 import org.springframework.stereotype.Component;
@@ -41,5 +42,14 @@ public class RedisComponent {
                 currentFilePath,
                 DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_DAY
         );
+    }
+
+    public SysSettingDTO getSysSettingDTO() {
+        SysSettingDTO sysSettingDTO = (SysSettingDTO) RedisUtils.get(DefaultParam.REDIS_KEY_SYS_SETTING);
+        if (sysSettingDTO == null) {
+            sysSettingDTO = new SysSettingDTO();
+            RedisUtils.set(DefaultParam.REDIS_KEY_SYS_SETTING, sysSettingDTO,DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_DAY);
+        }
+        return sysSettingDTO;
     }
 }

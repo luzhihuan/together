@@ -2,6 +2,7 @@ package com.easycom.Mapper;
 
 import com.easycom.entity.PO.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,7 +14,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
-    UserInfo selectByEmail(String userId);
+    UserInfo selectByEmail(@Param("email") String email);
 
     String getPasswordById(String userId);
 

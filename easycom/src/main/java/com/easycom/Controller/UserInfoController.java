@@ -1,6 +1,7 @@
 package com.easycom.Controller;
 
 
+import com.easycom.Service.IEmailCodeService;
 import com.easycom.Service.IUserInfoService;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.annotation.GlobalInterceptor;
@@ -12,6 +13,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -32,6 +34,8 @@ public class UserInfoController {
 
     @Resource
     private IUserInfoService userInfoService;
+    @Resource
+    private IEmailCodeService emailCodeService;
 
     /**
      * 获取验证码
@@ -106,5 +110,20 @@ public class UserInfoController {
     }
 
 
+    /**
+     * 发送邮箱验证码
+     * @param email
+     * @param checkCode
+     * @param checkCodeKey
+     * @param type
+     * @return
+     */
+    @RequestMapping("/sendCode")
+    public Result sendCode(@NotEmpty @Pattern(regexp = DefaultParam.EMAIL_CHECK) @Max(150) String email,
+                           @NotEmpty String checkCode,
+                           @NotEmpty String checkCodeKey,
+                           @NotEmpty Integer type){
+        return emailCodeService.sendCode(email, checkCode, checkCodeKey, type);
+    }
 
 }
