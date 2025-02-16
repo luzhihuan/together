@@ -46,7 +46,7 @@ public class ScoreBreakdown implements Serializable {
     /**
      * 基础分
      */
-    private String baseScore;
+    private Double baseScore;
 
     /**
      * 基础分事项
@@ -56,7 +56,7 @@ public class ScoreBreakdown implements Serializable {
     /**
      * 互评分，仅仅德育类型有
      */
-    private String evaluationScore;
+    private Double evaluationScore;
 
     /**
      * 互评分事项
@@ -66,7 +66,7 @@ public class ScoreBreakdown implements Serializable {
     /**
      * 加分项
      */
-    private String qualityScore;
+    private Double qualityScore;
 
     /**
      * 加分事项
@@ -76,7 +76,7 @@ public class ScoreBreakdown implements Serializable {
     /**
      * 扣分项
      */
-    private String deductScore;
+    private Double deductScore;
 
     /**
      * 扣分事项
@@ -86,7 +86,7 @@ public class ScoreBreakdown implements Serializable {
     /**
      * 总分
      */
-    private String totalScore;
+    private Double totalScore;
 
     /**
      * 表的类型：1德  2智  3体  4美  5劳

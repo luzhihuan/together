@@ -19,19 +19,14 @@ public class ScoreBreakUtil {
      * @param deductScore     扣分（String 类型，需转换为 Double 进行计算）
      * @return 计算后的总分（String 类型）
      */
-    public static String getMoralityTotalCode(String baseScore, String evaluationScore,
-                                              String qualityScore, String deductScore) {
+    public static Double getMoralityTotalCode(Double baseScore, Double evaluationScore,
+                                              Double qualityScore, Double deductScore) {
         // 如果扣分大于或等于总分，则返回 "0"
-        if (Double.parseDouble(deductScore) >= Double.parseDouble(baseScore) + Double.parseDouble(evaluationScore) + Double.parseDouble(qualityScore)) {
-            return "0";
+        if (deductScore >= baseScore + evaluationScore + qualityScore) {
+            return 0d;
         }
         // 按照公式计算总分
-        return String.valueOf(
-                Double.parseDouble(baseScore) * 0.3 +
-                        Double.parseDouble(evaluationScore) * 0.2 +
-                        Double.parseDouble(qualityScore) * 0.5 -
-                        Double.parseDouble(deductScore)
-        );
+        return baseScore * 0.3 + evaluationScore * 0.2 + qualityScore * 0.5 - deductScore;
     }
 
     /**
@@ -49,31 +44,19 @@ public class ScoreBreakUtil {
      * @param type        分数类型（通过 ScoreBreakdownTypeEnum 获取）
      * @return 计算后的总分（String 类型）
      */
-    public static String getOtherTotalCode(String baseScore, String bonusPoints, String deductScore, int type) {
+    public static Double getOtherTotalCode(Double baseScore, Double bonusPoints, Double deductScore, int type) {
         // 根据类型选择不同的权重公式
         if (type == ScoreBreakdownTypeEnum.INTELLECT.getType()) {
             // 智育：基础分权重0.8，奖励分权重0.2
-            return String.valueOf(
-                    Double.parseDouble(baseScore) * 0.8 +
-                            Double.parseDouble(bonusPoints) * 0.2 -
-                            Double.parseDouble(deductScore)
-            );
+            return baseScore * 0.8 + bonusPoints * 0.2 - deductScore;
         } else if (type == ScoreBreakdownTypeEnum.PHYSICAL_EDUCATION.getType()) {
             // 体育：基础分权重0.7，奖励分权重0.3
-            return String.valueOf(
-                    Double.parseDouble(baseScore) * 0.7 +
-                            Double.parseDouble(bonusPoints) * 0.3 -
-                            Double.parseDouble(deductScore)
-            );
+            return baseScore * 0.7 + bonusPoints * 0.3 - deductScore;
         } else if (type == ScoreBreakdownTypeEnum.AESTHETICS.getType() || type == ScoreBreakdownTypeEnum.LABOR.getType()) {
             // 美育和劳动：基础分权重0.5，奖励分权重0.5
-            return String.valueOf(
-                    Double.parseDouble(baseScore) * 0.5 +
-                            Double.parseDouble(bonusPoints) * 0.5 -
-                            Double.parseDouble(deductScore)
-            );
+            return baseScore * 0.5 + bonusPoints * 0.5 - deductScore;
         }
         // 如果类型不匹配，返回错误值 "-1"
-        return "-1";
+        return -1d;
     }
 }

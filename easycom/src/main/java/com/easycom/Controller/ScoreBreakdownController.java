@@ -44,10 +44,10 @@ public class ScoreBreakdownController {
      */
     @RequestMapping("/sendScore")
     @GlobalInterceptor
-    public Result recordScore(HttpServletRequest request, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String baseScore,
-                              @Max(200) String baseScoreDetails, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String evaluationScore,
-                              @Max(200) String evaluationScoreDetails, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String qualityScore,
-                              @Max(200) String qualityScoreDetails, @Pattern(regexp = DefaultParam.SCORE_LIMIT) String deductScore,
+    public Result recordScore(HttpServletRequest request, @Max(100) Double baseScore,
+                              @Max(200) String baseScoreDetails, @Max(100) Double evaluationScore,
+                              @Max(200) String evaluationScoreDetails, @Max(100) Double qualityScore,
+                              @Max(200) String qualityScoreDetails, @Max(100) Double deductScore,
                               @Max(200) String deductScoreDetails, @NotEmpty Integer type, MultipartFile[] files) {
 
         return scoreBreakdownService.recordScore(request, baseScore, baseScoreDetails,

@@ -45,13 +45,13 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
 
     @Override
     public Result recordScore(HttpServletRequest request,
-                              String baseScore, String baseScoreDetails,
-                              String evaluationScore, String evaluationScoreDetails,
-                              String qualityScore, String qualityScoreDetails,
-                              String deductScore, String deductScoreDetails,
+                              Double baseScore, String baseScoreDetails,
+                              Double evaluationScore, String evaluationScoreDetails,
+                              Double qualityScore, String qualityScoreDetails,
+                              Double deductScore, String deductScoreDetails,
                               Integer type, MultipartFile[] files) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
-        String totalScore = "";
+        Double totalScore = 0d;
 
         //设置文件存储路径
         StringBuilder fileFolder = new StringBuilder(appconfig.getProjectFolder() + DefaultParam.FILE_FOLDER_FILE + tokenUserInfoDTO.getUserId());

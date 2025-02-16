@@ -17,10 +17,10 @@ import java.util.HashMap;
 public interface IScoreBreakdownService extends IService<ScoreBreakdown> {
 
     Result recordScore(HttpServletRequest request,
-                       String baseScore, String baseScoreDetails,
-                       String evaluationScore, String evaluationScoreDetails,
-                       String qualityScore, String qualityScoreDetails,
-                       String deductScore, String deductScoreDetails, Integer type, MultipartFile[] files);
+                       Double baseScore, String baseScoreDetails,
+                       Double evaluationScore, String evaluationScoreDetails,
+                       Double qualityScore, String qualityScoreDetails,
+                       Double deductScore, String deductScoreDetails, Integer type, MultipartFile[] files);
 
     Result saveScore(HttpServletRequest request);
 
