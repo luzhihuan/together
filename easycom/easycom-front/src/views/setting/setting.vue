@@ -8,8 +8,17 @@
       <el-collapse v-model="activeName" accordion>
         <el-collapse-item title="绑定邮箱" name="1">
           <div>
-            <el-button type="primary">确认绑定</el-button>
-            <el-button type="primary">取消</el-button>
+            <el-card class="setting-card">
+              <el-form >
+                <el-form-item >
+                  <div class="form-item">
+                    <el-input prop="Email" placeholder="请输入新的邮箱账号" class="form-input" />
+                    <el-button type="primary" class="form-button">确认绑定</el-button>
+                    <el-button class="form-button">取消</el-button>                   
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-card>         
           </div>
         </el-collapse-item>
         <el-collapse-item title="修改当前绑定的邮箱" name="2">
@@ -46,8 +55,24 @@
         </el-collapse-item>
         <el-collapse-item title="修改密码" name="3">
           <div>
-            <el-button type="primary">确认修改</el-button>
-            <el-button type="primary">取消</el-button>
+            <el-card class="setting-card">
+              <el-form >
+                <el-form-item >
+                  <div class="form-item">
+                    <div>
+                      <el-input 
+                      prop="newPassword" 
+                      placeholder="请输入新密码" 
+                      />
+                    </div>
+                    <el-input prop="rePassword" placeholder="请确认新密码" class="form-input" />
+                    <el-button type="primary" class="form-button">确认修改</el-button>
+                    <el-button class="form-button">取消</el-button>
+                    
+                  </div>
+                </el-form-item>
+              </el-form>
+            </el-card>         
           </div>
         </el-collapse-item>
       </el-collapse>
@@ -61,7 +86,7 @@
 <script setup>
 import { ref } from 'vue';
 
-const activeName = ref('1')
+const activeName = ref('')
 
 </script>
 
@@ -75,7 +100,7 @@ const activeName = ref('1')
   .setting-card{
     border: 0px;
     width: 100%;
-    height: 400px;
+    height: 300px;
     display: flex;
     flex-direction: column;
   }
