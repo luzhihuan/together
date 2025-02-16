@@ -81,7 +81,7 @@ const menus = [
   {
     path:"/message",
     icon:"messages",
-    name:"信件",
+    name:"信箱",
     code:'messages',
   },
   {
@@ -247,7 +247,7 @@ const backToMain = ()=>{
     width: 100%;
   }
 
-
+  
 
 }
 
