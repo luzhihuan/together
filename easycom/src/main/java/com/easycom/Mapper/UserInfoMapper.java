@@ -16,6 +16,5 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
     UserInfo selectByEmail(@Param("email") String email);
 
-    String getPasswordById(String userId);
 
 }

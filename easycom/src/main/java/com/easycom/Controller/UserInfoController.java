@@ -69,13 +69,14 @@ public class UserInfoController {
      * @param codeKey   用户输入的验证码
      * @return
      */
-    @RequestMapping("/regist")
-    public Result regist(@NotEmpty String email,
-                         @NotEmpty String password,
-                         @NotEmpty String nick_name,
-                         @NotEmpty String checkCodeKey,
-                         @NotEmpty String codeKey){
-        return userInfoService.regist(checkCodeKey,codeKey,email,password,nick_name);
+    @RequestMapping("/register")
+    public Result register(@NotEmpty String email,
+                           @NotEmpty String password,
+                           @NotEmpty String nick_name,
+                           @NotEmpty String checkCodeKey,
+                           @NotEmpty String codeKey,
+                           @NotEmpty String emailCode){
+        return userInfoService.register(checkCodeKey,codeKey,email,password,nick_name,emailCode);
     }
 
     /**
@@ -86,7 +87,7 @@ public class UserInfoController {
      */
     @RequestMapping("/resetPassword")
     @GlobalInterceptor
-    public Result resetPassword(HttpServletRequest request,  @Pattern(regexp = DefaultParam.PASSWORD_VERIFY) String  password){
+    public Result resetPassword(HttpServletRequest request, @Pattern(regexp = DefaultParam.PASSWORD_VERIFY) String  password){
         return userInfoService.resetPassword(request,password);
     }
 

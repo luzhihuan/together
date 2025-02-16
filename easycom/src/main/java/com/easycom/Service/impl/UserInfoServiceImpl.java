@@ -3,10 +3,12 @@ package com.easycom.Service.impl;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.easycom.Service.IEmailCodeService;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.Utils.UserHolder;
 import com.easycom.Utils.VerifyUtil;
 import com.easycom.config.AppConfig;
+import com.easycom.entity.DTO.SysSettingDTO;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.UserInfo;
 import com.easycom.Mapper.UserInfoMapper;
@@ -45,6 +47,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     private AppConfig appConfig;
     @Resource
     private RedisComponent redisComponent;
+    @Resource
+    private IEmailCodeService emailCodeService;
 
 
     @Override
@@ -125,21 +129,28 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result regist(String checkCodeKey, String checkCode, String email, String password, String nickName) {
-        if (RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
-            return Result.fail("图片验证码已过期，请重新获取！");
-        }
-        if (!checkCode.equalsIgnoreCase(
-                RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey).toString())) {
-            return Result.fail("图片验证码不正确");
-        }
-        if (!VerifyUtil.verify(VerifyRegexEnum.PASSWORD, password)) {
-            return Result.fail("密码格式错误");
-        }
-        if (userInfoMapper.selectByEmail(email) != null) {
-            return Result.fail("邮箱已被注册");
-        }
-            int insert = userInfoMapper.insert(UserInfo.builder()
+    public Result register(String checkCodeKey, String checkCode, String email, String password, String nickName,String emailCode) {
+        try{
+            if (RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
+                return Result.fail("图片验证码已过期，请重新获取！");
+            }
+            if (!checkCode.equalsIgnoreCase(
+                    RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey).toString())) {
+                return Result.fail("图片验证码不正确");
+            }
+            if (!VerifyUtil.verify(VerifyRegexEnum.PASSWORD, password)) {
+                return Result.fail("密码格式错误");
+            }
+            if (userInfoMapper.selectByEmail(email) != null) {
+                return Result.fail("邮箱已被注册");
+            }
+
+            //检验邮箱验证码
+            emailCodeService.checkCode(email,emailCode);
+
+            SysSettingDTO sysSettingDTO = redisComponent.getSysSettingDTO();
+
+            userInfoMapper.insert(UserInfo.builder()
                     .userId(UserHolder.getUserIdByRandom())
                     .email(email)
                     .nickName(nickName)
@@ -147,27 +158,20 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                     .status(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())
                     .build());
 
+            return Result.ok("注册成功");
+
+        }finally {
             RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey);
-
-
-            if (insert > 0) {
-                return Result.ok("注册成功");
-            } else {
-                return Result.fail("注册失败");
-            }
+        }
     }
 
 
     @Override
     public Result resetPassword(HttpServletRequest request, String password) {
-        //查看密码格式是否正确
-        if (VerifyUtil.verify(VerifyRegexEnum.PASSWORD, password)) {
-            return Result.fail("密码格式错误");
-        }
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
-        String check = userInfoMapper.getPasswordById(tokenUserInfoDTO.getUserId());
+        UserInfo userInfo = userInfoMapper.selectById(tokenUserInfoDTO.getUserId());
         //检查原密码和新密码是否一样
-        if (check.equals(password)) {
+        if (userInfo.getPassword().equals(DigestUtil.md5Hex(password))) {
             return Result.fail("密码未修改");
         }
         //修改密码
@@ -177,7 +181,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (update > 0) {
             return Result.ok("密码修改成功");
         } else {
-            return Result.fail("密码未修改");
+            return Result.fail("密码修改失败");
         }
 
     }

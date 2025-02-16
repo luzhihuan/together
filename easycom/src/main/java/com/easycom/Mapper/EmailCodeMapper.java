@@ -14,6 +14,6 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface EmailCodeMapper extends BaseMapper<EmailCode> {
 
-    public void disableEmailCode(@Param("email") String email);
+    void disableEmailCode(@Param("email") String email);
 
 }

@@ -7,9 +7,5 @@
             from  user_info
         where email =#{email}
     </select>
-    <select id="getPasswordById" resultType="java.lang.String">
-        select password
-        from user_info
-        where user_id = #{userId}
-    </select>
+
 </mapper>

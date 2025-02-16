@@ -21,5 +21,5 @@ public interface IEmailCodeService extends IService<EmailCode> {
     Result sendCode(String email, String checkCode,
                     String checkCodeKey, Integer type);
 
-
+    void checkCode(String email,String emailCode);
 }
