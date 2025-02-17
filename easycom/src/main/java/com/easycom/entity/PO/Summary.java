@@ -14,25 +14,26 @@ import java.io.Serializable;
 @Data
 public class Summary implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
-
     private String userId;
 
-    private Integer studentId;
+    private String studentId;
 
-    private Integer moralityScore;
+    private double moralityScore;
 
-    private Integer intellectualScore;
+    private double intellectualScore;
 
-    private Integer sportScore;
+    private double sportScore;
 
-    private Integer aestheticScore;
+    private double aestheticScore;
 
-    private Integer laborScore;
 
-    private Integer totalScore;
+    private double laborScore;
+
+
+    private double totalScore;
 
     private Integer status;
+
 
     private static final long serialVersionUID = 1L;
 }

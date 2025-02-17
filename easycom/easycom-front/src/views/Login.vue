@@ -44,8 +44,8 @@
                     <el-input
                         size="large"
                         placeholder="请输入图片验证码"
-                        v-model.trim="formData.checkcode"
-                        @focus="clearValidation('checkcode')"
+                        v-model.trim="formData.checkCode"
+                        @focus="clearValidation('checkCode')"
                         @keyup.enter="loginAction"
                     >
                       <template #prefix>
@@ -111,7 +111,7 @@
                 <el-form-item prop="firstPassword" class="form_base">
                   <el-input
                       size="large"
-                      v-model.trim="formData.firstPassword"
+                      v-model.trim="formData.password"
                       placeholder="请输入新密码"
                       show-password
                       @focus="clearValidation('firstPassword')"
@@ -139,9 +139,9 @@
                   <div class="form_base">
                     <el-input
                         size="large"
-                        v-model.trim="formData.checkcode"
+                        v-model.trim="formData.checkCode"
                         placeholder="请输入图片验证码"
-                        @focus="clearValidation('checkcode')"
+                        @focus="clearValidation('checkCode')"
                     >
                       <template #prefix>
                         <span class="iconfont icon-checkCode"></span>
@@ -181,12 +181,12 @@
                   </el-input>
                 </el-form-item>
 
-                <el-form-item prop="nickname" class="form_base">
+                <el-form-item prop="nickName" class="form_base">
                   <el-input
                       size="large"
                       placeholder="请输入昵称"
                       v-model.trim="formData.nickName"
-                      @focus="clearValidation('nickname')"
+                      @focus="clearValidation('nickName')"
                   >
                     <template #prefix>
                       <span class="iconfont icon-user "></span>
@@ -239,13 +239,13 @@
                   </el-input>
                 </el-form-item>
 
-                <el-form-item prop="checkcode">
+                <el-form-item prop="checkCode">
                   <div class="form_base">
                     <el-input
                         size="large"
                         placeholder="请输入图片验证码"
                         v-model.trim="formData.checkCode"
-                        @focus="clearValidation('checkcode')"
+                        @focus="clearValidation('checkCode')"
                     >
                       <template #prefix>
                         <span class="iconfont icon-checkCode"></span>
@@ -289,13 +289,13 @@
             {{formData.email}}
           </el-form-item>
 
-          <el-form-item prop="checkcode">
+          <el-form-item prop="checkCode">
             <div class="form_base">
               <el-input
                   size="large"
                   placeholder="请输入图片验证码"
-                  v-model.trim="formDataSendMailCode.checkcode"
-                  @focus="clearValidation('checkcode')"
+                  v-model.trim="formDataSendMailCode.checkCode"
+                  @focus="clearValidation('checkCode')"
                   class="form_checkcode"
               >
                 <template #prefix>
