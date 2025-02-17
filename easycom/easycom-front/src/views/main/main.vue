@@ -67,20 +67,23 @@
       :showCancel = "false"
       @close = "dialog.show=false"
     >
-      <el-select 
-      v-model="value"
-      placeholder = "请选择当期评测时间"
-      class="style-selection"
-      >
-        <el-option
-          v-for = "item in years"
-          :key = "item.value"
-          :label = "item.label"
-          :value = "item.value"
-          :disabled = "item.disabled"       
-        />
-        
-      </el-select>
+      <el-form :model="formData" ref="formDataRef" :rules="rules">
+        <el-form-item prop="yearSelection">
+          <el-select 
+          v-model="formData.yearSelection"
+          placeholder = "请选择当期评测时间"
+          class="style-selection"
+          >
+            <el-option
+              v-for = "item in years"
+              :key = "item.value"
+              :label = "item.label"
+              :value = "item.value"
+              :disabled = "item.disabled"       
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
     </Dialog>
   </div>
 </template>
@@ -89,8 +92,28 @@
   import { ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { reactive } from 'vue';
+  import message from '../../utils/Message';
 
-  const value = ref('')
+  const route = useRoute()
+  const router = useRouter()
+
+  const formData = ref({})
+  const formDataRef = ref()
+  const rules = {
+    yearSelection :[{required: true, message: '请选择评测年份', trigger: 'blur'}],
+  }
+
+  const yearSelectionConfirm = () =>{
+    formDataRef.value.validate (async (valid) => {
+      if(!valid){
+        return;
+      }else{
+        const route = router.resolve({name: '文件上传'});
+        window.open(route.href, '_blank');
+      }
+    })
+  };
+
   const dialog = reactive({
     show: false,
     title: '评测年度选择',
@@ -98,6 +121,9 @@
       {
         type:"primary",
         text:"确认",
+        click: (e)=>{
+          yearSelectionConfirm();
+        }
       },
       {
         type:"primary",

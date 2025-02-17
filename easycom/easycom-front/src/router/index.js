@@ -47,12 +47,22 @@ const router =createRouter({
                     },
                     component:()=>import("@/views/setting/setting.vue"),
                 },
+                
             ]
         },
         {
             path:'/passwordReset',
             name:'passwordReset',
             component:()=>import("@/views/passwordReset.vue")
+        },
+        {
+            path: "/main/fileUpLoad",
+            name: "文件上传",
+            meta: {
+                needLogin: true,
+                code: 'file',
+            },
+            component:()=>import("@/views/main/fileUpLoad.vue"),
         }
     ]
 })
