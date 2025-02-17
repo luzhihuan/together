@@ -464,7 +464,7 @@ const sendEmailCode = async () => {
        params:{
          email:formDataSendMailCode.value.email,
          checkCodeKey:localStorage.getItem("checkCodeEmailKey"),
-         checkCode:formDataSendMailCode.value.checkcode,
+         checkCode:formDataSendMailCode.value.checkCode,
          type:currentCard.value===3?0:1
        },
       errorCallback: (res) => {
@@ -491,8 +491,6 @@ const loginAction = async () => {
     //将表单的数据复制过去
     Object.assign(params, formData.value)
     params.checkCodeKey = localStorage.getItem("checkCodeKey")
-    params.checkCode = params.checkcode
-    delete params.checkcode
     let cookieLoginInfo = proxy.VueCookies.get("loginInfo")
     let cookiePassword = cookieLoginInfo == null ? null : cookieLoginInfo.password
     if(params.password !== cookiePassword){
