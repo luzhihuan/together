@@ -11,6 +11,7 @@ import com.easycom.entity.PO.Summary;
 */
 public interface SummaryMapper extends BaseMapper<Summary> {
 
+    Summary showScore(String userId);
 }
 
 

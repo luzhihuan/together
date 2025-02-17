@@ -23,4 +23,9 @@
         aesthetic_score,labor_score,total_score,
         status
     </sql>
+    <select id="showScore" resultType="com.easycom.entity.PO.Summary">
+        select *
+            from summary
+        where user_id =#{userId}
+    </select>
 </mapper>
