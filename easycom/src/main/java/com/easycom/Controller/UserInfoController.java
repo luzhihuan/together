@@ -44,8 +44,8 @@ public class UserInfoController {
      * @return
      */
     @RequestMapping("/getCheckCode")
-    public Result getCheckCode(){
-        return userInfoService.getCheckCode();
+    public Result getCheckCode(Integer type){
+        return userInfoService.getCheckCode(type);
     }
 
     /**
