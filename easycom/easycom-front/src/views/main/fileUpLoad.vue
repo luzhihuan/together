@@ -19,17 +19,9 @@
   
 <script setup>
   import { ref, onMounted, onBeforeUnmount } from 'vue';
-<<<<<<< Updated upstream
-
   import templateImage from "@/assets/sample.jpg"
   
   // 模拟多屏数据
-  
-=======
-  import templateImage from "@/assets/sample.jpg"
-  
-  // 模拟多屏数据
->>>>>>> Stashed changes
   const pages = ref([
     { 
         title: '德育资料上传',   
