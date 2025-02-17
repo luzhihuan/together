@@ -75,8 +75,9 @@ public class UserInfoController {
                            @NotEmpty String nickName,
                            @NotEmpty String checkCodeKey,
                            @NotEmpty String checkCode,
-                           @NotEmpty String emailCode){
-        return userInfoService.register(checkCodeKey,checkCode,email,password,nickName,emailCode);
+                           @NotEmpty String emailCode,
+                           String registerCode){
+        return userInfoService.register(checkCodeKey,checkCode,email,password,nickName,emailCode,registerCode);
     }
 
     /**

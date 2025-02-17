@@ -64,11 +64,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         Map<String, String> res = new HashMap<>();
         res.put("checkCode", checkCode);
         res.put("checkCodeKey", checkCodeKey);
-        if(type==null||type==0){
-            RedisUtils.set(DefaultParam.REDIS_KEY_CHECK_CODE+checkCodeKey,checkCodeValue,DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_MIN);
-        }else {
-            RedisUtils.set(DefaultParam.REDIS_KEY_CHECK_CODE_EMAIL+checkCodeKey,checkCodeValue,DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_MIN);
-        }        
+        if (type == null || type == 0) {
+            RedisUtils.set(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey, checkCodeValue, DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_MIN);
+        } else {
+            RedisUtils.set(DefaultParam.REDIS_KEY_CHECK_CODE_EMAIL + checkCodeKey, checkCodeValue, DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_MIN);
+        }
         return Result.ok(res);
     }
 
@@ -110,6 +110,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         tokenUserInfoDTO.setUserId(check.getUserId());
         tokenUserInfoDTO.setToken(token);
         tokenUserInfoDTO.setNickName(check.getNickName());
+        tokenUserInfoDTO.setLevel(check.getLevel());
 
         //判断一下是否为管理员
         String[] split = appConfig.getAdminEmail().split(",");
@@ -133,8 +134,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result register(String checkCodeKey, String checkCode, String email, String password, String nickName,String emailCode) {
-        try{
+    public Result register(String checkCodeKey, String checkCode, String email, String password, String nickName, String emailCode,String registerCode) {
+        try {
             if (!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
                 return Result.fail("图片验证码已过期，请重新获取！");
             }
@@ -148,9 +149,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             if (userInfoMapper.selectByEmail(email) != null) {
                 return Result.fail("邮箱已被注册");
             }
+            //TODO 判断邀请码
 
             //检验邮箱验证码
-            emailCodeService.checkCode(email,emailCode);
+            emailCodeService.checkCode(email, emailCode);
 
             userInfoMapper.insert(UserInfo.builder()
                     .userId(UserHolder.getUserIdByRandom())
@@ -158,11 +160,12 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                     .nickName(nickName)
                     .password(DigestUtil.md5Hex(password))
                     .status(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())
+                    .level(1)
                     .build());
 
             return Result.ok("注册成功");
 
-        }finally {
+        } finally {
             RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey);
         }
     }

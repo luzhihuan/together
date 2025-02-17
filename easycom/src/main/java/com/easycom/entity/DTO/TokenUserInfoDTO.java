@@ -8,5 +8,6 @@ public class TokenUserInfoDTO {
     private String userId;
     private Boolean isAdmin;
     private String token;
+    private Integer level;
 
 }
