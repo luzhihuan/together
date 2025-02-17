@@ -88,7 +88,7 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
             EmailCode emailCode = new EmailCode();
             emailCode.setCode(code);
             emailCode.setEmail(email);
-            emailCode.setStatus(EmailCodeStatusEnum.USED.getStatus());
+            emailCode.setStatus(EmailCodeStatusEnum.NOT_USE.getStatus());
             emailCode.setCreateTime(LocalDateTime.now());
             emailCodeMapper.insert(emailCode);
             return Result.ok();
