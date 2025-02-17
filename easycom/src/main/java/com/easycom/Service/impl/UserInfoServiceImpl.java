@@ -124,9 +124,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
 
         //第一次登录
-        if (check.getStatus().equals(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())) {
-            return Result.firstLogin(tokenUserInfoDTO);
-        }
+//        if (check.getStatus().equals(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())) {
+//            return Result.firstLogin(tokenUserInfoDTO);
+//        }
 
         return Result.ok(tokenUserInfoDTO);
 
@@ -135,7 +135,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public Result register(String checkCodeKey, String checkCode, String email, String password, String nickName,String emailCode) {
         try{
-            if (RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
+            if (!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
                 return Result.fail("图片验证码已过期，请重新获取！");
             }
             if (!checkCode.equalsIgnoreCase(

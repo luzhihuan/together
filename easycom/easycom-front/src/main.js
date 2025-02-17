@@ -8,7 +8,7 @@
 // import "@/assets/icon/iconfont.css"
 // import '@/assets/base.scss'
 // import '@/assets/icon/iconfont.css'
-// import VueCookie from 'vue-cookies'
+import VueCookies from 'vue-cookies'
 
 
 // const app = createApp(App)
@@ -31,7 +31,7 @@ import '@/assets/base.scss'
 import VueCookie from 'vue-cookies'
 
 //全局属性引入
-//import Verify from '@/utils/Verify.js'
+import Verify from '@/utils/Verify.js'
 import Api from '@/utils/Api.js'
 import Message from '@/utils/Message.js'
 import Request from '@/utils/Request.js'
@@ -58,12 +58,12 @@ app.component("Dialog",Dialog)
 //app.component("NoData",NoData)
 
 //配置全局组件
-//app.config.globalProperties.Verify = Verify
+app.config.globalProperties.Verify = Verify
 app.config.globalProperties.Api = Api
 app.config.globalProperties.Message = Message
 //app.config.globalProperties.Utils = Utils
 app.config.globalProperties.Request = Request
-app.config.globalProperties.VueCookie = VueCookie
+app.config.globalProperties.VueCookies = VueCookies
 //app.config.globalProperties.Confirm = Confirm
 app.config.globalProperties.globalInfo = {
     avatarUrl:Api.avatarUrl,

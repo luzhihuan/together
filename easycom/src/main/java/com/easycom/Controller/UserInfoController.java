@@ -9,10 +9,7 @@ import com.easycom.entity.VO.Result;
 import com.easycom.entity.enums.VerifyRegexEnum;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import org.aspectj.weaver.ast.Not;
 import org.springframework.http.HttpRequest;
 import org.springframework.validation.annotation.Validated;
@@ -66,19 +63,20 @@ public class UserInfoController {
      * 用户注册逻辑
      * @param email 邮箱
      * @param password  密码
-     * @param nick_name 昵称
+     * @param nickName 昵称
      * @param checkCodeKey  验证码唯一标识
-     * @param codeKey   用户输入的验证码
+     * @param checkCode   用户输入的验证码@
+     * @param emailCode 邮箱验证码
      * @return
      */
     @RequestMapping("/register")
     public Result register(@NotEmpty String email,
                            @NotEmpty String password,
-                           @NotEmpty String nick_name,
+                           @NotEmpty String nickName,
                            @NotEmpty String checkCodeKey,
-                           @NotEmpty String codeKey,
+                           @NotEmpty String checkCode,
                            @NotEmpty String emailCode){
-        return userInfoService.register(checkCodeKey,codeKey,email,password,nick_name,emailCode);
+        return userInfoService.register(checkCodeKey,checkCode,email,password,nickName,emailCode);
     }
 
     /**
@@ -122,10 +120,10 @@ public class UserInfoController {
      * @return
      */
     @RequestMapping("/sendCode")
-    public Result sendCode(@NotEmpty @Pattern(regexp = DefaultParam.EMAIL_CHECK) @Max(150) String email,
+    public Result sendCode(@NotEmpty @Pattern(regexp = DefaultParam.EMAIL_CHECK) String email,
                            @NotEmpty String checkCode,
                            @NotEmpty String checkCodeKey,
-                           @NotEmpty Integer type){
+                           @NotNull Integer type){
         return emailCodeService.sendCode(email, checkCode, checkCodeKey, type);
     }
 
