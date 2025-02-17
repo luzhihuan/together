@@ -107,7 +107,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         tokenUserInfoDTO.setToken(token);
         tokenUserInfoDTO.setNickName(check.getNickName());
 
-
         //判断一下是否为管理员
         String[] split = appConfig.getAdminEmail().split(",");
         if (ArraysUtil.contains(split, check.getEmail())) {

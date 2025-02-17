@@ -23,14 +23,4 @@
         aesthetic_score,labor_score,total_score,
         status
     </sql>
-    insert into summary (userId, moralityScore, intellectualScore,
-    sportScore, aestheticScore, laborScore, totalScore, status)
-    values (#{summary.userId}, #{summary.moralityScore},
-    #{summary.intellectualScore}, #{summary.sportScore}, #{summary.aestheticScore},
-    #{summary.laborScore}, #{summary.totalScore}, #{summary.status});
-    <select id="selectByUserId" resultType="com.easycom.entity.PO.Summary">
-        select *
-        from Summary
-        where user_id = #{userId}
-    </select>
 </mapper>

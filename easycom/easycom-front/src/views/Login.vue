@@ -58,7 +58,7 @@
                       </div>
                       <div class="form_base">
                           <el-button type="text" class="fogotPassword" @click="reSetCancel">忘记密码?</el-button>
-                          <el-button type="text" class="fogotPassword" @click="">没有账号?</el-button>
+                          <el-button type="text" class="fogotPassword" @click="reSetCancel">没有账号?</el-button>
                       </div>
                       <div class="form_base">
                         <el-button type="primary" class="logIn" @click="loginAction">登录</el-button>
@@ -119,30 +119,16 @@
 
                   <el-form-item prop="rePassword" class="form_base">
                       <el-input 
-                      v-mode="resetForm.rePassword" 
-                      placeholder="请确认新密码" 
-                      v-model.trim="resetForm.rePassword"
-                      show-password
-                      @focus="clearValidation('rePassword')"
-                      >
-                        <template #prefix>
-                            <span class="iconfont icon-password"></span>
-                        </template>
-                      </el-input>
-                  </el-form-item>
-
-                  <el-form-item prop="reSetFormCheckcode">
-                    <el-input
-                      v-model="emailConfirmDialog.checkcode"
-                      placeholder="请输入图片验证码"
-                      v-model-trim = "emailConfirmDialog.checkcode"
-                      @focus="clearValidation('checkcode')"
-                      class="form_checkcode"
-                    >
-                    <template #prefix>
-                      <span class="iconfont icon-checkCode "></span>
-                    </template>
-                    </el-input>
+                          v-mode="resetForm.rePassword" 
+                          placeholder="请确认新密码" 
+                          v-model.trim="resetForm.rePassword"
+                          show-password
+                          @focus="clearValidation('rePassword')"
+                          >
+                              <template #prefix>
+                                  <span class="iconfont icon-password"></span>
+                              </template>
+                          </el-input>
                   </el-form-item>
 
                   <el-form-item class="form_base button">
@@ -267,8 +253,7 @@ import { md5 } from "js-md5";
       email:[{required: true, message:'请输入邮箱', trigger:'blur'}],
       emailCode:[{required: true, message:'请输入收到的邮箱验证码', trigger:'blur'}],
       firstPassword:[{required: true, message:'请输入新密码', trigger:'blur'}],
-      rePassword:[{required: true, message:'请确认新密码', trigger:'blur'}],
-      reSetFormCheckcode:[{required: true, message:'请输入图片验证码', trigger:'blur'}]
+      rePassword:[{required: true, message:'请确认新密码', trigger:'blur'}]
   };
 
   const formData = ref({});
@@ -349,7 +334,7 @@ import { md5 } from "js-md5";
         //proxy.VueCookie.set("UserInfo", result.data,0)
         //proxy.VueCookie.set("token",result.data.token,0)
 
-        await router.push({name:'首页'})
+        await router.push({name:'Framework'})
     }
 
 
