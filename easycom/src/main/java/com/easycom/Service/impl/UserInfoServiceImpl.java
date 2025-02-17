@@ -52,7 +52,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
 
     @Override
-    public Result getCheckCode() {
+    public Result getCheckCode(Integer type) {
         Captcha captcha = new SpecCaptcha(120, 40, 5);
         captcha.setCharType(Captcha.TYPE_ONLY_CHAR);
         //验证码图片
@@ -64,7 +64,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         Map<String, String> res = new HashMap<>();
         res.put("checkCode", checkCode);
         res.put("checkCodeKey", checkCodeKey);
-        RedisUtils.set(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey, checkCodeValue, DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_MIN);
+        if(type==null||type==0){
+            RedisUtils.set(DefaultParam.REDIS_KEY_CHECK_CODE+checkCodeKey,checkCodeValue,DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_MIN);
+        }else {
+            RedisUtils.set(DefaultParam.REDIS_KEY_CHECK_CODE_EMAIL+checkCodeKey,checkCodeValue,DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_MIN);
+        }        
         return Result.ok(res);
     }
 
@@ -120,9 +124,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
 
         //第一次登录
-        if (check.getStatus().equals(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())) {
-            return Result.firstLogin(tokenUserInfoDTO);
-        }
+//        if (check.getStatus().equals(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())) {
+//            return Result.firstLogin(tokenUserInfoDTO);
+//        }
 
         return Result.ok(tokenUserInfoDTO);
 
@@ -131,7 +135,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public Result register(String checkCodeKey, String checkCode, String email, String password, String nickName,String emailCode) {
         try{
-            if (RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
+            if (!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
                 return Result.fail("图片验证码已过期，请重新获取！");
             }
             if (!checkCode.equalsIgnoreCase(
@@ -147,8 +151,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
             //检验邮箱验证码
             emailCodeService.checkCode(email,emailCode);
-
-            SysSettingDTO sysSettingDTO = redisComponent.getSysSettingDTO();
 
             userInfoMapper.insert(UserInfo.builder()
                     .userId(UserHolder.getUserIdByRandom())

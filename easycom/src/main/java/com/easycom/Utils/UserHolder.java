@@ -27,7 +27,7 @@ public class UserHolder {
     }
 
     public static String getUserIdByRandom(){
-        return 'U'+RandomUtil.randomString(11);
+        return 'U'+RandomUtil.randomNumbers(11);
     }
 
     public static String getFileSuffix(String fileName){

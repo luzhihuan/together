@@ -19,11 +19,11 @@ import org.springframework.http.HttpRequest;
  * @since 2025-02-09
  */
 public interface IUserInfoService extends IService<UserInfo> {
-    Result getCheckCode();
+    Result getCheckCode(Integer type);
 
     Result login( String checkCodeKey, String username, String password, String checkCode);
 
-    Result register(String checkCodeKey, String codeKey, String email, String password, String nickName,String emailCode);
+    Result register(String checkCodeKey, String checkCode, String email, String password, String nickName,String emailCode);
 
     Result resetPassword(HttpServletRequest request, String password);
 

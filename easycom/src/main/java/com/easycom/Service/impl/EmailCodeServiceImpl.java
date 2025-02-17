@@ -61,11 +61,11 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
     @Transactional(rollbackFor = Exception.class)
     public Result sendCode(String email, String checkCode, String checkCodeKey, Integer type) {
         try{
-            if(!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE+checkCodeKey)){
+            if(!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE_EMAIL+checkCodeKey)){
                 return Result.fail("验证码已经过期，请重新获取！");
             }
             if(!checkCode.equalsIgnoreCase(
-                    (String) RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE+checkCodeKey)
+                    (String) RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE_EMAIL+checkCodeKey)
             )){
                 return Result.fail("验证码不正确！");
             }
@@ -131,7 +131,7 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
 
             SysSettingDTO sysSettingDTO = redisComponent.getSysSettingDTO();
             helper.setSubject(sysSettingDTO.getRegisterMailTitle());
-            helper.setText(sysSettingDTO.getRegisterEmailContent());
+            helper.setText(String.format(sysSettingDTO.getRegisterEmailContent(),code));
             helper.setSentDate(new Date());
             javaMailSender.send(message);
 

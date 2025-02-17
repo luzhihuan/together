@@ -21,7 +21,7 @@
 
             <div class="hello">欢迎回来！</div>
 
-            <div class="nick-name">luzhihuan</div>
+            <div class="nick-name">{{userInfo.nickName}}</div>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
@@ -118,6 +118,8 @@ watch(()=>route,(newVal,oldVal)=>{
 const backToMain = ()=>{
   router.push('/main')
 }
+
+const userInfo = proxy.VueCookies.get("userInfo")
 
 </script>
 

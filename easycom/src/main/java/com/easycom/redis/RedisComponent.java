@@ -21,8 +21,8 @@ public class RedisComponent {
         );
 
         RedisUtils.set(
-                DefaultParam.REDIS_KEY_TOKEN_USERID + tokenUserInfoDTO.getToken(),
-                tokenUserInfoDTO.getUserId(),
+                DefaultParam.REDIS_KEY_TOKEN_USERID + tokenUserInfoDTO.getUserId(),
+                tokenUserInfoDTO.getToken(),
                 DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_DAY
         );
     }
