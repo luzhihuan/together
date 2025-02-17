@@ -55,15 +55,15 @@ const router =createRouter({
             name:'passwordReset',
             component:()=>import("@/views/passwordReset.vue")
         },
-        // {
-        //     path: "/main/fileUpLoad",
-        //     name: "文件上传",
-        //     meta: {
-        //         needLogin: true,
-        //         code: 'file',
-        //     },
-        //     component:()=>import("@/views/main/fileUpLoad.vue"),
-        // }
+        {
+            path: "/main/fileUpLoad",
+            name: "文件上传",
+            meta: {
+                needLogin: true,
+                code: 'file',
+            },
+            component:()=>import("@/views/main/fileUpLoad.vue"),
+        }
     ]
 })
 router.beforeEach((to,from,next,)=>{
