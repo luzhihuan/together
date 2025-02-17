@@ -46,6 +46,7 @@
                         placeholder="请输入图片验证码"
                         v-model.trim="formData.checkcode"
                         @focus="clearValidation('checkcode')"
+                        @keyup.enter="loginAction"
                     >
                       <template #prefix>
                         <span class="iconfont icon-checkCode"></span>
@@ -493,7 +494,7 @@ const loginAction = async () => {
     params.checkCode = params.checkcode
     delete params.checkcode
     let cookieLoginInfo = proxy.VueCookies.get("loginInfo")
-    let cookiePassword = cookieLoginInfo == null ? null : cookieLoginInfo
+    let cookiePassword = cookieLoginInfo == null ? null : cookieLoginInfo.password
     if(params.password !== cookiePassword){
       params.password = md5(params.password)
     }
