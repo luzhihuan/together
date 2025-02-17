@@ -4,16 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.easycom.Mapper.ScoreBreakdownMapper;
+import com.easycom.Mapper.SummaryMapper;
 import com.easycom.Service.IScoreBreakdownService;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.Utils.ScoreBreakUtil;
+import com.easycom.Utils.SummaryUtils;
 import com.easycom.Utils.UserHolder;
 import com.easycom.config.AppConfig;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.ScoreBreakdown;
+import com.easycom.entity.PO.Summary;
 import com.easycom.entity.VO.Result;
 import com.easycom.entity.enums.ScoreBreakdownStatusEnum;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
+import com.easycom.entity.enums.SummaryEnum;
 import com.easycom.entity.enums.VerifyRegexEnum;
 import com.easycom.exception.UserException;
 import com.easycom.redis.RedisComponent;
@@ -24,11 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Wrapper;
-import java.util.HashMap;
 import java.util.Optional;
-
-import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.summary;
 
 /**
  * @author 21597
@@ -39,6 +39,8 @@ import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.summary
 public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper, ScoreBreakdown> implements IScoreBreakdownService {
     @Resource
     private ScoreBreakdownMapper scoreBreakdownMapper;
+    @Resource
+    private SummaryMapper summaryMapper;
     @Resource
     private RedisComponent redisComponent;
     @Resource
@@ -130,23 +132,29 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result saveScore(HttpServletRequest request) {
+        //建立一个summary的实例，记录各项总分
+        Summary summary = new Summary();
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
+        summary.setUserId(tokenUserInfoDTO.getUserId());
         //遍历每一种类型的表，并将其写入数据库
         for (ScoreBreakdownTypeEnum typeEnum : ScoreBreakdownTypeEnum.values()) {
             ScoreBreakdown scoreBreakdown = (ScoreBreakdown) RedisUtils.get(
                     DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + typeEnum.getType());
             scoreBreakdown.setStatus(ScoreBreakdownStatusEnum.FINISH.getStatus());
             boolean b = scoreBreakdownMapper.insertOrUpdate(scoreBreakdown);
-            if (b) {
+            if (!b) {
+                //记录总分
+                SummaryUtils.setInfo(typeEnum,summary,scoreBreakdown.getTotalScore());
+            }else {
                 throw new UserException("上传失败，请重新检查！");
             }
         }
 
         //补充summary的信息，并录入到数据库当中
-        summary.setUserId(tokenUserInfoDTO.getUserId());
         summary.setStatus(SummaryEnum.CLASS_AUDIT.getStatus());
-        //TODO 计算总分计算
-        summaryMapper.save(summary);
+        //总分计算
+        SummaryUtils.setTotalScore(summary);
+        summaryMapper.insertOrUpdate(summary);
 
         //TODO 从缓存中获取到用户所有临时文件，存储到服务器文件夹中
 
