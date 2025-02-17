@@ -39,7 +39,7 @@
                   </el-input>
                 </el-form-item>
 
-                <el-form-item prop="checkcode">
+                <el-form-item prop="checkCode">
                   <div class="form_base">
                     <el-input
                         size="large"
