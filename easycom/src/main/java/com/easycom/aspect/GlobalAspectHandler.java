@@ -28,39 +28,43 @@ public class GlobalAspectHandler {
     private String errorMsg = "";
 
     @Pointcut("@annotation(com.easycom.annotation.GlobalInterceptor)")
-    public void requestInterceptor(){
+    public void requestInterceptor() {
 
     }
 
     @Before("requestInterceptor()")
-    public void InterceptorDo(JoinPoint point){
+    public void InterceptorDo(JoinPoint point) {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
         GlobalInterceptor interceptor = method.getAnnotation(GlobalInterceptor.class);
-        if(interceptor==null){
+        if (interceptor == null) {
             return;
         }
-        if(interceptor.checkLogin()||interceptor.checkAdmin()){
-            if(!checkLogin(interceptor.checkAdmin())){
+        if (interceptor.checkLogin() || interceptor.checkAdmin()) {
+            if (!checkLogin(interceptor.checkAdmin(), interceptor.checkIsFirstLogin())) {
                 throw new UserException(errorMsg);
             }
         }
     }
 
-    public boolean checkLogin(boolean isAdmin){
+    public boolean checkLogin(boolean isAdmin, boolean checkFirstLogin) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         String token = request.getHeader("token");
-        if(token == null){
+        if (token == null) {
             errorMsg = "请先登录!";
         }
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
-        if(tokenUserInfoDTO==null){
+        if (tokenUserInfoDTO == null) {
             errorMsg = "请先登录";
             return false;
         }
-        if(isAdmin&&!tokenUserInfoDTO.getIsAdmin()){
+        if (isAdmin && !tokenUserInfoDTO.getIsAdmin()) {
             errorMsg = "对不起！你不是管理员";
+            return false;
+        }
+        if (tokenUserInfoDTO.getIsFirst() && checkFirstLogin) {
+            errorMsg = "您是第一次登陆，请先更改密码！";
             return false;
         }
         return true;
