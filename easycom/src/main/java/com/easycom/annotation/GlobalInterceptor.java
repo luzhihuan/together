@@ -13,6 +13,8 @@ public @interface GlobalInterceptor {
     boolean checkLogin() default true;
 
     boolean checkAdmin() default false;
+    
+    boolean checkIsFirstLogin() default true;
 
 
 }

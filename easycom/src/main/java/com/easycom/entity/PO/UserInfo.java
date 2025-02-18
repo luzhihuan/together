@@ -9,6 +9,7 @@ import java.io.Serializable;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -68,4 +69,7 @@ public class UserInfo implements Serializable {
      * 用户身份 0：普通用户 1：班审核员 2：辅导员审核员 3：校领导审核员
      */
     private Integer level;
+
+    public UserInfo() {
+    }
 }

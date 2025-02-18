@@ -88,28 +88,30 @@ public class UserInfoController {
      * @return
      */
     @RequestMapping("/resetPassword")
-    @GlobalInterceptor
-    public Result resetPassword(HttpServletRequest request, @Pattern(regexp = DefaultParam.PASSWORD_VERIFY) String  password){
-        return userInfoService.resetPassword(request,password);
+    @GlobalInterceptor(checkIsFirstLogin = false)
+    public Result resetPassword(HttpServletRequest request, 
+                                @Pattern(regexp = DefaultParam.PASSWORD_VERIFY) String  password,
+                                String email,String emailCode){
+        return userInfoService.resetPassword(request,password,email,emailCode);
     }
 
-    /**
+    /**d
      * 找回密码
      * @param password 修改的密码
-     * @param checkCodeKey  验证码唯一标识
+     * @param checkCodeEmailKey  验证码唯一标识
      * @param checkCode 验证码的值
      * @param emailCode 邮箱发送的验证码
      * @param username  用户名
      * @return
      */
     @RequestMapping("/findPassword")
-    @GlobalInterceptor
-    public Result findPassword(@Pattern(regexp = DefaultParam.PASSWORD_VERIFY) String password,
-                               @NotEmpty String checkCodeKey,
+    public Result findPassword(@Pattern(regexp = DefaultParam.EMAIL_CHECK) String email,
+                               @Pattern(regexp = DefaultParam.PASSWORD_VERIFY) String password,
+                               @NotEmpty String checkCodeEmailKey,
                                @NotEmpty String checkCode,
                                @NotEmpty String emailCode,
                                @NotEmpty String username){
-        return userInfoService.findPassword(password, checkCodeKey, checkCode, emailCode, username);
+        return userInfoService.findPassword(email,password, checkCodeEmailKey, checkCode, emailCode, username);
     }
 
 

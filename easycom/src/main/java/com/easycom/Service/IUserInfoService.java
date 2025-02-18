@@ -26,8 +26,8 @@ public interface IUserInfoService extends IService<UserInfo> {
     Result register(String checkCodeKey, String checkCode, String email,
                     String password, String nickName,String emailCode,String registerCode);
 
-    Result resetPassword(HttpServletRequest request, String password);
+    Result resetPassword(HttpServletRequest request, String  password, String email,String emailCode);
 
-    Result findPassword( String password, String checkCodeKey,
+    Result findPassword(String email, String password, String checkCodeEmailKey,
                          String checkCode, String emailCode, String username);
 }
