@@ -2,18 +2,21 @@ package com.easycom.Service.impl;
 
 import cn.hutool.core.lang.UUID;
 import cn.hutool.crypto.digest.DigestUtil;
+import com.easycom.Mapper.RegisterCodeMapper;
 import com.easycom.Service.IEmailCodeService;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.Utils.UserHolder;
 import com.easycom.Utils.VerifyUtil;
 import com.easycom.config.AppConfig;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
+import com.easycom.entity.PO.RegisterCode;
 import com.easycom.entity.PO.Summary;
 import com.easycom.entity.PO.UserInfo;
 import com.easycom.Mapper.UserInfoMapper;
 import com.easycom.Service.IUserInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easycom.entity.VO.Result;
+import com.easycom.entity.enums.UserLevelEnum;
 import com.easycom.entity.enums.UserStatusEnum;
 import com.easycom.entity.enums.VerifyRegexEnum;
 import com.easycom.redis.RedisComponent;
@@ -43,6 +46,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Resource
     private UserInfoMapper userInfoMapper;
+    @Resource
+    private RegisterCodeMapper registerCodeMapper;
     @Resource
     private AppConfig appConfig;
     @Resource
@@ -123,15 +128,15 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
         //将dto保存到redis
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
-        
+
 
         return Result.ok(tokenUserInfoDTO);
 
     }
 
     @Override
-    public Result register(String checkCodeKey, String checkCode, 
-                           String email, String password, 
+    public Result register(String checkCodeKey, String checkCode,
+                           String email, String password,
                            String nickName, String emailCode, String registerCode) {
         try {
             if (!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
@@ -147,20 +152,25 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             if (userInfoMapper.selectByEmail(email) != null) {
                 return Result.fail("邮箱已被注册");
             }
-            //TODO 判断邀请码
 
             //检验邮箱验证码
             emailCodeService.checkCode(email, emailCode);
-
-            userInfoMapper.insert(UserInfo.builder()
+            UserInfo build = UserInfo.builder()
                     .userId(UserHolder.getUserIdByRandom())
                     .email(email)
                     .nickName(nickName)
                     .password(DigestUtil.md5Hex(password))
                     .status(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())
-                    .level(1)
-                    .build());
-
+                    .level(0)
+                    .build();
+            //根据邀请码设置相对应的用户身份，默认为普通用户
+            if (registerCode != null && !registerCode.equals("")) {
+                RegisterCode code = registerCodeMapper.selectByCode(registerCode);
+                if (code.getStatus() == 0 && code.getEmail() == null) {
+                    build.setLevel(code.getLevel());
+                }
+            }
+            userInfoMapper.insert(build);
             return Result.ok("注册成功");
 
         } finally {
@@ -170,7 +180,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
 
     @Override
-    public Result resetPassword(HttpServletRequest request, String password, String email,String emailCode) {
+    public Result resetPassword(HttpServletRequest request, String password, String email, String emailCode) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
         UserInfo db_userInfo = userInfoMapper.selectById(tokenUserInfoDTO.getUserId());
         //检查原密码和新密码是否一样
@@ -181,13 +191,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         UserInfo userInfo = new UserInfo();
         userInfo.setPassword(DigestUtil.md5Hex(password));
         userInfo.setUserId(tokenUserInfoDTO.getUserId());
-        
+
         //修改密码，如果第一次登录，强制要求绑定邮箱
-        if(email!=null && tokenUserInfoDTO.getIsFirst()){
+        if (email != null && tokenUserInfoDTO.getIsFirst()) {
             userInfo.setEmail(email);
             tokenUserInfoDTO.setIsFirst(false);
             redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
-            emailCodeService.checkCode(email,emailCode);
+            emailCodeService.checkCode(email, emailCode);
         }
         int update = userInfoMapper.updateById(userInfo);
         if (update > 0) {
@@ -199,8 +209,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result findPassword(String email,String password, String checkCodeEmailKey, String checkCode, String emailCode, String username) {
-        try{
+    public Result findPassword(String email, String password, String checkCodeEmailKey, String checkCode, String emailCode, String username) {
+        try {
             if (!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeEmailKey)) {
                 return Result.fail("图片验证码已过期，请重新获取！");
             }
@@ -212,14 +222,14 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             if (db_userInfo == null) {
                 return Result.fail("邮箱不存在！");
             }
-            emailCodeService.checkCode(email,emailCode);
+            emailCodeService.checkCode(email, emailCode);
             UserInfo userInfo = new UserInfo();
             userInfo.setPassword(DigestUtil.md5Hex(password));
             userInfo.setUserId(db_userInfo.getUserId());
             userInfoMapper.updateById(userInfo);
             return Result.ok("修改成功！");
-        }finally {
-            RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE_EMAIL+checkCodeEmailKey);
+        } finally {
+            RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE_EMAIL + checkCodeEmailKey);
         }
     }
 

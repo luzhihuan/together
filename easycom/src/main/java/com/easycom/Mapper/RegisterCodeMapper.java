@@ -6,4 +6,5 @@ import com.easycom.entity.PO.RegisterCode;
 
 public interface RegisterCodeMapper extends BaseMapper<RegisterCode> {
 
+    RegisterCode selectByCode(String registerCode);
 }

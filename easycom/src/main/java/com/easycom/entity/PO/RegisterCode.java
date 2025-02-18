@@ -35,4 +35,8 @@ public class RegisterCode {
      * 使用的邮箱
      */
     private String email;
+    /**
+     * 所代表的等级
+     */
+    private Integer level;
 }
