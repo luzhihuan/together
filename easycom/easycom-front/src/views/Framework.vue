@@ -26,7 +26,7 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item>修改密码</el-dropdown-item>
-              <el-dropdown-item @click="bindEmailFormDialog">绑定邮箱</el-dropdown-item>
+              <el-dropdown-item >绑定邮箱</el-dropdown-item>
               <el-dropdown-item>退出</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -97,7 +97,27 @@
               >
                 发送验证码
               </el-button>
-            </el-form-item>          
+            </el-form-item>
+            <el-form-item prop="password">
+            <el-input
+            placeholder="请输入新密码"
+            v-model.trim = bindEmailForm.passwod
+            >
+              <template #prefix>
+                <span class="iconfont icon-password "></span>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="rePassword">
+            <el-input
+            placeholder="请确认新密码"
+            v-model.trim = bindEmailForm.rePassword
+            >
+              <template #prefix>
+                <span class="iconfont icon-password "></span>
+              </template>
+            </el-input>
+          </el-form-item>          
           </div>
         </el-form>
       </Dialog> 
@@ -109,7 +129,7 @@
         :showCancel="false"
         :showClose="false"
       >
-        检测到当前账号为首次登录，为了保障账号安全，请先绑定邮箱账号
+        检测到当前账号为首次登录，为了保障账号安全，请先绑定邮箱账号并修改密码
       </Dialog>
 
   </div>
@@ -164,6 +184,9 @@ const alert = reactive({
 const rules = {
   email: [{required: true, message: '请输入一个常用的邮箱账号', trigger: 'blur'}],
   emailCode: [{required: true, message: '请输入收到的验证码', trigger: 'blur'}],
+  passwod:[{required: true, message: '请输入新密码', trigger: 'blur'}],
+  rePasswod:[{required: true, message: '请确认新密码', trigger: 'blur'}],
+
 }
 
 const menus = [
@@ -236,8 +259,10 @@ const bindEmailFormDialog = () =>{
 
 //判断用户状态的逻辑段
 const ifFullMember = (async) => {
-  if (responseData == 1){
+  if (responseData == 2){
     alert.show = true
+  }else{
+    alert.show = false
   }
 }
 //组件加载完成之后判断用户状态码
