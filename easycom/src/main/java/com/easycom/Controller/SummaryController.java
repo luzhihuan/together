@@ -19,13 +19,20 @@ public class SummaryController {
      * @param request
      * @return
      */
-
+    //展示总得分
     @RequestMapping("/showScore")
     public Result showScore(HttpServletRequest request){
         return summaryService.showScore(request);
     }
 
-//    @RequestMapping("/check")
-//    public Result check(HttpServletRequest)
+    /**
+     * 
+     * @param request
+     * @return
+     */
+    @RequestMapping("/check")
+    public Result check(HttpServletRequest request){
+        return summaryService.check(request);
+    }
 
 }

@@ -16,6 +16,7 @@ import com.easycom.Mapper.UserInfoMapper;
 import com.easycom.Service.IUserInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.easycom.entity.VO.Result;
+import com.easycom.entity.enums.RegisterCodeEnum;
 import com.easycom.entity.enums.UserLevelEnum;
 import com.easycom.entity.enums.UserStatusEnum;
 import com.easycom.entity.enums.VerifyRegexEnum;
@@ -169,8 +170,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 if (code.getStatus() == 0 && code.getEmail() == null) {
                     build.setLevel(code.getLevel());
                 }
+                code.setEmail(build.getEmail());
+                code.setStatus(RegisterCodeEnum.IS_USE.getStatus());
+                registerCodeMapper.updateById(code);
             }
+
             userInfoMapper.insert(build);
+
             return Result.ok("注册成功");
 
         } finally {
