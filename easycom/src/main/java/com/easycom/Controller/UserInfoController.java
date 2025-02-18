@@ -65,8 +65,9 @@ public class UserInfoController {
      * @param password  密码
      * @param nickName 昵称
      * @param checkCodeKey  验证码唯一标识
-     * @param checkCode   用户输入的验证码@
+     * @param checkCode   用户输入的验证码
      * @param emailCode 邮箱验证码
+     * @param registerCode 注册码用于确定审核员等级
      * @return
      */
     @RequestMapping("/register")
