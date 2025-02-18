@@ -98,7 +98,7 @@ public class UserInfoController {
     /**d
      * 找回密码
      * @param password 修改的密码
-     * @param checkCodeKey  验证码唯一标识
+     * @param checkCodeEmailKey  验证码唯一标识
      * @param checkCode 验证码的值
      * @param emailCode 邮箱发送的验证码
      * @param username  用户名
