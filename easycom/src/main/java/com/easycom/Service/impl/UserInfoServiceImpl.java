@@ -194,7 +194,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             return Result.fail("密码未修改");
         }
 
-        UserInfo userInfo = new UserInfo();
+        UserInfo userInfo = UserInfo.builder().build();
         userInfo.setPassword(DigestUtil.md5Hex(password));
         userInfo.setUserId(tokenUserInfoDTO.getUserId());
 
@@ -229,7 +229,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 return Result.fail("邮箱不存在！");
             }
             emailCodeService.checkCode(email, emailCode);
-            UserInfo userInfo = new UserInfo();
+            UserInfo userInfo = UserInfo.builder().build();
             userInfo.setPassword(DigestUtil.md5Hex(password));
             userInfo.setUserId(db_userInfo.getUserId());
             userInfoMapper.updateById(userInfo);
