@@ -17,8 +17,7 @@ import com.easycom.entity.PO.Summary;
 import com.easycom.entity.VO.Result;
 import com.easycom.entity.enums.ScoreBreakdownStatusEnum;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
-import com.easycom.entity.enums.SummaryEnum;
-import com.easycom.entity.enums.VerifyRegexEnum;
+import com.easycom.entity.enums.SummaryStatusEnum;
 import com.easycom.exception.UserException;
 import com.easycom.redis.RedisComponent;
 import com.easycom.redis.RedisUtils;
@@ -151,7 +150,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         }
 
         //补充summary的信息，并录入到数据库当中
-        summary.setStatus(SummaryEnum.CLASS_AUDIT.getStatus());
+        summary.setStatus(SummaryStatusEnum.CLASS_AUDIT.getStatus());
         //总分计算
         SummaryUtils.setTotalScore(summary);
         summaryMapper.insertOrUpdate(summary);

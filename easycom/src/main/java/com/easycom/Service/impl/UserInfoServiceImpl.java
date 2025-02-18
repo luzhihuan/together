@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jodd.util.ArraysUtil;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -134,8 +135,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return Result.ok(tokenUserInfoDTO);
 
     }
-
     @Override
+    @Transactional(rollbackFor = Exception.class)
+
     public Result register(String checkCodeKey, String checkCode,
                            String email, String password,
                            String nickName, String emailCode, String registerCode) {

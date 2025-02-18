@@ -14,4 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 public interface ISummaryService extends IService<Summary> {
 
     Result showScore(HttpServletRequest request);
+
+    Result check(HttpServletRequest request);
 }
