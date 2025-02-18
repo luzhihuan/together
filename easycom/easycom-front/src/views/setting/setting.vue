@@ -6,12 +6,7 @@
       <span class="font-title">账号设置</span>
       <el-divider class="divider"></el-divider>
       <el-collapse v-model="activeName" accordion>
-        <el-collapse-item title="绑定邮箱" name="1">
-          <div>
-            <el-button type="primary">确认绑定</el-button>
-            <el-button type="primary">取消</el-button>
-          </div>
-        </el-collapse-item>
+
         <el-collapse-item title="修改当前绑定的邮箱" name="2">
           <div>
             <el-card class="setting-card">

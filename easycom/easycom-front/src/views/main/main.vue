@@ -85,6 +85,7 @@
         </el-form-item>
       </el-form>
     </Dialog>
+
   </div>
 </template>
 
@@ -100,7 +101,7 @@
   const formData = ref({})
   const formDataRef = ref()
   const rules = {
-    yearSelection :[{required: true, message: '请选择评测年份', trigger: 'blur'}],
+    yearSelection: [{required: true, message: '请选择评测年份', trigger: 'blur'}],
   }
 
   const yearSelectionConfirm = () =>{

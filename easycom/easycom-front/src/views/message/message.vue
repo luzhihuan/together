@@ -1,6 +1,6 @@
 <template>
   <div class="message-body"> 
-    <!-- <div class="oneThirdPart">
+     <div class="oneThirdPart">
        <el-container class="button-container"> 
         <el-button class="style-button" >
           <template #icon>
@@ -10,29 +10,30 @@
           <span class="style-font">收件箱</span>
         </el-button>
       
-      </el-container>     
-    </div>
-    <div class="oneThirdPart">
-       <el-container class="button-container"> 
-        <el-button class="style-button" >
-        <template #icon>
-          <el-icon><Message /></el-icon>
-        </template>
-          <span class="style-font">写信件</span>       
-        </el-button>
-      </el-container>
-    </div>
-    <div class="oneThirdPart">
-      <el-container class="button-container">
-       
-        <el-button class="style-button" >
-        <template #icon>
-          <el-icon><Edit /></el-icon>
-        </template>
-        <span class="style-font">草稿箱</span>
-        </el-button>
-      </el-container>
-    </div> -->
+      </el-container>   
+
+      <!-- </div>
+      <div class="oneThirdPart">
+        <el-container class="button-container"> 
+          <el-button class="style-button" >
+          <template #icon>
+            <el-icon><Message /></el-icon>
+          </template>
+            <span class="style-font">写信件</span>       
+          </el-button>
+        </el-container>
+      </div>
+      <div class="oneThirdPart">
+        <el-container class="button-container">
+        
+          <el-button class="style-button" >
+          <template #icon>
+            <el-icon><Edit /></el-icon>
+          </template>
+          <span class="style-font">草稿箱</span>
+          </el-button>
+        </el-container> -->
+      </div> 
 
     
   </div>

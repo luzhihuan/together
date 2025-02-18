@@ -1,8 +1,8 @@
 <template>
   <div class="">
-<!--    顶端-->
+    <!--顶端-->
     <div class="header">
-<!--      左边-->
+      <!--左边-->
       <div class="logo" @click="backToMain">
         <div class="name">
           <img src="../assets/logo.png" alt="" style="cursor: pointer;margin-right: 10px"/>
@@ -10,7 +10,7 @@
         </div>
       </div>
 
-<!--      右边-->
+      <!--右边-->
       <div class="right-panel">
         <el-dropdown>
           <div class="user-info">
@@ -26,7 +26,7 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item>修改密码</el-dropdown-item>
-              <el-dropdown-item>绑定邮箱</el-dropdown-item>
+              <el-dropdown-item @click="bindEmailFormDialog">绑定邮箱</el-dropdown-item>
               <el-dropdown-item>退出</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -34,9 +34,9 @@
       </div>
     </div>
 
-<!--    主体部分-->
+    <!--主体部分-->
     <div class="body">
-<!--      左边菜单栏-->
+      <!--左边菜单栏-->
       <div class="left-menu">
         <div class="">
           <div @click="jump(item)" 
@@ -58,18 +58,113 @@
       <div class="right-main">
         <router-view/>
       </div>
-    </div>
+      </div>
+
+      <Dialog
+        :show = "firstTimeLogin.show"
+        :title = "firstTimeLogin.title"
+        :buttons = "firstTimeLogin.buttons"
+        width = "500px"
+        :showCancel = "false"
+        @close = "firstTimeLogin.show=false"
+      >
+        <el-form :model="bindEmailForm" ref="bindEmailFormRef" :rules="rules">
+          <el-form-item prop="email">
+            <el-input
+            placeholder="输入一个常用的邮箱账号"
+            v-model.trim = bindEmailForm.email
+            >
+              <template #prefix>
+                <span class="iconfont icon-user "></span>
+              </template>
+            </el-input>
+          </el-form-item>
+          <div>
+            <el-form-item prop="emailCode">
+              <el-input
+              placeholder="输入收到的验证码"
+              style="width: 75%;"
+              v-model.trim = bindEmailForm.emailCode
+              >
+                <template #prefix>
+                  <span class="iconfont icon-checkCode "></span>
+                </template>
+              </el-input>
+              <el-button 
+                type='primary'
+                style="margin-left: 5px;"
+                @click="sendEmailCode"
+              >
+                发送验证码
+              </el-button>
+            </el-form-item>          
+          </div>
+        </el-form>
+      </Dialog> 
+      <!-- 温馨提示弹窗 -->
+      <Dialog
+        :show="alert.show" 
+        :title="alert.title" 
+        :buttons="alert.buttons" 
+        :showCancel="false"
+        :showClose="false"
+      >
+        检测到当前账号为首次登录，为了保障账号安全，请先绑定邮箱账号
+      </Dialog>
 
   </div>
 </template>
 
 <script setup>
-import {ref, reactive, getCurrentInstance, nextTick, watch} from "vue"
+import { buttonEmits } from "element-plus";
+import { fa } from "element-plus/es/locale/index.mjs";
+import responseData from '@/utils/Request.js'
+import {ref, reactive, getCurrentInstance, nextTick, watch, onMounted} from "vue"
 const { proxy } = getCurrentInstance();
 
 import {useRouter,useRoute} from "vue-router";
+import message from "../utils/Message";
 const route = useRoute()
 const router = useRouter()
+
+const bindEmailForm = ref({})
+const bindEmailFormRef = ref()
+//绑定邮箱表单数据规则
+const firstTimeLogin = reactive({
+  show: false,
+  title: '邮箱绑定',
+  buttons:[
+    {
+      text: '确认绑定',
+      type: 'primary',
+    },
+    {
+      text: '取消',
+
+      click: (e) =>{
+        bindEmailFormDialog()
+      }
+    }
+  ]
+})
+//温馨提示弹窗
+const alert = reactive({
+  show: true,
+  title: '温馨提示',
+  buttons:[
+    {
+      text: '确认',
+      click: (e) =>{
+        bindEmailFormDialog()
+      }
+    },
+  ],
+})
+
+const rules = {
+  email: [{required: true, message: '请输入一个常用的邮箱账号', trigger: 'blur'}],
+  emailCode: [{required: true, message: '请输入收到的验证码', trigger: 'blur'}],
+}
 
 const menus = [
   {
@@ -91,6 +186,14 @@ const menus = [
     code:'setting',
   },
 ]
+//判断邮箱是否输入并且正确的逻辑
+const sendEmailCode = async () => {
+  bindEmailFormRef.value.validateField("email",(valid)=>{
+    if(!valid){
+      return;
+    }
+  })
+}
 
 const currentMenu = ref(menus[0])
 const currentPath = ref()
@@ -121,6 +224,26 @@ const backToMain = ()=>{
 
 const userInfo = proxy.VueCookies.get("userInfo")
 
+//控制邮箱绑定弹窗
+const bindEmailFormDialog = () =>{
+  if(!firstTimeLogin.show){
+    firstTimeLogin.show = true;
+  }else{
+    firstTimeLogin.show = false;
+  }
+}
+
+
+//判断用户状态的逻辑段
+const ifFullMember = (async) => {
+  if (responseData == 1){
+    alert.show = true
+  }
+}
+//组件加载完成之后判断用户状态码
+onMounted(()=>{
+  ifFullMember();
+})
 </script>
 
 
