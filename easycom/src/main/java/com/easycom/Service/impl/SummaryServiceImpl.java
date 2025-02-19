@@ -43,7 +43,7 @@ public class SummaryServiceImpl extends ServiceImpl<SummaryMapper, Summary> impl
                 ||tokenUserInfoDTO.getLevel()>UserLevelEnum.SCHOOL_LEADER_AUDITORS.getLevel()){
             return Result.fail("权限不足，无法审核");
         }
-        //查询相对应等级所需要的总分表
+        //查询相对应等级所需要的审核的总分表
         QueryWrapper<Summary> summaryQueryWrapper = new QueryWrapper<>();
         summaryQueryWrapper.eq("status", SummaryStatusEnum.getStatusByLevel(tokenUserInfoDTO.getLevel()));
         List<Summary> summaries = summaryMapper.selectList(summaryQueryWrapper);

@@ -85,12 +85,15 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             //所有上传的文件都命名为  1.图片后缀 2.图片后缀 3.图片后缀 等
             currentFilePath = currentFilePath.append(i+1).append(fileSuffix);
             //TODO 将文件暂时存储到redis中
-            redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),currentFilePath);
+            // key命名规则 easycom:user:temp:{userId}:{count}
+            redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),i,files[i]);
         }
+        //！！！！！跟随上面的（要改一起改）!!!!上传redis记录保存了几条数据
+        redisComponent.saveProveInfoCount(tokenUserInfoDTO.getUserId(),files.length);
 
 
-        //设置文件路径规则为，如果用户传入5个文件，则为 /file/{userid}/5
-        String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+files.length;
+        //设置文件路径规则为，如果用户传入5个文件，则为 /file/{userid}/{type}
+        String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+type;
 
         //计算各个分数项
         if (type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())) {
@@ -141,6 +144,8 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                     DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + typeEnum.getType());
             scoreBreakdown.setStatus(ScoreBreakdownStatusEnum.FINISH.getStatus());
             boolean b = scoreBreakdownMapper.insertOrUpdate(scoreBreakdown);
+            //TODO 从缓存中获取到用户所有临时文件，存储到服务器文件夹中
+//            RedisUtils.get("")
             if (!b) {
                 //记录总分
                 SummaryUtils.setInfo(typeEnum,summary,scoreBreakdown.getTotalScore());
@@ -155,7 +160,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         SummaryUtils.setTotalScore(summary);
         summaryMapper.insertOrUpdate(summary);
 
-        //TODO 从缓存中获取到用户所有临时文件，存储到服务器文件夹中
+
 
         //TODO 用户填写完毕后，需要将所有临时文件删除，包括删除存储每一种类型的表
         return Result.ok("上传成功");

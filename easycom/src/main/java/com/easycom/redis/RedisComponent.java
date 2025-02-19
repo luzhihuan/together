@@ -5,6 +5,9 @@ import com.easycom.entity.DTO.SysSettingDTO;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.ScoreBreakdown;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @Component
 public class RedisComponent {
@@ -36,10 +39,17 @@ public class RedisComponent {
         );
     }
 
-    public void saveProveInfo(String userId, StringBuilder currentFilePath) {
+    public void saveProveInfo(String userId, Integer count, MultipartFile file) {
         RedisUtils.set(
-                DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId,
-                currentFilePath,
+                DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId+":"+count,
+                file,
+                DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_DAY
+        );
+    }
+    public void saveProveInfoCount(String userId, int length) {
+        RedisUtils.set(
+                DefaultParam.REDIS_KEY_USER_TEMP_FILE+userId,
+                length,
                 DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_DAY
         );
     }
@@ -52,4 +62,5 @@ public class RedisComponent {
         }
         return sysSettingDTO;
     }
+
 }
