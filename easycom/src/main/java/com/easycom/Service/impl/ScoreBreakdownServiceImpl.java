@@ -132,12 +132,13 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             Integer proveInfoCount = redisComponent.getProveInfoCount(tokenUserInfoDTO.getUserId(), typeEnum.getTypeName());
             for (int i = 0; i < proveInfoCount; i++) {
                 MultipartFile file = redisComponent.getUserTempFile(tokenUserInfoDTO.getUserId(),typeEnum.getTypeName(),i);
-                //TODO 存储到服务器当中
+                //TODO 存储到服务器文件当中
             }
 
             if (!b) {
                 //记录总分
                 SummaryUtils.setInfo(typeEnum,summary,scoreBreakdown.getTotalScore());
+                RedisComponent.deleteAllScoreInfo(tokenUserInfoDTO.getUserId());
             }else {
                 throw new UserException("上传失败，请重新检查！");
             }
@@ -151,8 +152,8 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
 
 
 
-        //TODO 用户填写完毕后，需要将所有临时文件删除，包括删除存储每一种类型的表
-        RedisComponent.deleteAllScoreInfo(tokenUserInfoDTO.getUserId());
+        //用户填写完毕后，需要将所有临时文件删除，包括删除存储每一种类型的表
+
         return Result.ok("上传成功");
     }
 
