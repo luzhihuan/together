@@ -43,10 +43,10 @@ public class RedisComponent {
         );
     }
 
-    public void saveProveInfo(String userId, String typeName ,Integer count, MultipartFile file) {
+    public void saveProveInfo(String userId, String typeName ,String fileName, MultipartFile file) {
         try {
             RedisUtils.set(
-                    DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId+":"+typeName+":"+count,
+                    DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId+":"+typeName+":"+fileName,
                     file.getBytes(),
                     DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
             );
@@ -54,10 +54,10 @@ public class RedisComponent {
             throw new RuntimeException("保存文件失败！");
         }
     }
-    public void saveProveInfoCount(String userId,String typeName, int length) {
-        RedisUtils.set(
-                DefaultParam.REDIS_KEY_USER_TEMP_FILE+userId+":"+typeName+DefaultParam.REDIS_KEY_USER_TEMP_FILE_TOTAL,
-                length,
+    public void saveFileName2List(String userId,String typeName, String fileName) {
+        RedisUtils.lSet(
+                DefaultParam.REDIS_KEY_USER_TEMP_FILE+userId+":"+typeName+DefaultParam.REDIS_KEY_USER_TEMP_FILE_NAME_LIST,
+                fileName,
                 DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
         );
     }

@@ -54,7 +54,7 @@ spring:
 
 
 project:
-  folder: f:/git_clone/togenter/easycom
+  folder: f:/git_clone/together/easycom
 
 
 admin:

@@ -90,25 +90,25 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         if(files!=null){
             for (int i = 0; i < files.length; i++) {
                 //获取文件后缀名
-                String fileSuffix = UserHolder.getFileSuffix(files[i].getName());
+                String fileSuffix = UserHolder.getFileSuffix(files[i].getOriginalFilename());
                 //如果文件不是图片类型
                 if(!fileSuffix.equals(".png")&&!fileSuffix.equals(".PNG")&&
                         !fileSuffix.equals(".jpg")&&!fileSuffix.equals(".JPG")&&
                         !fileSuffix.equals(".JPEG")&&!fileSuffix.equals(".jpeg")&&
-                        !fileSuffix.equals(".doc")&&!fileSuffix.equals(".pdf")
+                        !fileSuffix.equals(".doc")&&!fileSuffix.equals(".pdf")&&
+                        !fileSuffix.equals(".docx")
                 ){
                     throw new UserException("文件格式不对！");
                 }
                 // 将文件暂时存储到redis中
-                // key命名规则 easycom:user:temp:{userId}:{type}:{count}
-                redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),i,files[i]);
+                // key命名规则 easycom:user:temp:{userId}:{type}:{count.fileSuffix}
+                redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),i+fileSuffix,files[i]);
+                //将所有文件名保存到redis中，用一个列表，将用户上传的不同文件类型保存起来
+                redisComponent.saveFileName2List(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),i+fileSuffix);
             }
-
-            //上传redis记录保存了几条数据
-            redisComponent.saveProveInfoCount(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),files.length);
             
             //设置文件路径为 ../file/{userid}/{type}
-            String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+ScoreBreakdownTypeEnum.getByType(type).getTypeName();
+            String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+"/"+ScoreBreakdownTypeEnum.getByType(type).getTypeName();
             scoreBreakdown.setFilePath(filePath);
         }
         

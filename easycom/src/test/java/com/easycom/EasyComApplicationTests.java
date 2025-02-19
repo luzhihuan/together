@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 
 @SpringBootTest
 class EasyComApplicationTests {
@@ -27,7 +28,8 @@ class EasyComApplicationTests {
 
 		String userId = "U58474128947";
 		String typeName = ScoreBreakdownTypeEnum.MORALITY.getTypeName();
-		Integer fileTotal = (Integer) RedisUtils.get(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + DefaultParam.REDIS_KEY_USER_TEMP_FILE_TOTAL);
+		List<Object> filenameList = RedisUtils.lGet(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + DefaultParam.REDIS_KEY_USER_TEMP_FILE_NAME_LIST,0,-1);
+		int fileTotal = filenameList.size();
 
 		String folder = appConfig.getProjectFolder()+DefaultParam.FILE_FOLDER_FILE+"/test/";
 		File fileFolder = new File(folder);
@@ -36,8 +38,9 @@ class EasyComApplicationTests {
 		}
 		// 遍历所有文件并保存
 		for (int i = 0; i < fileTotal; i++) {
-			Object redisValue = RedisUtils.get(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + ":" + i);
-
+			String fileName = filenameList.get(i).toString();
+			Object redisValue = RedisUtils.get(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + ":" + fileName);
+			
 			if (redisValue == null) {
 				System.out.println("文件 " + i + " 不存在！");
 				continue;
@@ -57,13 +60,13 @@ class EasyComApplicationTests {
 			}
 
 			// 将字节数组保存为文件
-			File file = new File(fileFolder, i + ".png"); // 文件名格式为 0.png, 1.png 等
+			File file = new File(fileFolder, fileName); // 文件名格式为 0.png, 1.png 等
 
 			try (FileOutputStream fos = new FileOutputStream(file)) {
 				fos.write(files); // 将字节数组写入文件
 				fos.flush(); // 刷新输出流以确保数据完全写入文件
 			} catch (IOException e) {
-				e.printStackTrace(); // 捕获并处理可能的 IO 异常
+				System.out.println(e.getMessage()); // 捕获并处理可能的 IO 异常
 			}
 		}
 

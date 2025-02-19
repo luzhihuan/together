@@ -17,7 +17,7 @@ public class DefaultParam {
     public static final Integer REDIS_KEY_EXPIRE_TIME_ONE_HOUR = REDIS_KEY_EXPIRE_TIME_ONE_MIN * 60;
     public static final String REDIS_KEY_SCORE_BREAKDOWN_USERID = "easycom:score:userId:";
     public static final String REDIS_KEY_USER_TEMP_FILE = "easycom:user:temp:";
-    public static final String REDIS_KEY_USER_TEMP_FILE_TOTAL = ":total";
+    public static final String REDIS_KEY_USER_TEMP_FILE_NAME_LIST = ":filenameList";
     public static final String REDIS_KEY_SYS_SETTING = "easycom:SystemSetting:";
 
     public static final String PASSWORD_VERIFY = "^(?=.*\\d)(?=.*[a-zA-Z])[\\da-zA-Z~!@#$%^&*_]{8,18}$";
