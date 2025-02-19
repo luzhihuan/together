@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -63,7 +65,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             //如果文件不是图片类型
             if(!fileSuffix.equals(".png")||!fileSuffix.equals(".PNG")||
                     !fileSuffix.equals(".jpg")||!fileSuffix.equals(".JPG")||
-                    !fileSuffix.equals(".JPEG")||!fileSuffix.equals(".jpeg")
+                    !fileSuffix.equals(".JPEG")||!fileSuffix.equals(".jpeg")||files[i].isEmpty()
             ){
                 throw new UserException("文件格式不对！");
             }
@@ -132,14 +134,20 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             Integer proveInfoCount = redisComponent.getProveInfoCount(tokenUserInfoDTO.getUserId(), typeEnum.getTypeName());
             for (int i = 0; i < proveInfoCount; i++) {
                 MultipartFile file = redisComponent.getUserTempFile(tokenUserInfoDTO.getUserId(),typeEnum.getTypeName(),i);
-                //TODO 存储到服务器文件当中
-                //获取文件路径
+                //TODO 修改文件名
+                //获取文件路径,并保存文件
                 String filePath = scoreBreakdown.getFilePath();
+                try {
+                    file.transferTo(new File(filePath));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (!b) {
                 //记录总分
                 SummaryUtils.setInfo(typeEnum,summary,scoreBreakdown.getTotalScore());
+                //用户填写完毕后，需要将所有临时文件删除，包括删除存储每一种类型的表
                 RedisComponent.deleteAllScoreInfo(tokenUserInfoDTO.getUserId());
             }else {
                 throw new UserException("上传失败，请重新检查！");
@@ -154,7 +162,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
 
 
 
-        //用户填写完毕后，需要将所有临时文件删除，包括删除存储每一种类型的表
+
 
         return Result.ok("上传成功");
     }
