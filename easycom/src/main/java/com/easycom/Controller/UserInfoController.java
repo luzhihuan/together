@@ -98,7 +98,7 @@ public class UserInfoController {
     /**d
      * 找回密码
      * @param password 修改的密码
-     * @param checkCodeEmailKey  验证码唯一标识
+     * @param checkCodeKey  验证码唯一标识
      * @param checkCode 验证码的值
      * @param emailCode 邮箱发送的验证码
      * @param username  用户名
@@ -107,11 +107,10 @@ public class UserInfoController {
     @RequestMapping("/findPassword")
     public Result findPassword(@Pattern(regexp = DefaultParam.EMAIL_CHECK) String email,
                                @Pattern(regexp = DefaultParam.PASSWORD_VERIFY) String password,
-                               @NotEmpty String checkCodeEmailKey,
+                               @NotEmpty String checkCodeKey,
                                @NotEmpty String checkCode,
-                               @NotEmpty String emailCode,
-                               @NotEmpty String username){
-        return userInfoService.findPassword(email,password, checkCodeEmailKey, checkCode, emailCode, username);
+                               @NotEmpty String emailCode){
+        return userInfoService.findPassword(email,password, checkCodeKey, checkCode, emailCode);
     }
 
 

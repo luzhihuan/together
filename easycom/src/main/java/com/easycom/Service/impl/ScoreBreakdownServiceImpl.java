@@ -55,45 +55,29 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                               Integer type, MultipartFile[] files) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
         Double totalScore = 0d;
-
-        //设置文件存储路径
-        StringBuilder fileFolder = new StringBuilder(appconfig.getProjectFolder() + DefaultParam.FILE_FOLDER_FILE + tokenUserInfoDTO.getUserId());
-        if(type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())){
-            fileFolder.append("/m/");
-        }else if(type.equals(ScoreBreakdownTypeEnum.INTELLECT.getType())){
-            fileFolder.append("/i/");
-        }else if(type.equals(ScoreBreakdownTypeEnum.PHYSICAL_EDUCATION.getType())){
-            fileFolder.append("/p/");
-        }else if(type.equals(ScoreBreakdownTypeEnum.AESTHETICS.getType())){
-            fileFolder.append("/a/");
-        }else if(type.equals(ScoreBreakdownTypeEnum.LABOR.getType())){
-            fileFolder.append("/l/");
-        }else {
-            return Result.fail(DefaultParam.PARAM_ERROR);
-        }
+        
+        //先将文件暂时存储到redis中
         for (int i = 0; i < files.length; i++) {
-            StringBuilder currentFilePath = fileFolder;
             //获取文件后缀名
             String fileSuffix = UserHolder.getFileSuffix(files[i].getName());
             //如果文件不是图片类型
             if(!fileSuffix.equals(".png")||!fileSuffix.equals(".PNG")||
                     !fileSuffix.equals(".jpg")||!fileSuffix.equals(".JPG")||
-                    !fileSuffix.equals(".JPEG")||!fileSuffix.equals(".jpg")
+                    !fileSuffix.equals(".JPEG")||!fileSuffix.equals(".jpeg")
             ){
                 throw new UserException("文件格式不对！");
             }
-            //所有上传的文件都命名为  1.图片后缀 2.图片后缀 3.图片后缀 等
-            currentFilePath = currentFilePath.append(i+1).append(fileSuffix);
-            //TODO 将文件暂时存储到redis中
-            // key命名规则 easycom:user:temp:{userId}:{count}
-            redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),i,files[i]);
+            // 将文件暂时存储到redis中
+            // key命名规则 easycom:user:temp:{userId}:{type}:{count}
+            redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),i,files[i]);
         }
+        
         //！！！！！跟随上面的（要改一起改）!!!!上传redis记录保存了几条数据
-        redisComponent.saveProveInfoCount(tokenUserInfoDTO.getUserId(),files.length);
+        redisComponent.saveProveInfoCount(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),files.length);
+        
 
-
-        //设置文件路径规则为，如果用户传入5个文件，则为 /file/{userid}/{type}
-        String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+type;
+        //设置文件路径为 ../file/{userid}/{type}
+        String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+ScoreBreakdownTypeEnum.getByType(type).getTypeName();
 
         //计算各个分数项
         if (type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())) {

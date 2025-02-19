@@ -108,13 +108,13 @@
                   <el-button type="text">没收到验证码？</el-button>
                 </el-form-item>
 
-                <el-form-item prop="firstPassword" class="form_base">
+                <el-form-item prop="password" class="form_base">
                   <el-input
                       size="large"
                       v-model.trim="formData.password"
                       placeholder="请输入新密码"
                       show-password
-                      @focus="clearValidation('firstPassword')"
+                      @focus="clearValidation('password')"
                   >
                     <template #prefix>
                       <span class="iconfont icon-password"></span>
@@ -135,7 +135,7 @@
                     </template>
                   </el-input>
                 </el-form-item>
-                <el-form-item prop="checkcode">
+                <el-form-item prop="checkCode">
                   <div class="form_base">
                     <el-input
                         size="large"
@@ -401,8 +401,6 @@ const changeCheckCode = async (type) => {
 }
 
 
-
-
 //重置表单 且如果存在则或者去用户的登录信息
 const restForm = () => {
   changeCheckCode(0)
@@ -561,6 +559,32 @@ const submitRegister = async () => {
   })
 }
 
+//找回密码功能
+const reSetPassword = async () => {
+  formDataRef.value.validate(async (valid)=>{
+    if(!valid){
+      return
+    }
+    let result = await proxy.Request({
+      url:proxy.Api.findPassword,
+      params:{
+        email:formData.value.email,
+        emailCode:formData.value.emailCode,
+        password:formData.value.password,
+        checkCode:formData.value.checkCode,
+        checkCodeKey:localStorage.getItem("checkCodeKey"),
+      },
+      errorCallback: (res) => {
+        proxy.Message.error(res.msg)
+      }
+    })
+    if(!result){
+      return;
+    }
+    proxy.Message.success("修改成功！")
+    reSetCancel(1)
+  })
+}
 
 </script>
 

@@ -39,18 +39,18 @@ public class RedisComponent {
         );
     }
 
-    public void saveProveInfo(String userId, Integer count, MultipartFile file) {
+    public void saveProveInfo(String userId, String typeName ,Integer count, MultipartFile file) {
         RedisUtils.set(
-                DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId+":"+count,
+                DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId+":"+typeName+count,
                 file,
-                DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_DAY
+                DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
         );
     }
-    public void saveProveInfoCount(String userId, int length) {
+    public void saveProveInfoCount(String userId,String typeName, int length) {
         RedisUtils.set(
-                DefaultParam.REDIS_KEY_USER_TEMP_FILE+userId,
+                DefaultParam.REDIS_KEY_USER_TEMP_FILE+userId+":"+typeName+"total",
                 length,
-                DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_DAY
+                DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
         );
     }
 
