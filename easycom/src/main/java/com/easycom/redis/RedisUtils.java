@@ -1,9 +1,10 @@
 package com.easycom.redis;
 
-import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,8 @@ public class RedisUtils {
         // String的序列化
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
         // json序列化配置
-        GenericFastJsonRedisSerializer jackson2JsonRedisSerializer = new GenericFastJsonRedisSerializer();
+        
+        GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
         //key采用String的序列化方式
         redisTemplate.setKeySerializer(stringRedisSerializer);
         //hash的key也采用String 的序列化方式

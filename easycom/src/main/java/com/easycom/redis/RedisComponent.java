@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 
 @Component
 public class RedisComponent {
@@ -43,15 +44,19 @@ public class RedisComponent {
     }
 
     public void saveProveInfo(String userId, String typeName ,Integer count, MultipartFile file) {
-        RedisUtils.set(
-                DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId+":"+typeName+count,
-                file,
-                DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
-        );
+        try {
+            RedisUtils.set(
+                    DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId+":"+typeName+":"+count,
+                    file.getBytes(),
+                    DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("保存文件失败！");
+        }
     }
     public void saveProveInfoCount(String userId,String typeName, int length) {
         RedisUtils.set(
-                DefaultParam.REDIS_KEY_USER_TEMP_FILE+userId+":"+typeName+"total",
+                DefaultParam.REDIS_KEY_USER_TEMP_FILE+userId+":"+typeName+DefaultParam.REDIS_KEY_USER_TEMP_FILE_TOTAL,
                 length,
                 DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
         );

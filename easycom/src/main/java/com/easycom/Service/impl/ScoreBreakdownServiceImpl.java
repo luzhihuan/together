@@ -57,29 +57,6 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                               Integer type, MultipartFile[] files) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
         Double totalScore = 0d;
-        
-        //先将文件暂时存储到redis中
-        for (int i = 0; i < files.length; i++) {
-            //获取文件后缀名
-            String fileSuffix = UserHolder.getFileSuffix(files[i].getName());
-            //如果文件不是图片类型
-            if(!fileSuffix.equals(".png")||!fileSuffix.equals(".PNG")||
-                    !fileSuffix.equals(".jpg")||!fileSuffix.equals(".JPG")||
-                    !fileSuffix.equals(".JPEG")||!fileSuffix.equals(".jpeg")||files[i].isEmpty()
-            ){
-                throw new UserException("文件格式不对！");
-            }
-            // 将文件暂时存储到redis中
-            // key命名规则 easycom:user:temp:{userId}:{type}:{count}
-            redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),i,files[i]);
-        }
-        
-        //上传redis记录保存了几条数据
-        redisComponent.saveProveInfoCount(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),files.length);
-        
-
-        //设置文件路径为 ../file/{userid}/{type}
-        String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+ScoreBreakdownTypeEnum.getByType(type).getTypeName();
 
         //计算各个分数项
         if (type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())) {
@@ -107,13 +84,37 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                 .deductScoresDetails(deductScoreDetails)
                 .totalScore(totalScore)
                 .type(type)
-                .status(ScoreBreakdownStatusEnum.SENDING.getStatus())
-                .filePath(filePath).build();
+                .status(ScoreBreakdownStatusEnum.SENDING.getStatus()).build();
+        
+        //先将文件暂时存储到redis中
+        if(files!=null){
+            for (int i = 0; i < files.length; i++) {
+                //获取文件后缀名
+                String fileSuffix = UserHolder.getFileSuffix(files[i].getName());
+                //如果文件不是图片类型
+                if(!fileSuffix.equals(".png")&&!fileSuffix.equals(".PNG")&&
+                        !fileSuffix.equals(".jpg")&&!fileSuffix.equals(".JPG")&&
+                        !fileSuffix.equals(".JPEG")&&!fileSuffix.equals(".jpeg")&&
+                        !fileSuffix.equals(".doc")&&!fileSuffix.equals(".pdf")
+                ){
+                    throw new UserException("文件格式不对！");
+                }
+                // 将文件暂时存储到redis中
+                // key命名规则 easycom:user:temp:{userId}:{type}:{count}
+                redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),i,files[i]);
+            }
 
+            //上传redis记录保存了几条数据
+            redisComponent.saveProveInfoCount(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),files.length);
+            
+            //设置文件路径为 ../file/{userid}/{type}
+            String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+ScoreBreakdownTypeEnum.getByType(type).getTypeName();
+            scoreBreakdown.setFilePath(filePath);
+        }
+        
         //每种类型的表，先暂时存到redis中
         redisComponent.saveScore(scoreBreakdown);
-
-
+        
         return Result.ok("上传中");
     }
 
@@ -161,9 +162,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         summaryMapper.insertOrUpdate(summary);
 
 
-
-
-
+        
         return Result.ok("上传成功");
     }
 
