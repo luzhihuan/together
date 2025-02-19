@@ -4,6 +4,7 @@ import com.easycom.Utils.DefaultParam;
 import com.easycom.entity.DTO.SysSettingDTO;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.ScoreBreakdown;
+import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,6 +12,8 @@ import java.io.File;
 
 @Component
 public class RedisComponent {
+
+
     public void saveTokenUserInfoDTO(TokenUserInfoDTO tokenUserInfoDTO) {
 
         //存储两份信息
@@ -63,4 +66,27 @@ public class RedisComponent {
         return sysSettingDTO;
     }
 
+    public MultipartFile getUserTempFile(String userId,String typeName,Integer count) {
+        return (MultipartFile) RedisUtils.get( DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId+":"+typeName+count);
+    }
+    public Integer getProveInfoCount(String userId,String typeName) {
+        Integer i = (Integer) RedisUtils.get(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + "total");
+        if (i == null){
+            return 0;
+        }
+        return i;
+    }
+    public static void deleteAllScoreInfo(String userId) {
+        for (ScoreBreakdownTypeEnum value : ScoreBreakdownTypeEnum.values()) {
+            Integer count = (Integer) RedisUtils.get(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + value.getTypeName() + "total");
+            for (int i = 0; i < count; i++) {
+                //删除文件
+                RedisUtils.del(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId+":"+value.getTypeName()+i);
+            }
+            //删除文件数信息
+            RedisUtils.del(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + value.getTypeName() + "total");
+            //删除得分表
+            RedisUtils.del(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + userId + ":" + value.getType());
+        }
+    }
 }
