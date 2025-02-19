@@ -133,6 +133,8 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             for (int i = 0; i < proveInfoCount; i++) {
                 MultipartFile file = redisComponent.getUserTempFile(tokenUserInfoDTO.getUserId(),typeEnum.getTypeName(),i);
                 //TODO 存储到服务器文件当中
+                //获取文件路径
+                String filePath = scoreBreakdown.getFilePath();
             }
 
             if (!b) {
