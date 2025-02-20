@@ -1,3 +1,7 @@
 
 *.log
 *.log
+easycom/logs/debug/springboot-debug.log
+easycom/logs/error/springboot-error.log
+easycom/logs/info/springboot-info.log
+easycom/logs/warn/springboot-warn.log
