@@ -9,6 +9,8 @@ const api = {
     register:"/user/register",
     //登录功能
     login:"/user/login",
+    //找回密码
+    findPassword:"/user/findPassword"
 }
 
 export default api;

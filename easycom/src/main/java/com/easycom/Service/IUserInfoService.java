@@ -28,6 +28,6 @@ public interface IUserInfoService extends IService<UserInfo> {
 
     Result resetPassword(HttpServletRequest request, String  password, String email,String emailCode);
 
-    Result findPassword(String email, String password, String checkCodeEmailKey,
-                         String checkCode, String emailCode, String username);
+    Result findPassword(String email, String password, String checkCodeKey,
+                         String checkCode, String emailCode);
 }

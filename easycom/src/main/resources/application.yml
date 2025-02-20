@@ -13,7 +13,7 @@ mybatis-plus:
 spring:
   servlet:
     multipart:
-      max-request-size: 5MB
+      max-request-size: 50MB
       max-file-size: 5MB
   mail:
     host: smtp.qq.com
@@ -54,9 +54,8 @@ spring:
 
 
 project:
-  folder: f:/git_clone/togenter/easycom
+  folder: f:/git_clone/together/easycom
 
 
 admin:
   emails: test@qq.com,2350542910@qq.com
-

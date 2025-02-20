@@ -9,6 +9,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
@@ -45,10 +46,10 @@ public class ScoreBreakdownController {
     @RequestMapping("/sendScore")
     @GlobalInterceptor
     public Result recordScore(HttpServletRequest request, @Max(100) Double baseScore,
-                              @Max(200) String baseScoreDetails, @Max(100) Double evaluationScore,
-                              @Max(200) String evaluationScoreDetails, @Max(100) Double qualityScore,
-                              @Max(200) String qualityScoreDetails, @Max(100) Double deductScore,
-                              @Max(200) String deductScoreDetails, @NotEmpty Integer type, MultipartFile[] files) {
+                              @Length(max = 200) String baseScoreDetails, @Max(100) Double evaluationScore,
+                              @Length(max = 200) String evaluationScoreDetails, @Max(100) Double qualityScore,
+                              @Length(max = 200) String qualityScoreDetails, @Max(100) Double deductScore,
+                              @Length(max = 200) String deductScoreDetails, @NotNull Integer type, MultipartFile[] files)  {
 
         return scoreBreakdownService.recordScore(request, baseScore, baseScoreDetails,
                 evaluationScore, evaluationScoreDetails, qualityScore,

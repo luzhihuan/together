@@ -118,6 +118,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         tokenUserInfoDTO.setToken(token);
         tokenUserInfoDTO.setNickName(check.getNickName());
         tokenUserInfoDTO.setLevel(check.getLevel());
+        
 
         //判断一下是否为管理员
         String[] split = appConfig.getAdminEmail().split(",");
@@ -217,13 +218,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result findPassword(String email, String password, String checkCodeEmailKey, String checkCode, String emailCode, String username) {
+    public Result findPassword(String email, String password, String checkCodeKey, String checkCode, String emailCode) {
         try {
-            if (!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeEmailKey)) {
+            if (!RedisUtils.hasKey(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey)) {
                 return Result.fail("图片验证码已过期，请重新获取！");
             }
             if (!checkCode.equalsIgnoreCase(
-                    RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeEmailKey).toString())) {
+                    RedisUtils.get(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey).toString())) {
                 return Result.fail("图片验证码不正确");
             }
             UserInfo db_userInfo = userInfoMapper.selectByEmail(email);
@@ -237,7 +238,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             userInfoMapper.updateById(userInfo);
             return Result.ok("修改成功！");
         } finally {
-            RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE_EMAIL + checkCodeEmailKey);
+            RedisUtils.del(DefaultParam.REDIS_KEY_CHECK_CODE + checkCodeKey);
         }
     }
 
