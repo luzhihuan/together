@@ -1,39 +1,79 @@
 package com.easycom.entity.PO;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
- * @TableName summary
+ * <p>
+ *
+ * </p>
+ *
+ * @author luzhihuan
+ * @since 2025-02-20
  */
-@TableName(value ="summary")
 @Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@TableName("summary")
 public class Summary implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 表的自增id
+     */
     @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    /**
+     * 用户ID
+     */
     private String userId;
 
+    /**
+     * 学生ID
+     */
     private String studentId;
 
-    private double moralityScore;
+    /**
+     * 德育总分
+     */
+    private Double moralityScore;
 
-    private double intellectualScore;
+    /**
+     * 智育总分
+     */
+    private Double intellectualScore;
 
-    private double sportScore;
+    /**
+     * 体育总分
+     */
+    private Double sportScore;
 
-    private double aestheticScore;
+    /**
+     * 美育总分
+     */
+    private Double aestheticScore;
 
+    /**
+     * 劳育总分
+     */
+    private Double laborScore;
 
-    private double laborScore;
+    /**
+     * 总分
+     */
+    private Double totalScore;
 
-
-    private double totalScore;
-
+    /**
+     * 状态 0班组审核中 1辅导员审核中2校领导审核中 3审核通过 4退回
+     */
     private Integer status;
 
 
-    private static final long serialVersionUID = 1L;
 }

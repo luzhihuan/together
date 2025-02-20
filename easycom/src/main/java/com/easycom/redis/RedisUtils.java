@@ -99,6 +99,28 @@ public class RedisUtils {
             }
         }
     }
+    
+    /**
+     * 删除指定前缀的 key 及其所有子 key
+     *
+     * @param prefix 前缀 key
+     * @return 删除的 key 数量
+     */
+    public static long deleteKeysByPrefix(String prefix) {
+        // 匹配前缀的 key 模式
+        String pattern = prefix + "*";
+
+        // 使用 SCAN 命令查找匹配的 key
+        Set<String> keys = redisTemplate.keys(pattern);
+
+        // 如果找到匹配的 key，则批量删除
+        if (!keys.isEmpty()) {
+            return redisTemplate.delete(keys);
+        }
+
+        // 如果没有匹配的 key，返回 0
+        return 0;
+    }
 
     /**
      * 获取并删除缓存

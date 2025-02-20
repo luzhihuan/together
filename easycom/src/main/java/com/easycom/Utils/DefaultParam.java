@@ -6,6 +6,9 @@ public class DefaultParam {
 
     public static final String PARAM_ERROR = "参数错误！";
     public static final String ILLEGAL_ACCESS = "非法访问！";
+    
+    public static final String FILE_PROVE_NAME = "证明材料";
+    public static final String DEFAULT_STUDENT_ID = "200000000";
 
 
     public static final String REDIS_KEY_CHECK_CODE = "easycom:checkcode:";

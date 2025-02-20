@@ -2,6 +2,7 @@ package com.easycom;
 
 import com.easycom.Utils.DefaultParam;
 import com.easycom.config.AppConfig;
+import com.easycom.entity.PO.ScoreBreakdown;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
 import com.easycom.redis.RedisUtils;
 import jakarta.annotation.Resource;
@@ -15,7 +16,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest	
 class EasyComApplicationTests {
 
 	@Resource
@@ -70,6 +71,20 @@ class EasyComApplicationTests {
 			}
 		}
 
+
+		System.out.println();
+		System.out.println();
+		System.out.println();
+	}
+	
+	@Test
+	void testRedis(){
+		System.out.println();
+		System.out.println();
+		System.out.println();
+
+		long l = RedisUtils.deleteKeysByPrefix("easycom:test1");
+		System.out.println(l);
 
 		System.out.println();
 		System.out.println();
