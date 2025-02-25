@@ -132,13 +132,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         //将dto保存到redis
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
 
-
         return Result.ok(tokenUserInfoDTO);
 
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-
     public Result register(String checkCodeKey, String checkCode,
                            String email, String password,
                            String nickName, String emailCode, String registerCode) {

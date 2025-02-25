@@ -101,7 +101,7 @@ public class UserInfoController {
      * @param checkCodeKey  验证码唯一标识
      * @param checkCode 验证码的值
      * @param emailCode 邮箱发送的验证码
-     * @param username  用户名
+     * @param email 用户邮箱
      * @return
      */
     @RequestMapping("/findPassword")

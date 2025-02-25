@@ -81,7 +81,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         scoreBreakdown.setUserId(tokenUserInfoDTO.getUserId());
         scoreBreakdown.setStudentId(DefaultParam.DEFAULT_STUDENT_ID);
         scoreBreakdown.setBaseScore(baseScore);
-        scoreBreakdown.setBaseScoreDetails(deductScoreDetails);
+        scoreBreakdown.setBaseScoreDetails(baseScoreDetails);
         scoreBreakdown.setEvaluationScore(evaluationScore);
         scoreBreakdown.setEvaluationScoreDetails(evaluationScoreDetails);
         scoreBreakdown.setQualityScore(qualityScore);
@@ -190,6 +190,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
 
         //补充summary的信息，并录入到数据库当中
         summary.setStatus(SummaryStatusEnum.CLASS_AUDIT.getStatus());
+        
         //总分计算
         SummaryUtils.setTotalScore(summary);
         
