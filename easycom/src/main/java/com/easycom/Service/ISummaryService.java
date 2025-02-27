@@ -15,5 +15,5 @@ public interface ISummaryService extends IService<Summary> {
 
     Result showScore(HttpServletRequest request);
 
-    Result check(HttpServletRequest request);
+    Result check(HttpServletRequest request,Integer current,Integer size);
 }

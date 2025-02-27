@@ -31,8 +31,10 @@ public class SummaryController {
      * @return
      */
     @RequestMapping("/check")
-    public Result check(HttpServletRequest request){
-        return summaryService.check(request);
+    public Result check(HttpServletRequest request,
+                        Integer current,
+                        Integer size){
+        return summaryService.check(request,current,size);
     }
 
 }

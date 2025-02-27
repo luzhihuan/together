@@ -41,7 +41,7 @@ public class SummaryServiceImpl extends ServiceImpl<SummaryMapper, Summary> impl
     }
 
     @Override
-    public Result check(HttpServletRequest request) {
+    public Result check(HttpServletRequest request,Integer current,Integer size) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
         //根据身份判断是否具有该功能
         if (tokenUserInfoDTO.getLevel().equals(UserLevelEnum.NOMAL_USER.getLevel())){
@@ -51,7 +51,7 @@ public class SummaryServiceImpl extends ServiceImpl<SummaryMapper, Summary> impl
         QueryWrapper<Summary> summaryQueryWrapper = new QueryWrapper<>();
         summaryQueryWrapper.eq("status", SummaryStatusEnum.getStatusByLevel(tokenUserInfoDTO.getLevel()));
         // TODO 假设每页显示5条记录,修改Ipage
-        IPage<Summary> page = new Page<>(1, 15);
+        IPage<Summary> page = new Page<>(current, size);
         List<Summary> summaryList = summaryMapper.selectList(page, summaryQueryWrapper);
 
         List<SummaryVo> summaryVos = new ArrayList<>();
