@@ -94,7 +94,6 @@ public class RedisComponent {
 
     @Async
     public void saveUserFile2Folder(String userId) {
-        FileOutputStream fos = null;
         try{
             for (ScoreBreakdownTypeEnum typeEnum : ScoreBreakdownTypeEnum.values()) {
                 //从缓存中获取到文件数量
@@ -135,22 +134,18 @@ public class RedisComponent {
                         continue;
                     }
                     //将读取到的文件写入目标文件中
-                    fos = new FileOutputStream(file);
-                    fos.write(files);
-                    fos.flush();
+                    try (FileOutputStream fos = new FileOutputStream(file)) {
+                        fos.write(files);
+                        fos.flush();
+                    } catch (IOException e) {
+                        log.error("文件写入失败，文件名：{}，原因：{}", fileName, e.getMessage());
+                        throw new UserException("文件保存失败！");
+                    }
                 }
             }
-        }catch (IOException e){
+        }catch (Exception e){
             log.error("文件保存失败！因为：{}",e.getMessage());
             throw new UserException("文件保存失败！");
-        }finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException e) {
-                log.error("文件流关闭失败！因为："+e.getMessage());
-            }
         }
     }
 
