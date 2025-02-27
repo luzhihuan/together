@@ -1,9 +1,17 @@
 package com.easycom;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.easycom.Mapper.SummaryMapper;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.config.AppConfig;
 import com.easycom.entity.PO.ScoreBreakdown;
+import com.easycom.entity.PO.Summary;
+import com.easycom.entity.VO.SummaryVo;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
+import com.easycom.entity.enums.SummaryStatusEnum;
 import com.easycom.redis.RedisUtils;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
@@ -13,11 +21,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
 @SpringBootTest	
 class EasyComApplicationTests {
+	@Autowired
+	private SummaryMapper summaryMapper;
+	@Test
+	void test(){
+		QueryWrapper<Summary> summaryQueryWrapper = new QueryWrapper<>();
+		summaryQueryWrapper.eq("status", 0);
+		IPage<Summary> page = new Page<>(1, 15);
+		List<Summary> summaryList = summaryMapper.selectList(page, summaryQueryWrapper);
+
+		List<SummaryVo> summaryVos = new ArrayList<>();
+		summaryList.forEach(summary -> summaryVos.add( BeanUtil.copyProperties(summary, SummaryVo.class)));
+		summaryVos.forEach(System.out::println);
+	}
 
 	@Resource
 	private AppConfig appConfig;
