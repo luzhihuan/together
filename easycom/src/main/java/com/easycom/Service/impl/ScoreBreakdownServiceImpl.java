@@ -11,10 +11,7 @@ import com.easycom.Mapper.ScoreBreakdownMapper;
 import com.easycom.Mapper.SummaryMapper;
 import com.easycom.Mapper.UserInfoMapper;
 import com.easycom.Service.IScoreBreakdownService;
-import com.easycom.Utils.DefaultParam;
-import com.easycom.Utils.ScoreBreakUtil;
-import com.easycom.Utils.SummaryUtils;
-import com.easycom.Utils.UserHolder;
+import com.easycom.Utils.*;
 import com.easycom.config.AppConfig;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.ScoreBreakdown;
@@ -25,6 +22,7 @@ import com.easycom.entity.VO.ScoreBreakdownVO;
 import com.easycom.entity.enums.ScoreBreakdownStatusEnum;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
 import com.easycom.entity.enums.SummaryStatusEnum;
+import com.easycom.entity.enums.VerifyRegexEnum;
 import com.easycom.exception.UserException;
 import com.easycom.redis.RedisComponent;
 import com.easycom.redis.RedisUtils;
@@ -106,29 +104,32 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
 
         //先将文件暂时存储到redis中
         if(files!=null){
+            StringBuilder filePath = new StringBuilder();
             for (int i = 0; i < files.length; i++) {
                 //获取文件后缀名
                 String fileSuffix = UserHolder.getFileSuffix(files[i].getOriginalFilename());
-                //如果文件不是图片类型
-                if(!fileSuffix.equals(".png")&&!fileSuffix.equals(".PNG")&&
-                        !fileSuffix.equals(".jpg")&&!fileSuffix.equals(".JPG")&&
-                        !fileSuffix.equals(".JPEG")&&!fileSuffix.equals(".jpeg")&&
-                        !fileSuffix.equals(".doc")&&!fileSuffix.equals(".pdf")&&
-                        !fileSuffix.equals(".docx")
-                ){
+                //如果文件不是图片，word，pdf类型
+                if(!VerifyUtil.verify(VerifyRegexEnum.FILE_SUFFIX,fileSuffix)){
                     throw new UserException("文件格式不对！");
                 }
+                if(files[i].getOriginalFilename().length()>40){
+                    throw new UserException("文件名长度请勿超过40！上传失败！");
+                }
+
+                filePath.append(files[i].getOriginalFilename());
+                if(i < files.length -1){
+                    filePath.append(",");
+                }
+                
                 // 将文件暂时存储到redis中
                 // key命名规则 easycom:user:temp:{userId}:{typeName}:{count.fileSuffix}
-                redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),DefaultParam.FILE_PROVE_NAME+i+fileSuffix,files[i]);
+                redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),files[i].getOriginalFilename(),files[i]);
                 //将所有文件名保存到redis中，用一个列表，将用户上传的不同文件类型保存起来
-                redisComponent.saveFileName2List(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),DefaultParam.FILE_PROVE_NAME+i+fileSuffix);
+                redisComponent.saveFileName2List(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),files[i].getOriginalFilename());
+                
             }
-            
-            
-            //TODO 重新设置设置文件路径为 ../file/{userid}/{typeName}/,name1.suf,name2.suf
-            String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+"/"+ScoreBreakdownTypeEnum.getByType(type).getTypeName()+"/";
-            scoreBreakdown.setFilePath(filePath);
+            //设置文件路径为 name1.suf,name2.suf
+            scoreBreakdown.setFilePath(filePath.toString());
         }
         
         //每种类型的表，先暂时存到redis中
@@ -175,25 +176,6 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             }
             
             boolean b = scoreBreakdownMapper.insertOrUpdate(scoreBreakdown);
-            
-            //从缓存中获取到文件数量，存储到服务器文件夹中
-            List<String> fileNameList = redisComponent.getFileNameList(userId, typeEnum.getTypeName());
-            
-            //创建目录
-            String folderName = appconfig.getProjectFolder()+DefaultParam.FILE_FOLDER_FILE + userId+"/";
-            File folderFather = new File(folderName);
-            if(!folderFather.exists()){
-                folderFather.mkdir();
-            }
-            
-            //带有类型名的目录
-            String typeNameFolder = folderName + typeEnum.getTypeName()+"/";
-            
-            //TODO 循环遍历服务器的文件夹，防止重复保存
-            
-            
-            //将用户保存的临时文件保存到服务器文件夹../file/{userId}/{typeName}/中
-            redisComponent.saveUserFile2Folder(userId,typeEnum.getTypeName(),fileNameList,typeNameFolder);
 
             if (b) {
                 //记录每种类型的总分
@@ -202,6 +184,11 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                 throw new UserException("上传失败，请重新检查！");
             }
         }
+        
+        
+        //将用户保存的临时文件保存到服务器文件夹../file/{userId}/{typeName}/中
+        redisComponent.saveUserFile2Folder(userId);
+        
         //用户提交所有类型信息完毕后，需要将所有临时文件删除，包括删除每一种类型的测评信息
 //        RedisComponent.deleteAllScoreInfo(userId);
         //补充summary的信息，并录入到数据库当中

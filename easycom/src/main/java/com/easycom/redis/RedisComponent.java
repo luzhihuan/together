@@ -1,12 +1,16 @@
 package com.easycom.redis;
 
 import com.easycom.Utils.DefaultParam;
+import com.easycom.config.AppConfig;
 import com.easycom.entity.DTO.SysSettingDTO;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.ScoreBreakdown;
+import com.easycom.entity.enums.ScoreBreakdownStatusEnum;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
 import com.easycom.exception.UserException;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +24,9 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class RedisComponent {
+    
+    @Resource
+    private AppConfig appConfig;
 
 
     public void saveTokenUserInfoDTO(TokenUserInfoDTO tokenUserInfoDTO) {
@@ -85,37 +92,64 @@ public class RedisComponent {
         return null;
     }
 
-    public void saveUserFile2Folder(String userId, String typeName, List<String> fileNameList, String folderName) {
-        File folder = new File(folderName);
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        for (int i = 0; i < fileNameList.size(); i++) {
-            String fileName = fileNameList.get(i);
-            Object fileValue = RedisUtils.get(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + ":" + fileName);
-            if(fileValue==null){
-                log.info("文件，{}，不存在！",fileName);
-                continue;
+    @Async
+    public void saveUserFile2Folder(String userId) {
+        FileOutputStream fos = null;
+        try{
+            for (ScoreBreakdownTypeEnum typeEnum : ScoreBreakdownTypeEnum.values()) {
+                //从缓存中获取到文件数量
+                List<String> fileNameList = getFileNameList(userId, typeEnum.getTypeName());
+
+                //创建目录 ../easycom/file/
+                String folderName = appConfig.getProjectFolder()+DefaultParam.FILE_FOLDER_FILE + userId+"/";
+                File folderFather = new File(folderName);
+                if(!folderFather.exists()){
+                    folderFather.mkdir();
+                }
+                //带有类型名的目录 ../easycom/file/{typeName}/
+                String typeNameFolder = folderName + typeEnum.getTypeName()+"/";
+                File folder = new File(typeNameFolder);
+                if (!folder.exists()) {
+                    folder.mkdir();
+                }
+
+                for (String fileName : fileNameList) {
+                    Object fileValue = RedisUtils.get(
+                            DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeEnum.getTypeName() + ":" + fileName);
+                    if (fileValue == null) {
+                        log.info("文件，{}，不存在！", fileName);
+                        continue;
+                    }
+                    byte[] files;
+                    if (fileValue instanceof byte[]) {
+                        files = (byte[]) fileValue;
+                    } else if (fileValue instanceof String) {
+                        files = Base64.getDecoder().decode((String) fileValue);
+                    } else {
+                        throw new IllegalArgumentException("Redis 中的数据类型不正确，预期为 byte[] 或 String，实际为：" + fileValue.getClass().getName());
+                    }
+
+                    //这是文件的写入路径
+                    File file = new File(folder, fileName);
+                    if (file.exists()) {
+                        continue;
+                    }
+                    //将读取到的文件写入目标文件中
+                    fos = new FileOutputStream(file);
+                    fos.write(files);
+                    fos.flush();
+                }
             }
-            byte[] files;
-            if(fileValue instanceof byte[]){
-                files = (byte[]) fileValue;
-            }else if(fileValue instanceof String){
-                files = Base64.getDecoder().decode((String) fileValue);
-            }else {
-                throw new IllegalArgumentException("Redis 中的数据类型不正确，预期为 byte[] 或 String，实际为：" + fileValue.getClass().getName());
-            }
-            
-            //这是文件的写入路径
-            File file = new File(folder, fileName);
-            
-            //将读取到的文件写入目标文件中
-            try(FileOutputStream fos = new FileOutputStream(file)){
-                fos.write(files);
-                fos.flush();
-            }catch (IOException e){
-                log.error("文件保存失败！因为：{}",e.getMessage());
-                throw new UserException("文件保存失败！");
+        }catch (IOException e){
+            log.error("文件保存失败！因为：{}",e.getMessage());
+            throw new UserException("文件保存失败！");
+        }finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                log.error("文件流关闭失败！因为："+e.getMessage());
             }
         }
     }
