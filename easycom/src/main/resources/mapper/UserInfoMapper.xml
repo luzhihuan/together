@@ -8,4 +8,11 @@
         where email =#{email}
     </select>
 
+    <select id="selectByUserIdAndStudentId" resultType="com.easycom.entity.PO.UserInfo">
+        select *
+        from user_info
+        where user_id = #{userId}
+          and student_id = #{studentId}
+    </select>
+
 </mapper>

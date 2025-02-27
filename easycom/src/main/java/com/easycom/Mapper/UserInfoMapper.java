@@ -16,5 +16,5 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
     UserInfo selectByEmail(@Param("email") String email);
 
-
+    UserInfo selectByUserIdAndStudentId(@Param("userId") String userId,@Param("studentId") String studentId);
 }

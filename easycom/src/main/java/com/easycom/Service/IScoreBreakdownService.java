@@ -16,7 +16,7 @@ import java.util.HashMap;
 */
 public interface IScoreBreakdownService extends IService<ScoreBreakdown> {
 
-    Result recordScore(HttpServletRequest request,
+    Result recordScore(HttpServletRequest request,Integer id,
                        Double baseScore, String baseScoreDetails,
                        Double evaluationScore, String evaluationScoreDetails,
                        Double qualityScore, String qualityScoreDetails,
@@ -25,10 +25,10 @@ public interface IScoreBreakdownService extends IService<ScoreBreakdown> {
     Result saveScore(HttpServletRequest request);
 
 
-    Result deleteScore(HttpServletRequest request,Integer type);
+//    Result deleteScore(HttpServletRequest request,Integer type);
 
-    Result beforeShowInfo(HttpServletRequest request, Integer type);
+//    Result beforeShowInfo(HttpServletRequest request, Integer type);
 
-    Result afterShowInfo(HttpServletRequest request, Integer type);
+    Result getUserScoreInfo(HttpServletRequest request);
 }
 

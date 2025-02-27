@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum VerifyRegexEnum {
 
     NO("","不校验"),
+    STUDENT_ID("^[A-Z0-9]{9}$","学生学号"),
     IP("([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])" +
             "(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}","IP地址"),
     POSITIVE_INTEGER("^[0-9]*[1-9][0-9]*$","正整数"),

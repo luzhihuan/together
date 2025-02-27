@@ -94,7 +94,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         UserInfo check = null;
         if (VerifyUtil.verify(VerifyRegexEnum.EMAIL, username)) {
             check = userInfoMapper.selectByEmail(username);
-        } else if (VerifyUtil.verify(VerifyRegexEnum.ACCOUNT, username)) {
+        } else if (VerifyUtil.verify(VerifyRegexEnum.STUDENT_ID, username)) {
             check = userInfoMapper.selectById(username);
         } else {
             return Result.fail("用户名或密码错误！");
@@ -118,6 +118,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         tokenUserInfoDTO.setToken(token);
         tokenUserInfoDTO.setNickName(check.getNickName());
         tokenUserInfoDTO.setLevel(check.getLevel());
+        tokenUserInfoDTO.setStudentId(check.getStudentId());
         
 
         //判断一下是否为管理员

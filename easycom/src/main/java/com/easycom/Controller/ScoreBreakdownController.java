@@ -30,6 +30,7 @@ public class ScoreBreakdownController {
     /**
      * 填写每一种类型的表，并保存
      *
+     * @param id                    每种类型的测评信息的唯一id
      * @param request                前端请求信息
      * @param baseScore              基础分
      * @param baseScoreDetails       基础分事项
@@ -45,13 +46,13 @@ public class ScoreBreakdownController {
      */
     @RequestMapping("/sendScore")
     @GlobalInterceptor
-    public Result recordScore(HttpServletRequest request, @Max(100) Double baseScore,
+    public Result recordScore(HttpServletRequest request,Integer id, @Max(100) Double baseScore,
                               @Length(max = 200) String baseScoreDetails, @Max(100) Double evaluationScore,
                               @Length(max = 200) String evaluationScoreDetails, @Max(100) Double qualityScore,
                               @Length(max = 200) String qualityScoreDetails, @Max(100) Double deductScore,
                               @Length(max = 200) String deductScoreDetails, @NotNull Integer type, MultipartFile[] files)  {
 
-        return scoreBreakdownService.recordScore(request, baseScore, baseScoreDetails,
+        return scoreBreakdownService.recordScore(request,id, baseScore, baseScoreDetails,
                 evaluationScore, evaluationScoreDetails, qualityScore,
                 qualityScoreDetails, deductScore, deductScoreDetails, type,files);
 
@@ -64,28 +65,38 @@ public class ScoreBreakdownController {
     public Result saveScore(HttpServletRequest request) {
         return scoreBreakdownService.saveScore(request);
     }
+    
+    
+//    /**
+//     * 删除redis中的存档
+//     * */
+//    @RequestMapping("/deleteScore")
+//    @GlobalInterceptor
+//    public Result deleteScore(HttpServletRequest request, Integer type) {
+//        return scoreBreakdownService.deleteScore(request, type);
+//    }
+    
+    
+//    /**
+//    * 在上传完成前访问redis展示数据
+//    * */
+//    @RequestMapping("/beforeShowInfo")
+//    @GlobalInterceptor
+//    public Result beforeShowInfo(HttpServletRequest request, Integer type) {
+//        return scoreBreakdownService.beforeShowInfo(request, type);
+//    }
+
+
     /**
-     * 删除redis中的存档
-     * */
-    @RequestMapping("/deleteScore")
+     * 获取学生填写每一种类测评的信息，用于修改操作
+     * @param request   前端信息
+     * @return  每一种类型测评信息的一个列表
+     */
+    @RequestMapping("/getUserScoreInfo")
     @GlobalInterceptor
-    public Result deleteScore(HttpServletRequest request, Integer type) {
-        return scoreBreakdownService.deleteScore(request, type);
+    public Result getUserScoreInfo(HttpServletRequest request ) {
+        return scoreBreakdownService.getUserScoreInfo(request);
     }
-    /**
-    * 在上传完成前访问redis展示数据
-    * */
-    @RequestMapping("/beforeShowInfo")
-    @GlobalInterceptor
-    public Result beforeShowInfo(HttpServletRequest request, Integer type) {
-        return scoreBreakdownService.beforeShowInfo(request, type);
-    }
-    /**
-     * 在上传完成后访问mysql展示数据
-     * */
-    @RequestMapping("/afterShowInfo")
-    @GlobalInterceptor
-    public Result afterShowInfo(HttpServletRequest request, Integer type) {
-        return scoreBreakdownService.afterShowInfo(request, type);
-    }
+    
+    
 }

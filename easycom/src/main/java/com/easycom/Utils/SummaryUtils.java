@@ -24,9 +24,10 @@ public class SummaryUtils {
             综合测评总成绩=德育测评成绩×20%＋智育测评成绩×60%＋体
                          育测评成绩×10%＋美育测评成绩×5%＋劳育测评成绩×5%
         */
-        summary.setTotalScore(summary.getMoralityScore() * 0.2
-                + summary.getIntellectualScore() * 0.6
-                + summary.getSportScore() * 0.1
-                + (summary.getAestheticScore() + summary.getLaborScore()) * 0.05);
+//        summary.setTotalScore(summary.getMoralityScore() * 0.2
+//                + summary.getIntellectualScore() * 0.6
+//                + summary.getSportScore() * 0.1
+//                + (summary.getAestheticScore() + summary.getLaborScore()) * 0.05);
+        summary.setTotalScore(100d);
     }
 }

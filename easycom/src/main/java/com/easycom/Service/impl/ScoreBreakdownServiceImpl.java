@@ -1,10 +1,15 @@
 package com.easycom.Service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.easycom.Mapper.ScoreBreakdownMapper;
 import com.easycom.Mapper.SummaryMapper;
+import com.easycom.Mapper.UserInfoMapper;
 import com.easycom.Service.IScoreBreakdownService;
 import com.easycom.Utils.DefaultParam;
 import com.easycom.Utils.ScoreBreakUtil;
@@ -14,7 +19,9 @@ import com.easycom.config.AppConfig;
 import com.easycom.entity.DTO.TokenUserInfoDTO;
 import com.easycom.entity.PO.ScoreBreakdown;
 import com.easycom.entity.PO.Summary;
+import com.easycom.entity.PO.UserInfo;
 import com.easycom.entity.VO.Result;
+import com.easycom.entity.VO.ScoreBreakdownVO;
 import com.easycom.entity.enums.ScoreBreakdownStatusEnum;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
 import com.easycom.entity.enums.SummaryStatusEnum;
@@ -30,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,10 +57,12 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
     private RedisComponent redisComponent;
     @Resource
     private AppConfig appconfig;
+    @Resource
+    private UserInfoMapper userInfoMapper;
 
 
     @Override
-    public Result recordScore(HttpServletRequest request,
+    public Result recordScore(HttpServletRequest request,Integer id,
                               Double baseScore, String baseScoreDetails,
                               Double evaluationScore, String evaluationScoreDetails,
                               Double qualityScore, String qualityScoreDetails,
@@ -61,7 +71,6 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
         Double totalScore = 0d;
         
-        //TODO 查询数据库，如果发现已经存在有，那么说明是用户修改，执行修改逻辑！
 
         //计算各个分数项
         if (type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())) {
@@ -91,7 +100,9 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         scoreBreakdown.setTotalScore(totalScore);
         scoreBreakdown.setType(type);
         scoreBreakdown.setStatus(ScoreBreakdownStatusEnum.SENDING.getStatus());
-        
+        if(id!=null&& NumberUtil.isValidNumber(id)){
+            scoreBreakdown.setId(id);
+        }
 
         //先将文件暂时存储到redis中
         if(files!=null){
@@ -114,7 +125,8 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                 redisComponent.saveFileName2List(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),DefaultParam.FILE_PROVE_NAME+i+fileSuffix);
             }
             
-            //设置文件路径为 ../file/{userid}/{typeName}
+            
+            //TODO 重新设置设置文件路径为 ../file/{userid}/{typeName}/,name1.suf,name2.suf
             String filePath = DefaultParam.FILE_FOLDER_FILE+tokenUserInfoDTO.getUserId()+"/"+ScoreBreakdownTypeEnum.getByType(type).getTypeName()+"/";
             scoreBreakdown.setFilePath(filePath);
         }
@@ -158,6 +170,9 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             }
             //设置信息为已提交
             scoreBreakdown.setStatus(ScoreBreakdownStatusEnum.FINISH.getStatus());
+            if(StrUtil.isEmpty(scoreBreakdown.getFilePath())){
+                scoreBreakdown.setFilePath("");
+            }
             
             boolean b = scoreBreakdownMapper.insertOrUpdate(scoreBreakdown);
             
@@ -174,20 +189,21 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             //带有类型名的目录
             String typeNameFolder = folderName + typeEnum.getTypeName()+"/";
             
+            //TODO 循环遍历服务器的文件夹，防止重复保存
+            
+            
             //将用户保存的临时文件保存到服务器文件夹../file/{userId}/{typeName}/中
             redisComponent.saveUserFile2Folder(userId,typeEnum.getTypeName(),fileNameList,typeNameFolder);
 
             if (b) {
                 //记录每种类型的总分
                 SummaryUtils.setInfo(typeEnum,summary,scoreBreakdown.getTotalScore());
-                
-                //用户提交所有类型信息完毕后，需要将所有临时文件删除，包括删除每一种类型的测评信息
-                RedisComponent.deleteAllScoreInfo(userId);
             }else {
                 throw new UserException("上传失败，请重新检查！");
             }
         }
-
+        //用户提交所有类型信息完毕后，需要将所有临时文件删除，包括删除每一种类型的测评信息
+//        RedisComponent.deleteAllScoreInfo(userId);
         //补充summary的信息，并录入到数据库当中
         summary.setStatus(SummaryStatusEnum.CLASS_AUDIT.getStatus());
         
@@ -199,31 +215,48 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         return Result.ok("上传成功");
     }
 
+//    @Override
+//    public Result deleteScore(HttpServletRequest request,Integer type) {
+//        TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
+//        RedisUtils.del(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + type);
+//        return Result.ok("删除成功");
+//    }
+
+    
+//    @Override 
+//    public Result beforeShowInfo(HttpServletRequest request, Integer type) {
+//        TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
+//        return Result.ok((ScoreBreakdown)RedisUtils.get(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + type));
+//
+//    }
+
     @Override
-    public Result deleteScore(HttpServletRequest request,Integer type) {
+    public Result getUserScoreInfo(HttpServletRequest request) {
         TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
-        RedisUtils.del(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + type);
-        return Result.ok("删除成功");
+        String userId = tokenUserInfoDTO.getUserId();
+        String studentId = tokenUserInfoDTO.getStudentId();
+        UserInfo userInfo = userInfoMapper.selectByUserIdAndStudentId(userId, studentId);
+        if(userInfo == null){
+            return Result.fail(DefaultParam.PARAM_ERROR);
+        }
+
+        List<ScoreBreakdown> scoreBreakdownList = scoreBreakdownMapper.selectList(
+                new LambdaQueryWrapper<ScoreBreakdown>()
+                        .eq(ScoreBreakdown::getUserId, userInfo)
+                        .eq(ScoreBreakdown::getStudentId, studentId)
+        );
+        
+        if(scoreBreakdownList.size()!=5){
+            return Result.fail(DefaultParam.PARAM_ERROR);
+        }
+
+        ArrayList<ScoreBreakdownVO> scoreBreakdownVOList = new ArrayList<>();  
+        scoreBreakdownList.forEach(scoreBreakdown ->
+                scoreBreakdownVOList.add(BeanUtil.copyProperties(scoreBreakdown,ScoreBreakdownVO.class)));
+        return Result.ok(scoreBreakdownVOList);
     }
-
-    @Override 
-    public Result beforeShowInfo(HttpServletRequest request, Integer type) {
-        TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
-        return Result.ok((ScoreBreakdown)RedisUtils.get(DefaultParam.REDIS_KEY_SCORE_BREAKDOWN_USERID + tokenUserInfoDTO.getUserId() + ":" + type));
-
-    }
-
-    @Override
-    public Result afterShowInfo(HttpServletRequest request, Integer type) {
-        TokenUserInfoDTO tokenUserInfoDTO = UserHolder.getTokenUserInfoDTO(request);
-
-        QueryWrapper<ScoreBreakdown> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id",tokenUserInfoDTO.getUserId())
-                    .eq("type",type);
-
-        ScoreBreakdown scoreBreakdown = scoreBreakdownMapper.selectOne(queryWrapper);
-        return Result.ok(scoreBreakdown);
-    }
+    
+    
 }
 
 

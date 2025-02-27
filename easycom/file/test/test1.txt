@@ -1,0 +1,220 @@
+保存文件的速度慢可能由以下原因导致：
+1. **频繁的 IO 操作**：每次保存文件都涉及磁盘写入，频繁的小文件写入会降低性能。
+2. **Redis 数据读取**：频繁从 Redis 中读取文件数据可能导致网络或 Redis 本身的性能瓶颈。
+3. **同步写入**：文件写入是同步操作，可能会阻塞主线程。
+
+为了优化文件保存速度，可以从以下几个方面进行改进：
+
+---
+
+### 1. **批量写入文件**
+将多个小文件合并为一次批量写入操作，减少磁盘 IO 的次数。
+
+#### 优化代码：
+```java
+public void saveUserFile2Folder(String userId, String typeName, List<String> fileNameList, String folderName) {
+    File folder = new File(folderName);
+    if (!folder.exists()) {
+        folder.mkdir();
+    }
+
+    // 批量读取 Redis 中的文件数据
+    List<byte[]> fileDataList = new ArrayList<>();
+    for (String fileName : fileNameList) {
+        Object fileValue = RedisUtils.get(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + ":" + fileName);
+        if (fileValue == null) {
+            log.info("文件，{}，不存在！", fileName);
+            continue;
+        }
+
+        byte[] files;
+        if (fileValue instanceof byte[]) {
+            files = (byte[]) fileValue;
+        } else if (fileValue instanceof String) {
+            files = Base64.getDecoder().decode((String) fileValue);
+        } else {
+            throw new IllegalArgumentException("Redis 中的数据类型不正确，预期为 byte[] 或 String，实际为：" + fileValue.getClass().getName());
+        }
+        fileDataList.add(files);
+    }
+
+    // 批量写入文件
+    for (int i = 0; i < fileNameList.size(); i++) {
+        String fileName = fileNameList.get(i);
+        byte[] files = fileDataList.get(i);
+        if (files == null) {
+            continue;
+        }
+
+        File file = new File(folder, fileName);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(files);
+            fos.flush();
+        } catch (IOException e) {
+            log.error("文件保存失败！因为：{}", e.getMessage());
+            throw new UserException("文件保存失败！");
+        }
+    }
+}
+```
+
+---
+
+### 2. **异步写入文件**
+将文件写入操作放到异步任务中执行，避免阻塞主线程。
+
+#### 优化代码：
+```java
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+@Service
+public class FileService {
+
+    @Async
+    public void saveUserFile2FolderAsync(String userId, String typeName, List<String> fileNameList, String folderName) {
+        saveUserFile2Folder(userId, typeName, fileNameList, folderName);
+    }
+
+    private void saveUserFile2Folder(String userId, String typeName, List<String> fileNameList, String folderName) {
+        File folder = new File(folderName);
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+
+        for (String fileName : fileNameList) {
+            Object fileValue = RedisUtils.get(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + ":" + fileName);
+            if (fileValue == null) {
+                log.info("文件，{}，不存在！", fileName);
+                continue;
+            }
+
+            byte[] files;
+            if (fileValue instanceof byte[]) {
+                files = (byte[]) fileValue;
+            } else if (fileValue instanceof String) {
+                files = Base64.getDecoder().decode((String) fileValue);
+            } else {
+                throw new IllegalArgumentException("Redis 中的数据类型不正确，预期为 byte[] 或 String，实际为：" + fileValue.getClass().getName());
+            }
+
+            File file = new File(folder, fileName);
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(files);
+                fos.flush();
+            } catch (IOException e) {
+                log.error("文件保存失败！因为：{}", e.getMessage());
+                throw new UserException("文件保存失败！");
+            }
+        }
+    }
+}
+```
+
+在调用时使用异步方法：
+```java
+fileService.saveUserFile2FolderAsync(userId, typeEnum.getTypeName(), fileNameList, typeNameFolder);
+```
+
+---
+
+### 3. **使用缓冲区**
+在文件写入时使用 `BufferedOutputStream`，减少磁盘 IO 的次数。
+
+#### 优化代码：
+```java
+public void saveUserFile2Folder(String userId, String typeName, List<String> fileNameList, String folderName) {
+    File folder = new File(folderName);
+    if (!folder.exists()) {
+        folder.mkdir();
+    }
+
+    for (String fileName : fileNameList) {
+        Object fileValue = RedisUtils.get(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + ":" + fileName);
+        if (fileValue == null) {
+            log.info("文件，{}，不存在！", fileName);
+            continue;
+        }
+
+        byte[] files;
+        if (fileValue instanceof byte[]) {
+            files = (byte[]) fileValue;
+        } else if (fileValue instanceof String) {
+            files = Base64.getDecoder().decode((String) fileValue);
+        } else {
+            throw new IllegalArgumentException("Redis 中的数据类型不正确，预期为 byte[] 或 String，实际为：" + fileValue.getClass().getName());
+        }
+
+        File file = new File(folder, fileName);
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file))) {
+            bos.write(files);
+            bos.flush();
+        } catch (IOException e) {
+            log.error("文件保存失败！因为：{}", e.getMessage());
+            throw new UserException("文件保存失败！");
+        }
+    }
+}
+```
+
+---
+
+### 4. **Redis 批量读取**
+如果 Redis 支持批量读取（如 `mget`），可以一次性读取多个文件数据，减少网络开销。
+
+#### 优化代码：
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public void saveUserFile2Folder(String userId, String typeName, List<String> fileNameList, String folderName) {
+    File folder = new File(folderName);
+    if (!folder.exists()) {
+        folder.mkdir();
+    }
+
+    // 批量读取 Redis 中的文件数据
+    List<String> redisKeys = new ArrayList<>();
+    for (String fileName : fileNameList) {
+        redisKeys.add(DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + ":" + fileName);
+    }
+
+    List<Object> fileValues = RedisUtils.mget(redisKeys); // 假设 RedisUtils 支持批量读取
+    for (int i = 0; i < fileNameList.size(); i++) {
+        Object fileValue = fileValues.get(i);
+        if (fileValue == null) {
+            log.info("文件，{}，不存在！", fileNameList.get(i));
+            continue;
+        }
+
+        byte[] files;
+        if (fileValue instanceof byte[]) {
+            files = (byte[]) fileValue;
+        } else if (fileValue instanceof String) {
+            files = Base64.getDecoder().decode((String) fileValue);
+        } else {
+            throw new IllegalArgumentException("Redis 中的数据类型不正确，预期为 byte[] 或 String，实际为：" + fileValue.getClass().getName());
+        }
+
+        File file = new File(folder, fileNameList.get(i));
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file))) {
+            bos.write(files);
+            bos.flush();
+        } catch (IOException e) {
+            log.error("文件保存失败！因为：{}", e.getMessage());
+            throw new UserException("文件保存失败！");
+        }
+    }
+}
+```
+
+---
+
+### 5. **总结
+通过以下优化手段，可以显著提升文件保存速度：
+1. **批量写入文件**：减少磁盘 IO 次数。
+2. **异步写入文件**：避免阻塞主线程。
+3. **使用缓冲区**：减少磁盘 IO 次数。
+4. **Redis 批量读取**：减少网络开销。
+
+根据实际场景选择合适的优化方案，可以显著提升性能。
