@@ -26,15 +26,21 @@ public class SummaryController {
     }
 
     /**
-     * 
+     *
      * @param request
+     * @param current 页码
+     * @param size 表的个数
+     * @param classId 班级Id
      * @return
      */
     @RequestMapping("/check")
     public Result check(HttpServletRequest request,
                         Integer current,
-                        Integer size){
-        return summaryService.check(request,current,size);
+                        Integer size,
+                        String classId,
+                        String specId,
+                        String academyId){
+        return summaryService.check(request,current,size,classId,specId,academyId);
     }
 
 }

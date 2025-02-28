@@ -26,7 +26,6 @@ public class DefaultParam {
     public static final String PASSWORD_VERIFY = "^(?=.*\\d)(?=.*[a-zA-Z])[\\da-zA-Z~!@#$%^&*_]{8,18}$";
     public static final String EMAIL_CHECK = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
 
-
     public static final String FILE_FOLDER_FILE = "/file/";
 
 

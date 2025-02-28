@@ -11,5 +11,7 @@ public class TokenUserInfoDTO {
     private String token;
     private Integer level;
     private Boolean isFirst;
-
+    private String classId;
+    private String academyId;
+    private String specId;
 }

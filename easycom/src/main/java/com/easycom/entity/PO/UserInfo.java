@@ -74,5 +74,17 @@ public class UserInfo implements Serializable {
      * 用户身份 0：普通用户 1：班审核员 2：辅导员审核员 3：校领导审核员
      */
     private Integer level;
+    /**
+     * 班级id
+     */
+    private String classId;
+    /**
+     * 学院id
+     */
+    private String academyId;
+    /**
+     * 专业id
+     */
+    private String specId;
     
 }

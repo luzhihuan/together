@@ -56,4 +56,8 @@ public class SummaryUtils {
         }
         return summaryVos;
     }
+
+    public static List<String> getStudentIdsByClassId(String classId) {
+
+    }
 }

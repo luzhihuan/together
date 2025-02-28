@@ -119,7 +119,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         tokenUserInfoDTO.setNickName(check.getNickName());
         tokenUserInfoDTO.setLevel(check.getLevel());
         tokenUserInfoDTO.setStudentId(check.getStudentId());
-        
+        tokenUserInfoDTO.setClassId(check.getClassId());
+        tokenUserInfoDTO.setSpecId(check.getSpecId());
+        tokenUserInfoDTO.setAcademyId(check.getAcademyId());
 
         //判断一下是否为管理员
         String[] split = appConfig.getAdminEmail().split(",");
@@ -136,6 +138,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return Result.ok(tokenUserInfoDTO);
 
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result register(String checkCodeKey, String checkCode,
