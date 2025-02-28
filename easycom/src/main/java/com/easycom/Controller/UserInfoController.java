@@ -95,7 +95,7 @@ public class UserInfoController {
         return userInfoService.resetPassword(request,password,email,emailCode);
     }
 
-    /**d
+    /**
      * 找回密码
      * @param password 修改的密码
      * @param checkCodeKey  验证码唯一标识

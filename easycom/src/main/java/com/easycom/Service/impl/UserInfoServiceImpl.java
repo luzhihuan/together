@@ -1,6 +1,7 @@
 package com.easycom.Service.impl;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.easycom.Mapper.RegisterCodeMapper;
 import com.easycom.Service.IEmailCodeService;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -113,24 +115,31 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
         //生成token
         String token = UUID.fastUUID().toString(true);
+        //构建传输对象
         TokenUserInfoDTO tokenUserInfoDTO = new TokenUserInfoDTO();
+        //设置用户id
         tokenUserInfoDTO.setUserId(check.getUserId());
+        //设置登陆令牌和用户昵称
         tokenUserInfoDTO.setToken(token);
         tokenUserInfoDTO.setNickName(check.getNickName());
+        //根据查询对象的状态来判断是否第一次登录！
+        tokenUserInfoDTO.setIsFirst(Objects.equals(check.getStatus(), UserStatusEnum.FIRST_TIME_LOGIN.getStatus()));
+        //设置用户等级区分审核员与普通学生
         tokenUserInfoDTO.setLevel(check.getLevel());
+        //设置学生id，班别，专业，学院
+        //注意，如果level是高层级的，那么这个代表着审核员所审核的范围！
         tokenUserInfoDTO.setStudentId(check.getStudentId());
         tokenUserInfoDTO.setClassId(check.getClassId());
         tokenUserInfoDTO.setSpecId(check.getSpecId());
         tokenUserInfoDTO.setAcademyId(check.getAcademyId());
 
-        //判断一下是否为管理员
+        //判断一下是否为开发者！
         String[] split = appConfig.getAdminEmail().split(",");
         if (ArraysUtil.contains(split, check.getEmail())) {
             tokenUserInfoDTO.setIsAdmin(true);
         } else {
             tokenUserInfoDTO.setIsAdmin(false);
         }
-
 
         //将dto保存到redis
         redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
@@ -167,21 +176,23 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                     .nickName(nickName)
                     .password(DigestUtil.md5Hex(password))
                     .status(UserStatusEnum.FIRST_TIME_LOGIN.getStatus())
-                    .level(0)
+                    .level(UserLevelEnum.NOMAL_USER.getLevel())
                     .build();
             //根据邀请码设置相对应的用户身份，默认为普通用户
-            if (registerCode != null && !registerCode.equals("")) {
+            if (!StrUtil.isEmpty(registerCode)) {
                 RegisterCode code = registerCodeMapper.selectByCode(registerCode);
-                if (code.getStatus() == 0 && code.getEmail() == null) {
-                    build.setLevel(code.getLevel());
+                if(code == null){
+                    return Result.fail("不存在该邀请码！");
                 }
+                if (code.getStatus().equals(RegisterCodeEnum.IS_USE.getStatus())) {
+                    return Result.fail("该注册码已被注册！");
+                }
+                build.setLevel(code.getLevel());
                 code.setEmail(build.getEmail());
                 code.setStatus(RegisterCodeEnum.IS_USE.getStatus());
                 registerCodeMapper.updateById(code);
             }
-
             userInfoMapper.insert(build);
-
             return Result.ok("注册成功");
 
         } finally {
@@ -206,17 +217,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         //修改密码，如果第一次登录，强制要求绑定邮箱
         if (email != null && tokenUserInfoDTO.getIsFirst()) {
             userInfo.setEmail(email);
+            userInfo.setStatus(UserStatusEnum.ENABLE.getStatus());
             tokenUserInfoDTO.setIsFirst(false);
             redisComponent.saveTokenUserInfoDTO(tokenUserInfoDTO);
             emailCodeService.checkCode(email, emailCode);
         }
-        int update = userInfoMapper.updateById(userInfo);
-        if (update > 0) {
-            return Result.ok("密码修改成功");
-        } else {
-            return Result.fail("密码修改失败");
-        }
-
+        userInfoMapper.updateById(userInfo);
+        return Result.ok("密码修改成功");
     }
 
     @Override
