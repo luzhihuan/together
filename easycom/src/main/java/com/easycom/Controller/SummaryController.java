@@ -33,14 +33,14 @@ public class SummaryController {
      * @param classId 班级Id
      * @return
      */
-    @RequestMapping("/check")
-    public Result check(HttpServletRequest request,
+    @RequestMapping("/showTask")
+    public Result showTask(HttpServletRequest request,
                         Integer current,
                         Integer size,
                         String classId,
                         String specId,
                         String academyId){
-        return summaryService.check(request,current,size,classId,specId,academyId);
+        return summaryService.showTask(request,current,size,classId,specId,academyId);
     }
 
 }

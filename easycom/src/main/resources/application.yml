@@ -3,12 +3,14 @@ server:
   servlet:
     context-path: /api
 
+
 mybatis-plus:
-  #  configuration:
-  #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   type-aliases-package: com.easypan.entity
   global-config:
     banner: off
+
 
 spring:
   servlet:

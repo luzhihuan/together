@@ -4,8 +4,8 @@
 
     <select id="selectByEmail" resultType="com.easycom.entity.PO.UserInfo">
         select *
-            from  user_info
-        where email =#{email}
+        from user_info
+        where email = #{email}
     </select>
 
     <select id="selectByUserIdAndStudentId" resultType="com.easycom.entity.PO.UserInfo">
@@ -13,6 +13,30 @@
         from user_info
         where user_id = #{userId}
           and student_id = #{studentId}
+    </select>
+    <select id="selectStudentIdsByClassId" resultType="java.lang.String">
+        select student_id
+        from user_info
+        where class_id = #{classId}
+    </select>
+    <select id="selectStudentIdsBySpecId" resultType="java.lang.String">
+        select student_id
+        from user_info
+        where spec_id = #{specId}
+        <if test="classId != null">
+            and class_id = #{classId}
+        </if>
+    </select>
+    <select id="selectStudentIdsByAcademyId" resultType="java.lang.String">
+        select student_id
+        from user_info
+        where academy_id = #{academyId}
+        <if test="specId != null">
+              and spec_id = #{specId}
+        </if>
+        <if test="classId != null">
+            and class_id = #{classId}
+        </if>
     </select>
 
 </mapper>
