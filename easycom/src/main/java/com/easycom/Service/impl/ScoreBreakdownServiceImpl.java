@@ -1,6 +1,7 @@
 package com.easycom.Service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -31,6 +32,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -79,7 +82,6 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
 
         //处理空的情况！
         baseScoreDetails = Optional.ofNullable(baseScoreDetails).orElse("无");
-        evaluationScoreDetails = Optional.ofNullable(evaluationScoreDetails).orElse("无");
         qualityScoreDetails = Optional.ofNullable(qualityScoreDetails).orElse("无");
         deductScoreDetails  = Optional.ofNullable(deductScoreDetails).orElse("无");
 
@@ -89,8 +91,13 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         scoreBreakdown.setStudentId(DefaultParam.DEFAULT_STUDENT_ID);
         scoreBreakdown.setBaseScore(baseScore);
         scoreBreakdown.setBaseScoreDetails(baseScoreDetails);
-        scoreBreakdown.setEvaluationScore(evaluationScore);
-        scoreBreakdown.setEvaluationScoreDetails(evaluationScoreDetails);
+        
+        //只有德育才有互评分！
+        if(type.equals(ScoreBreakdownTypeEnum.MORALITY.getType())){
+            evaluationScoreDetails = Optional.ofNullable(evaluationScoreDetails).orElse("无");
+            scoreBreakdown.setEvaluationScore(evaluationScore);
+            scoreBreakdown.setEvaluationScoreDetails(evaluationScoreDetails);
+        }
         scoreBreakdown.setQualityScore(qualityScore);
         scoreBreakdown.setQualityScoreDetails(qualityScoreDetails);
         scoreBreakdown.setDeductScore(deductScore);
@@ -98,7 +105,21 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
         scoreBreakdown.setTotalScore(totalScore);
         scoreBreakdown.setType(type);
         scoreBreakdown.setStatus(ScoreBreakdownStatusEnum.SENDING.getStatus());
-        if(id!=null&& NumberUtil.isValidNumber(id)){
+        
+        //如果id不为空且是有效整数，则为用户修改操作！
+        if(id!=null && NumberUtil.isValidNumber(id) ){
+            ScoreBreakdown db_scoreBreakdown = scoreBreakdownMapper.selectById(id);
+            //如果查不到，或者查到了但不是这个学生的测评信息，或者修改的类型与数据库期望的类型不一致，均视为非法操作！
+            if(db_scoreBreakdown == null){
+                throw new UserException(DefaultParam.ILLEGAL_ACCESS);
+            }
+            if(!db_scoreBreakdown.getUserId().equals(tokenUserInfoDTO.getUserId()) || 
+                !db_scoreBreakdown.getStudentId().equals(tokenUserInfoDTO.getStudentId())){
+                throw new UserException(DefaultParam.ILLEGAL_ACCESS);
+            }
+            if(!db_scoreBreakdown.getType().equals(scoreBreakdown.getType())){
+                throw new UserException(DefaultParam.ILLEGAL_ACCESS);
+            }
             scoreBreakdown.setId(id);
         }
 
@@ -121,11 +142,20 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
                     filePath.append(",");
                 }
                 
+                String typeName = ScoreBreakdownTypeEnum.getByType(type).getTypeName();
+                
+                //如果文件存在于服务器当中，则不需要保存到缓存中！
+                String folder = appconfig.getProjectFolder() + DefaultParam.FILE_FOLDER_FILE + tokenUserInfoDTO.getUserId() + "/" + typeName;
+                File fileFolder = new File(folder);
+                List<String> server_fileNameList = new ArrayList<>();
+                if(fileFolder.exists()){
+                    server_fileNameList = FileUtil.listFileNames(fileFolder.getAbsolutePath());
+                }
+
                 // 将文件暂时存储到redis中
                 // key命名规则 easycom:user:temp:{userId}:{typeName}:{count.fileSuffix}
-                redisComponent.saveProveInfo(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),files[i].getOriginalFilename(),files[i]);
                 //将所有文件名保存到redis中，用一个列表，将用户上传的不同文件类型保存起来
-                redisComponent.saveFileName2List(tokenUserInfoDTO.getUserId(),ScoreBreakdownTypeEnum.getByType(type).getTypeName(),files[i].getOriginalFilename());
+                redisComponent.saveFile2Redis(tokenUserInfoDTO.getUserId(),typeName,files[i].getOriginalFilename(),files[i],server_fileNameList);
                 
             }
             //设置文件路径为 name1.suf,name2.suf
@@ -167,37 +197,34 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
             
             //如果某种类型的评测信息不存在则不处理这种类型的测评信息
             if(scoreBreakdown==null){
+//                scoreBreakdown == scoreBreakdownMapper.
                 continue;
             }
+            
             //设置信息为已提交
             scoreBreakdown.setStatus(ScoreBreakdownStatusEnum.FINISH.getStatus());
             if(StrUtil.isEmpty(scoreBreakdown.getFilePath())){
                 scoreBreakdown.setFilePath("");
             }
-            
-            boolean b = scoreBreakdownMapper.insertOrUpdate(scoreBreakdown);
-
-            if (b) {
-                //记录每种类型的总分
-                SummaryUtils.setInfo(typeEnum,summary,scoreBreakdown.getTotalScore());
-            }else {
-                throw new UserException("上传失败，请重新检查！");
-            }
+            scoreBreakdownMapper.insertOrUpdate(scoreBreakdown);
+            //记录每种类型的总分
+            SummaryUtils.setInfo(typeEnum,summary,scoreBreakdown.getTotalScore());
         }
         
-        
-        //将用户保存的临时文件保存到服务器文件夹../file/{userId}/{typeName}/中
-        redisComponent.saveUserFile2Folder(userId);
-        
-        //用户提交所有类型信息完毕后，需要将所有临时文件删除，包括删除每一种类型的测评信息
-//        RedisComponent.deleteAllScoreInfo(userId);
         //补充summary的信息，并录入到数据库当中
         summary.setStatus(SummaryStatusEnum.CLASS_AUDIT.getStatus());
-        
         //总分计算
         SummaryUtils.setTotalScore(summary);
-        
         summaryMapper.insertOrUpdate(summary);
+        
+        //将用户保存的临时文件保存到服务器文件夹../file/{userId}/{typeName}/中
+        //由于是异步保存，需要等到事务提交完毕后，再进行保存!
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                redisComponent.saveUserFile2Folder(userId);
+            }
+        });
         
         return Result.ok("上传成功");
     }
@@ -229,7 +256,7 @@ public class ScoreBreakdownServiceImpl extends ServiceImpl<ScoreBreakdownMapper,
 
         List<ScoreBreakdown> scoreBreakdownList = scoreBreakdownMapper.selectList(
                 new LambdaQueryWrapper<ScoreBreakdown>()
-                        .eq(ScoreBreakdown::getUserId, userInfo)
+                        .eq(ScoreBreakdown::getUserId, userId)
                         .eq(ScoreBreakdown::getStudentId, studentId)
         );
         

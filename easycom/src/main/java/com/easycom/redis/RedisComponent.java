@@ -59,25 +59,32 @@ public class RedisComponent {
     }
 
     //保存证明材料文件
-    public void saveProveInfo(String userId, String typeName, String fileName, MultipartFile file) {
+    //保存上传的文件名
+    public void saveFile2Redis(String userId, String typeName, String fileName, MultipartFile file,List<String > server_fileNameList) {
+
         try {
+            //如果发现传入的文件名与服务器中的文件名重复，则无需存储到缓存中
+            if(!server_fileNameList.isEmpty()){
+                for (String server_fileName : server_fileNameList) {
+                    if(server_fileName.equals(fileName)){
+                        log.warn("重复文件！不缓存！{}",fileName);
+                        return;
+                    }
+                }
+            }
             RedisUtils.set(
                     DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + ":" + fileName,
                     file.getBytes(),
                     DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
             );
+            RedisUtils.lSet(
+                    DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + DefaultParam.REDIS_KEY_USER_TEMP_FILE_NAME_LIST,
+                    fileName,
+                    DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
+            );
         } catch (IOException e) {
             throw new RuntimeException("保存文件失败！");
         }
-    }
-
-    //保存上传的文件名
-    public void saveFileName2List(String userId, String typeName, String fileName) {
-        RedisUtils.lSet(
-                DefaultParam.REDIS_KEY_USER_TEMP_FILE + userId + ":" + typeName + DefaultParam.REDIS_KEY_USER_TEMP_FILE_NAME_LIST,
-                fileName,
-                DefaultParam.REDIS_KEY_EXPIRE_TIME_ONE_HOUR
-        );
     }
 
     public List<String> getFileNameList(String userId, String typeName) {
@@ -98,7 +105,9 @@ public class RedisComponent {
             for (ScoreBreakdownTypeEnum typeEnum : ScoreBreakdownTypeEnum.values()) {
                 //从缓存中获取到文件数量
                 List<String> fileNameList = getFileNameList(userId, typeEnum.getTypeName());
-
+                if(fileNameList.isEmpty()){
+                    continue;
+                }
                 //创建目录 ../easycom/file/
                 String folderName = appConfig.getProjectFolder()+DefaultParam.FILE_FOLDER_FILE + userId+"/";
                 File folderFather = new File(folderName);
@@ -143,6 +152,8 @@ public class RedisComponent {
                     }
                 }
             }
+            //用户提交所有类型信息完毕后，需要将所有临时文件删除，包括删除每一种类型的测评信息
+            deleteAllScoreInfo(userId);
         }catch (Exception e){
             log.error("文件保存失败！因为：{}",e.getMessage());
             throw new UserException("文件保存失败！");

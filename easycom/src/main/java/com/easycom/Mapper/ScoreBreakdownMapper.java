@@ -2,6 +2,7 @@ package com.easycom.Mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.easycom.entity.PO.ScoreBreakdown;
+import org.apache.ibatis.annotations.Param;
 
 
 /**
@@ -11,7 +12,10 @@ import com.easycom.entity.PO.ScoreBreakdown;
 * @Entity com.easycom.po.ScoreBreakdown
 */
 public interface ScoreBreakdownMapper extends BaseMapper<ScoreBreakdown> {
-
+    
+    ScoreBreakdown selectByUserIdAndStudentIdAndType(@Param("userId") String userId,
+                                                     @Param("studentId") String studentId,
+                                                     @Param("type") Integer type);
 }
 
 

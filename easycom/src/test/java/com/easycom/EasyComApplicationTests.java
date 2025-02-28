@@ -1,6 +1,7 @@
 package com.easycom;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -111,6 +112,23 @@ class EasyComApplicationTests {
 		System.out.println();
 		System.out.println();
 		System.out.println();
+	}
+	
+	@Test
+	void testFileUtil(){
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
+		String filePath = appConfig.getProjectFolder() + DefaultParam.FILE_FOLDER_FILE + "test";
+		List<String> filenameList = FileUtil.listFileNames(filePath);
+		filenameList.forEach(System.out::println);
+
+
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
 	}
 
 }

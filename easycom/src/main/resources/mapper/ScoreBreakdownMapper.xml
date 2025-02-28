@@ -28,4 +28,12 @@
         deduct_score,deduct_scores_details,total_score,
         total_score_details,type,status
     </sql>
+    
+    <select id="selectByUserIdAndStudentIdAndType" resultType="com.easycom.entity.PO.ScoreBreakdown">
+        select *
+        from 
+
+    </select>
+    
+    
 </mapper>
