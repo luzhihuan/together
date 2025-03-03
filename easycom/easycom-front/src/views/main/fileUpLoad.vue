@@ -1,14 +1,26 @@
 <template>
   <div class="body">
     <span class="style-title">资料上传界面</span>
-    
+    <el-container>
+      <el-steps 
+        style="width: 800px"
+        :active="stepsStatus" 
+        align-center
+      >
+        <el-step title="步骤1"  description="德育资料上传"/>
+        <el-step title="步骤2"  description="智育资料上传"/>
+        <el-step title="步骤3"  description="体育资料上传"/>
+        <el-step title="步骤4"  description="美育资料上传"/>
+        <el-step title="步骤5"  description="劳育资料上传"/>
+      </el-steps>
+    </el-container>
     <!-- 走马灯组件 -->
     <el-carousel
       indicator-position="none"
       arrow="never"
       :autoplay="false"
       ref="carouselRef"
-      height="90vh"
+      height="82vh"
       :loop="false"
     >
       <el-carousel-item v-for="(item, index) in form" :key="index">
@@ -18,7 +30,7 @@
           <!-- 表单 -->
           <el-form class="style-form" :model="fileUploadForm" ref="fileUploadFormRef">
             <el-form-item>
-              <el-upload
+              <!-- <el-upload
                 v-model:file-list="fileUploadForm.fileList"
                 action="https://your-backend-api.com/upload"
                 list-type="picture-card"
@@ -28,7 +40,29 @@
                 :on-success="handleAvatarSuccess"
               >
                 <el-icon><Plus /></el-icon>
-              </el-upload>
+              </el-upload> -->
+
+                <!-- 修改为文件列表式上传形式 -->
+              <el-card class="style-upLoadCard">
+                <el-upload
+                  v-model:file-list="fileList"
+                  class="upload-demo"
+                  action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                  :on-change="handleChange"
+                  :on-preview="handlePictureCardPreview"
+                  :before-upload="beforeAvatarUpload"
+                >
+                  <el-tooltip
+                    effect="light"
+                    content="仅支持不超过5MB的jpg、png、docx、xlsx类型文件"
+                    placement="right-start"
+                  >
+                    <el-button type="primary">点击上传资料</el-button>
+                  </el-tooltip>
+                  
+                </el-upload>
+              </el-card>
+              
             </el-form-item>
             
             <el-form-item>
@@ -56,12 +90,11 @@ import { ref, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Plus } from '@element-plus/icons-vue';
 import axios from 'axios';
-
-
 const carouselRef = ref(null);
 const fileUploadForm = reactive({ fileList: [] });
 const dialogImageUrl = ref('');
 const dialogVisible = ref(false);
+const stepsStatus = ref(0);
 
 // 表单数据
 const form = reactive([
@@ -103,11 +136,13 @@ const form = reactive([
 //上一步
 const lastStep = async () => {
   if(carouselRef.value) carouselRef.value.prev();
+  stepsStatus.value-- ;
 }
 // 走马灯切换下一页并上传数据
 const nextStep = async (index) => {
   //await sendDataToServer(form[index]);
   if (carouselRef.value) carouselRef.value.next();
+  stepsStatus.value++ ;
 };
 
 // 提交数据到服务器
@@ -137,6 +172,18 @@ const beforeAvatarUpload = (file) => {
   }
   return true;
 };
+
+const fileList = ref([
+  {
+    name: '示例.jpg',
+    url:'', 
+  },
+])
+
+const handleChange = (uploadFiles) => {
+  fileList.value = [...uploadFiles].slice(-3);
+};
+
 </script>
 
 <style scoped>
@@ -161,12 +208,18 @@ const beforeAvatarUpload = (file) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 90vh;
+  height: 82vh;
   padding: 20px;
 }
 
 .style-title{
   font-size: 30px;
   margin-bottom: 15px; 
+}
+
+.style-upLoadCard{
+  width: 400px;
+  height: 300px;
+  overflow: auto;
 }
 </style>
