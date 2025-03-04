@@ -63,8 +63,7 @@
     
       <ResetPasswordOABindEmail
           :show="firstTimeLogin.show"
-          :title=firstTimeLogin.title
-          :buttons="firstTimeLogin.buttons"
+          :title=firstTimeLogin.title 
           @close="firstTimeLogin.show=false"
           :changeType="firstTimeLogin.opType"
           :showCancel="false"
@@ -154,7 +153,7 @@ const alert = reactive({
       text: '确认',
       click: (e) =>{
         //控制邮箱绑定弹窗
-        firstTimeLogin.show = !firstTimeLogin.show;
+        firstTimeLogin.show = true
       }
     },
   ],
@@ -165,21 +164,8 @@ const firstTimeLogin = reactive({
   show: false,
   title: '完善用户信息',
   opType:1,
-  buttons:[
-    {
-      text: '确认绑定',
-      type: 'primary',
-      click: (e) =>{
-        submit4firstLogin()
-      }
-    },
-  ]
 })
 
-const submit4firstLogin = async () => {
-  
-  
-}
 
 
 //判断用户状态的逻辑段

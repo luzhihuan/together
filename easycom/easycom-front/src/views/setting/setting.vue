@@ -103,7 +103,6 @@
   <ResetPasswordOABindEmail 
     :show="dialogRef.show"
     :title=dialogRef.title
-    :buttons="dialogRef.buttons"
     @close="dialogRef.show=false"
     :changeType="dialogRef.opType"
   >
@@ -125,14 +124,6 @@ const dialogRef = reactive({
   show:false,
   title:title,
   opType:1,
-  buttons:[{
-    type:"primary",
-    text:"发送",
-    click: (e) => {
-      submit()
-    }
-  }]
-  
 })
 
 

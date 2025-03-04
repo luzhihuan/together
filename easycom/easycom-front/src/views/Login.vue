@@ -313,7 +313,6 @@
     </div>
   </div>
 
-
 </template>
 
 
@@ -331,8 +330,6 @@ const router = useRouter()
 
 const formData = ref({});
 const formDataRef = ref();
-
-
 
 
 //界面切换动画初始化
