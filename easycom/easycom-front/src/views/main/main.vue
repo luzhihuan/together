@@ -20,7 +20,7 @@
       <el-container class="button-container">
         <el-button 
           class="style-button"
-          @click="fileUpLoad"
+          @click="openPrePerformance"
         >
         <el-icon>
           <TrendCharts />
@@ -32,10 +32,10 @@
       <el-container class="button-container">
         <el-button 
           class="style-button"
-          @click="fileUpLoad"
+          @click="openEvaluationResult"
         >
         <el-icon>
-          <Checked />
+          <Checked /> 
         </el-icon>
         </el-button>
         <span class="button-title">评测结果查询</span>
@@ -103,7 +103,7 @@
   const rules = {
     yearSelection: [{required: true, message: '请选择评测年份', trigger: 'blur'}],
   }
-
+//评定年度选择
   const yearSelectionConfirm = () =>{
     formDataRef.value.validate (async (valid) => {
       if(!valid){
@@ -114,7 +114,19 @@
       }
     })
   };
+//打开往期综测成绩界面
+  const openPrePerformance = () =>{
+      const route = router.resolve({name: '往期综测成绩'});
+      window.open(route.href, '_blank');
+}
 
+//打开评定结果查询界面
+const openEvaluationResult = () =>{
+      const route = router.resolve({name: '评定结果'});
+      window.open(route.href, '_blank');
+}
+
+//弹窗元素初始化
   const dialog = reactive({
     show: false,
     title: '评测年度选择',
@@ -135,7 +147,7 @@
       }
     ]
   })
-
+//选择器元素初始化
   const years = [
     {
       value : '2024-2025',

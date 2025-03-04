@@ -63,7 +63,34 @@ const router =createRouter({
                 code: 'file',
             },
             component:()=>import("@/views/main/fileUpLoad.vue"),
-        }
+        },
+        {
+            path: "/main/prePerformance",
+            name: "往期综测成绩",
+            meta: {
+                needLogin: true,
+                code: 'prePerformance',
+            },
+            component:()=>import("@/views/main/prePerformance.vue"),
+        },
+        {
+            path: "/main/evaluationResult",
+            name: "评定结果",
+            meta: {
+                needLogin: true,
+                code: 'evaluationResult',
+            },
+            component:()=>import("@/views/main/evaluationResult.vue"),
+        },
+        {
+            path: "/message/inbox",
+            name: "信箱",
+            meta: {
+                needLogin: true,
+                code: 'inbox',
+            },
+            component:()=>import("@/views/message/inbox.vue"),
+        },
     ]
 })
 router.beforeEach((to,from,next,)=>{

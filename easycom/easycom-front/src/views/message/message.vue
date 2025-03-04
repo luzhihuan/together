@@ -2,14 +2,20 @@
   <div class="message-body"> 
      <div class="oneThirdPart">
        <el-container class="button-container"> 
-        <el-button class="style-button" >
-          <template #icon>
-            <el-icon><MessageBox /></el-icon>
-            
-          </template>
-          <span class="style-font">收件箱</span>
-        </el-button>
-      
+        <el-badge
+          :value="200"
+          :max="99"
+        >
+          <el-button 
+            class="style-button" 
+            @click="openInbox"
+          >
+            <template #icon>
+              <el-icon><MessageBox /></el-icon>
+            </template>
+            <span class="style-font">收件箱</span>
+          </el-button>
+        </el-badge>
       </el-container>   
 
       <!-- </div>
@@ -40,6 +46,16 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+const router = useRouter()
+const route = useRoute()
+
+const openInbox = () => {
+  const route = router.resolve({name:'信箱'});
+  window.open(route.href, '_blank');
+}
 
 </script>
 
