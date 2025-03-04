@@ -359,7 +359,7 @@ const rules = {
       {required: true, message: '请输入密码', trigger: 'blur'},
       {validator: proxy.Verify.password, message: "密码只能是数字，字母，特殊字符8-18位"}
   ],
-  checkcode: [{required: true, message: '请输入正确的图片验证码', trigger: 'blur'}],
+  checkCode: [{required: true, message: '请输入正确的图片验证码', trigger: 'blur'}],
   email: [
     {required: true, message: '请输入正确的邮箱', trigger: 'blur'},
     {validator: proxy.Verify.email, message: '请输入正确的邮箱'}

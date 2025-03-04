@@ -1,18 +1,25 @@
 package com.easycom;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.compiler.DiagnosticUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.easycom.Mapper.SummaryMapper;
+import com.easycom.Mapper.UserInfoMapper;
 import com.easycom.Utils.DefaultParam;
+import com.easycom.Utils.UserHolder;
 import com.easycom.config.AppConfig;
 import com.easycom.entity.PO.ScoreBreakdown;
 import com.easycom.entity.PO.Summary;
+import com.easycom.entity.PO.UserInfo;
 import com.easycom.entity.VO.SummaryVo;
 import com.easycom.entity.enums.ScoreBreakdownTypeEnum;
 import com.easycom.entity.enums.SummaryStatusEnum;
+import com.easycom.entity.enums.UserLevelEnum;
+import com.easycom.entity.enums.UserStatusEnum;
 import com.easycom.redis.RedisUtils;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
@@ -30,6 +37,11 @@ import java.util.List;
 class EasyComApplicationTests {
 	@Autowired
 	private SummaryMapper summaryMapper;
+	
+	@Autowired
+	private UserInfoMapper userInfoMapper;
+	
+	
 	@Test
 	void test(){
 		QueryWrapper<Summary> summaryQueryWrapper = new QueryWrapper<>();
@@ -125,6 +137,40 @@ class EasyComApplicationTests {
 		filenameList.forEach(System.out::println);
 
 
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
+	}
+	
+	@Test
+	void AutoGenerateUser(){
+		System.out.println();
+		System.out.println();
+		System.out.println();
+
+		String studentId = "221541200";
+		String password = "Stu12345";
+
+		// 拆分学生ID
+		String college = studentId.substring(2, 4);       // 学院号
+		String major = studentId.substring(4, 6);         // 专业号
+		String classNumber = studentId.substring(6, 7);   // 班级号
+		String studentNumber = studentId.substring(7);    // 学号
+		
+		UserInfo userInfo = UserInfo.builder().build();
+		userInfo.setUserId(UserHolder.getUserIdByRandom());
+		userInfo.setStudentId(studentId);
+		userInfo.setNickName(studentId);
+		userInfo.setPassword(DigestUtil.md5Hex(password));
+		userInfo.setStatus(UserStatusEnum.FIRST_TIME_LOGIN.getStatus());
+		userInfo.setLevel(UserLevelEnum.NOMAL_USER.getLevel());
+		userInfo.setClassId(classNumber);
+		userInfo.setSpecId(major);
+		userInfo.setAcademyId(college);
+		userInfoMapper.insert(userInfo);
+		System.out.println("success!");
+	
 		System.out.println();
 		System.out.println();
 		System.out.println();

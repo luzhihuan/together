@@ -97,7 +97,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (VerifyUtil.verify(VerifyRegexEnum.EMAIL, username)) {
             check = userInfoMapper.selectByEmail(username);
         } else if (VerifyUtil.verify(VerifyRegexEnum.STUDENT_ID, username)) {
-            check = userInfoMapper.selectById(username);
+            check = userInfoMapper.selectByStudentId(username);
         } else {
             return Result.fail("用户名或密码错误！");
         }

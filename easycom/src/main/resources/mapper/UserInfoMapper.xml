@@ -8,6 +8,12 @@
         where email = #{email}
     </select>
 
+    <select id="selectByStudentId" resultType="com.easycom.entity.PO.UserInfo">
+        select *
+        from user_info
+        where student_id = #{studentId}
+    </select>
+
     <select id="selectByUserIdAndStudentId" resultType="com.easycom.entity.PO.UserInfo">
         select *
         from user_info
@@ -38,5 +44,6 @@
             and class_id = #{classId}
         </if>
     </select>
+
 
 </mapper>

@@ -1,7 +1,5 @@
 <template>
   <div class="setting-body">
-    <span class="font-title">设置</span>
-    <el-divider class="divider"></el-divider>
     <div>
       <span class="font-title">账号设置</span>
       <el-divider class="divider"></el-divider>
@@ -50,7 +48,7 @@
       <el-container class="button-container">
         <el-button 
           class="style-button"
-          @click="emailDialog"
+          @click="showDialog(3)"
         >
         <el-icon>
           <MessageBox />
@@ -62,7 +60,7 @@
       <el-container class="button-container">
         <el-button 
           class="style-button"
-          @click="passwordDialog"
+          @click="showDialog(2)"
         >
         <el-icon>
           <Lock />
@@ -79,7 +77,7 @@
           <KnifeFork />
         </el-icon>
         </el-button>
-        <span class="button-title">其它whatever</span>
+        <span class="button-title">其它</span>
       </el-container>
     </div>
     <div class="marginTop">
@@ -101,12 +99,54 @@
       
     </div>
   </div>
+  
+  <ResetPasswordOABindEmail 
+    :show="dialogRef.show"
+    :title=dialogRef.title
+    :buttons="dialogRef.buttons"
+    @close="dialogRef.show=false"
+    :changeType="dialogRef.opType"
+  >
+  </ResetPasswordOABindEmail>
+  
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref,reactive } from 'vue';
+import ResetPasswordOABindEmail from "@/components/ResetPasswordOABindEmail.vue";
 
 const activeName = ref('1')
+
+//操作类型，1第一次登录，2修改密码，3绑定邮箱
+const title  = ref()
+
+
+const dialogRef = reactive({
+  show:false,
+  title:title,
+  opType:1,
+  buttons:[{
+    type:"primary",
+    text:"发送",
+    click: (e) => {
+      submit()
+    }
+  }]
+  
+})
+
+
+const showDialog = (opType) => {
+  if(opType === 2){
+    dialogRef.opType = 2
+    title.value="修改当前密码"
+  }
+  if(opType === 3){
+    dialogRef.opType = 3
+    title.value="更换邮箱"
+  }
+  dialogRef.show = true
+} 
 
 </script>
 
@@ -170,7 +210,8 @@ const activeName = ref('1')
   width: 100%;
 }
 
-// .setting-body{
+ .setting-body{
+   margin-top: 20px;
 //   display: flex;
 //   overflow: auto;
 //   flex-direction: column;
@@ -213,6 +254,6 @@ const activeName = ref('1')
 //     margin-left: 0px ;
 //     width: 100%;
 //   }
-// }
+}
 
 </style>
