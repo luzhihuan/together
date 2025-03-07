@@ -8,6 +8,7 @@
         >
           <el-container
             class="style-container"
+            @click="openDetails"
           >
             <el-title class="font-title">{{ item.title }}</el-title>
           </el-container>
@@ -35,7 +36,7 @@ const prePerformanceList = [
 ]
 
 //获取数据库中往年的综测数据
-const getPrePerformance = (async) =>{
+const getPrePerformance = async () =>{
 
 }
 
@@ -76,8 +77,13 @@ const getPrePerformance = (async) =>{
 .style-container{
   margin: 20px;
   height: 600px;
-  box-shadow: 0 5px 15px rgba(0,0,0, 0.3);
+  box-shadow: 0 0 3px 1px rgba(0,0,0, 0.3);
   border-radius: 5px;
   background-color: rgb(241, 242, 241);
+  transition: all 0.3s;
+
+  &:hover{
+    box-shadow: 0 0 6px 3px rgba(0,0,0, 0.3);
+  }
 }
 </style>

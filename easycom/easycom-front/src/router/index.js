@@ -91,6 +91,24 @@ const router =createRouter({
             },
             component:()=>import("@/views/message/inbox.vue"),
         },
+        {
+            path: "/main/unprocessedTask",
+            name: "未处理任务",
+            meta: {
+                needLogin: true,
+                code: 'unprocessedTask',
+            },
+            component:()=>import("@/views/main/unprocessedTask.vue"),
+        },
+        {
+            path: "/main/unprocessedTask/id",
+            name: "单个任务",
+            meta: {
+                needLogin: true,
+                code: 'singleTask',
+            },
+            component:()=>import("@/views/main/singleTask.vue"),
+        },
     ]
 })
 router.beforeEach((to,from,next,)=>{

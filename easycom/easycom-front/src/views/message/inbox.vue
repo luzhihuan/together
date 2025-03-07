@@ -48,8 +48,8 @@ const currentEmail = ref(null);
 
 
 const messageDialog = (item) => {
-currentEmail.value = item;
-dialogVisible.value = true;
+  currentEmail.value = item;
+  dialogVisible.value = true;
 };
 </script>
   
@@ -59,28 +59,33 @@ dialogVisible.value = true;
 .body{
     display: flex;
     flex-direction: row;
-    overflow: auto;
+    overflow: hidden;
     height: 100vh;
 }
 .style-divider{
     border-color: rgb(142, 198, 225);
     border-width: 5px;
-    margin: 50px;
-    height: 100%;
+    margin-left: 60px;
+    margin-right: 60px;
+    height: 100vh;
 }
 
 .style-card{
-    // display: flex;
+    display: flex;
     // justify-content: center;
-    margin: 60px;
+    flex-direction: column;
+    margin: 30px;
+    margin-top: 40px;
     background-color: rgb(244, 248, 248);
     width: 65%;
-    height: 100%;
+    height: 90vh;
     transition: all 0.3s;
+    overflow: auto;
+    border-radius: 8px;
 }
 
 .style-card:hover{
-    box-shadow: 0 3px 5px rgba(0,0,0, $alpha: 0.5);
+    box-shadow: 0 0 4px 5px rgba(0,0,0, $alpha: 0.1);
 }
 
 .style-emailCard{
@@ -89,9 +94,12 @@ dialogVisible.value = true;
     //justify-content: center;
     width: 90%;
     height: 125px;
-    border-radius: 6px;
+    border-radius: 8px;
     background-color: rgb(244, 248, 248);
-    margin: 30px;
+    max-width: none;
+    min-width: 0;
+    margin: auto;
+    margin-top: 20px;
     transition: all 0.3s ease-in-out;
 }
 .style-emailCard:hover{

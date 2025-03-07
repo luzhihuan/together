@@ -28,7 +28,6 @@ import 'element-plus/dist/index.css'
 import '@/assets/icon/iconfont.css'
 import '@/assets/base.scss'
 
-import VueCookie from 'vue-cookies'
 
 //全局属性引入
 import Verify from '@/utils/Verify.js'

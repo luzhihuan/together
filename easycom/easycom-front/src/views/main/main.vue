@@ -1,5 +1,5 @@
 <template>
-  <div class="marginTop">
+  <div class="style-body">
     <span class="font-title">
       综测服务
     </span>
@@ -20,6 +20,18 @@
       <el-container class="button-container">
         <el-button 
           class="style-button"
+          @click="openEvaluationResult"
+        >
+        <el-icon>
+          <Checked /> 
+        </el-icon>
+        </el-button>
+        <span class="button-title">评测结果查询</span>
+      </el-container>
+
+      <el-container class="button-container">
+        <el-button 
+          class="style-button"
           @click="openPrePerformance"
         >
         <el-icon>
@@ -29,34 +41,37 @@
         <span class="button-title">往期综测成绩</span>
       </el-container> 
 
-      <el-container class="button-container">
-        <el-button 
-          class="style-button"
-          @click="openEvaluationResult"
-        >
-        <el-icon>
-          <Checked /> 
-        </el-icon>
-        </el-button>
-        <span class="button-title">评测结果查询</span>
-      </el-container>
+      
     </div>
     <div class="marginTop">
       <span class="font-title">
-        敬请期待
+        管理接口
       </span>
       <el-divider class="divider"></el-divider>
-      <el-container class="button-container">
-          <el-button 
-            class="style-button"
-            @click="fileUpLoad"
-          >
-          <el-icon>
-            <Cherry /> 
-          </el-icon>
-          </el-button>
-          <span class="button-title">敬请期待</span>
-      </el-container>
+      <div class="style-row">
+        <el-container class="button-container">
+            <el-button 
+              class="style-button"
+              @click="openUnprocessedTask"
+            >
+            <el-icon>
+              <List />
+            </el-icon>
+            </el-button>
+            <span class="button-title">未处理审核任务</span>
+        </el-container>
+        <el-container class="button-container">
+            <el-button 
+              class="style-button"
+              @click="fileUpLoad"
+            >
+            <el-icon>
+              <Cherry /> 
+            </el-icon>
+            </el-button>
+            <span class="button-title">敬请期待</span>
+        </el-container>
+      </div>
     </div>
 
     <Dialog
@@ -104,7 +119,7 @@
     yearSelection: [{required: true, message: '请选择评测年份', trigger: 'blur'}],
   }
 //评定年度选择
-  const yearSelectionConfirm = () =>{
+const yearSelectionConfirm = () =>{
     formDataRef.value.validate (async (valid) => {
       if(!valid){
         return;
@@ -115,15 +130,21 @@
     })
   };
 //打开往期综测成绩界面
-  const openPrePerformance = () =>{
-      const route = router.resolve({name: '往期综测成绩'});
-      window.open(route.href, '_blank');
+const openPrePerformance = () =>{
+    const route = router.resolve({name: '往期综测成绩'});
+    window.open(route.href, '_blank');
 }
 
 //打开评定结果查询界面
 const openEvaluationResult = () =>{
-      const route = router.resolve({name: '评定结果'});
-      window.open(route.href, '_blank');
+    const route = router.resolve({name: '评定结果'});
+    window.open(route.href, '_blank');
+}
+
+//打开尚未处理任务界面
+const openUnprocessedTask = () =>{
+    const route = router.resolve({name: '未处理任务'});
+    window.open(route.href, '_blank');
 }
 
 //弹窗元素初始化
@@ -172,15 +193,19 @@ const openEvaluationResult = () =>{
 
 <style lang="scss" scoped>
 
+.style-body{
+  margin-top: 20px;
+}
 //分界线样式
 .divider{
   border-width: 3px;
   border-color: rgb(110, 87, 2);
   box-shadow: 0 5px 5px rgba(0,0,0, 0.3);
+
 }
 //上下间距
 .marginTop{
-  margin-top: 30px;
+  margin-top: 20px;
 }
 //标题样式
 .font-title{

@@ -630,7 +630,12 @@ const reSetPassword = async () => {
     justify-content: center;
     align-items: center;
     background: rgba(255, 255, 255, 0.82);
-    box-shadow: 0 4px 20px rgba(19, 179, 77, 0.9);
+    transition: all 0.3s;
+  }
+
+  .login-card:hover{
+    transform: scale(1.01);
+    box-shadow: 0 0 4px 6px rgba(3, 41, 17, 0.4);
   }
 
   .login-title {

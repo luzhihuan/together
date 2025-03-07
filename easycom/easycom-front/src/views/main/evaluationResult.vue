@@ -48,7 +48,7 @@ const evaluationResultList = [
 ]
 
 //获取数据库中评定的数据
-const getEvaluationResult = (async) =>{
+const getEvaluationResult = async () =>{
 
 }
 
